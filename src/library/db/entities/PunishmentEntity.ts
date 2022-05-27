@@ -7,4 +7,8 @@ export class PunishmentEntity extends BaseEntity {
 
 	@Column('timestamp')
 	public timestamp: Date;
+
+	constructor() {
+		super();
+	}
 }
