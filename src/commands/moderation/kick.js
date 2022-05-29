@@ -1,7 +1,7 @@
 const { Command, Args } = require("@sapphire/framework");
 const { Message } = require("discord.js");
 
-class BanCommand extends Command {
+class KickCommand extends Command {
   /**
    *
    * @param { Command.Context } context
@@ -10,9 +10,9 @@ class BanCommand extends Command {
   constructor(context, options) {
     super(context, {
       ...options,
-      name: "ban",
+      name: "kick",
       preconditions: ["Staff"],
-      description: "Bans a user from the server.",
+      description: "Kicks a member from the server.",
     });
   }
 
@@ -22,34 +22,32 @@ class BanCommand extends Command {
    * @param { Args } args
    */
   async messageRun(message, args) {
-    const rawUser = await args.pickResult("user");
-    if (!rawUser.success)
+    const rawMember = await args.pickResult("member");
+    if (!rawMember.success)
       return this.container.utility.errReply(
         message,
-        "You must provide a valid user to ban."
+        "You must provide a valid member to kick."
       );
 
     const reason = await args.restResult("string");
     if (!reason.success)
       return this.container.utility.errReply(
         message,
-        "You must provide a reason to ban."
+        "You must provide a reason to kick."
       );
 
-    const member = message.guild.members.resolve(rawUser.value);
-    if (member) {
-      if (member.roles.highest.position > message.member.roles.highest.position)
-        return this.container.utility.errReply(
-          message,
-          "You cannot kick a user equal or higher to you in hierarchy."
-        );
-      if (!member.kickable)
-        return this.container.utility.errReply(
-          message,
-          "I do not have permissions to kick this member."
-        );
-    }
+    const member = rawMember.value;
 
+    if (member.roles.highest.position > message.member.roles.highest.position)
+      return this.container.utility.errReply(
+        message,
+        "You cannot kick a user equal or higher to you in hierarchy."
+      );
+    if (!member.kickable)
+      return this.container.utility.errReply(
+        message,
+        "I do not have permissions to kick this member."
+      );
     if (reason.value.length > 1000)
       return this.container.utility.errReply(
         message,
@@ -62,4 +60,4 @@ class BanCommand extends Command {
   }
 }
 
-module.exports = { BanCommand };
+module.exports = { KickCommand };
