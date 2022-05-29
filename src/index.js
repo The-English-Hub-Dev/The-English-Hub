@@ -3,10 +3,13 @@ const Sentry = require('@sentry/node');
 const { Intents, Options } = require('discord.js');
 require('@sapphire/plugin-logger/register');
 const { prefix } = require('../config.json');
+const { Database } = require('./library/db/database');
 
 process.on('uncaughtException', (error) => {
 	container.logger.error(error);
 });
+
+container.db = new Database();
 
 const client = new SapphireClient({
 	intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES, Intents.FLAGS.GUILD_BANS, Intents.FLAGS.GUILD_MEMBERS],
