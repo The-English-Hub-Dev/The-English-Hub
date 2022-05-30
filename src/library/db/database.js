@@ -1,5 +1,5 @@
-import { DataSource, Repository } from 'typeorm';
-import { PunishmentEntity } from './entities/PunishmentEntity';
+const { DataSource } = require('typeorm');
+const { PunishmentEntity } = require('./entities/PunishmentEntity');
 
 const ds = new DataSource({
     type: 'postgres',
@@ -17,11 +17,8 @@ const ds = new DataSource({
     },
 });
 
-export class Database {
-    public typeorm: DataSource = null;
-    public punishments: Repository<PunishmentEntity> = null;
-
-    public async initializeDB() {
+class Database {
+    async initializeDB() {
         this.typeorm = ds;
 
         this.punishments = this.typeorm.getRepository(PunishmentEntity);
@@ -29,3 +26,5 @@ export class Database {
         await this.typeorm.initialize();
     }
 }
+
+module.exports = { Database };

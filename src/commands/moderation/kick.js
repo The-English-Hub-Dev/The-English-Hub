@@ -1,5 +1,7 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
+const { PunishmentEntity } = require('../../library/db/entities/PunishmentEntity');
+const { PunishmentType } = require('../../library/typings');
 
 class KickCommand extends Command {
     /**
@@ -57,9 +59,18 @@ class KickCommand extends Command {
                 'The reason must be less than 100 characters.'
             );
 
-        await member.kick(reason.value);
+        const punishment = new PunishmentEntity({
+            moderator_id: message.author.id,
+            target_user_id: rawMember.value.id,
+            guild_id: message.guild.id,
+        });
 
-        return message.reply();
+        await punishment.save();
+
+        await this.container.punishments.sendPunishmentEmbed(rawMember.value, message.guild, PunishmentType.KICK);
+
+        const embed = await this.container.punishments.getChatPunishmentEmbed() 
+        return message.channel.send({embeds: [embed]});
     }
 }
 

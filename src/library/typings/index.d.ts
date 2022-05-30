@@ -6,6 +6,7 @@ import {
 import { Duration } from '@sapphire/time-utilities';
 import { GuildMember, Guild, Message, User } from 'discord.js';
 import { Database } from '../db/database';
+import { Punishments } from '../punishments';
 import { Utility } from '../utility';
 
 declare module '@sapphire/pieces' {
@@ -13,6 +14,7 @@ declare module '@sapphire/pieces' {
         client: SapphireClient;
         utility: Utility;
         db: Database;
+        punishments: Punishments;
         stores: StoreRegistry;
         logger: ILogger;
         applicationCommandRegistries: ApplicationCommandRegistry;
@@ -29,8 +31,8 @@ export enum PunishmentType {
 }
 
 export interface PunishmentOptions {
-    type: PunishmentType;
     moderator_id: string;
     target_user_id: string;
-    duration?: Duration;
+    guild_id: string;
+    duration?: string;
 }

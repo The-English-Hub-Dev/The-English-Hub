@@ -1,4 +1,5 @@
 import { DiscordSnowflake } from '@sapphire/snowflake';
+import { Duration } from '@sapphire/time-utilities';
 import { BaseEntity, Entity, PrimaryColumn, Column } from 'typeorm';
 import { PunishmentOptions } from '../../typings';
 
@@ -16,6 +17,9 @@ export class PunishmentEntity extends BaseEntity {
     @Column('text')
     public target_user_id: string;
 
+    @Column('text')
+    public guild_id: string;
+
     @Column('date')
     public expires: Date;
 
@@ -28,6 +32,7 @@ export class PunishmentEntity extends BaseEntity {
         this.timestamp = date;
         this.moderator_id = options.moderator_id;
         this.target_user_id = options.target_user_id;
-        this.expires = options.duration.fromNow;
+        this.guild_id = options.guild_id;
+        this.expires = options.duration ? new Duration(options.duration).fromNow : undefined;
     }
 }
