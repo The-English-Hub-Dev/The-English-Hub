@@ -50,7 +50,8 @@ class UnbanCommand extends Command {
             message.author.id,
             rawUser.value.id,
             reason.value,
-            PunishmentType.UNBAN
+            PunishmentType.UNBAN,
+            null
         );
 
         const isBanned = await message.guild.bans.fetch(rawUser.value.id).catch(() => null);

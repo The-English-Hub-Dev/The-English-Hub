@@ -1,6 +1,5 @@
 const { container } = require('@sapphire/framework');
 const { DataSource } = require('typeorm');
-const { PunishmentEntity } = require('./entities/PunishmentEntity');
 
 class Database {
     constructor() {

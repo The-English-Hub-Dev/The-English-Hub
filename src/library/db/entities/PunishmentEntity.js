@@ -26,6 +26,9 @@ const punishmentEntity = new EntitySchema({
         type: {
             type: 'text',
         },
+		duration: {
+			type: 'text',
+		}
     },
 });
 
@@ -35,9 +38,10 @@ class Punishment {
      * @param { String } userID
      * @param { String } moderatorID
      * @param { String } reason
+	 * @param { String } duration
      * @param { String } type
      */
-    constructor(userID, moderatorID, reason, type) {
+    constructor(userID, moderatorID, reason, type, duration) {
         const currentDate = new Date();
         const p = {
             punishment_id: String(
@@ -48,6 +52,7 @@ class Punishment {
             reason: reason,
             timestamp: currentDate,
             type: type,
+			duration: duration ?? null
         };
         this.savePunishment(p);
     }

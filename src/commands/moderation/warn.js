@@ -1,4 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
+const { Duration } = require('@sapphire/time-utilities');
 const { Message } = require('discord.js');
 const { Punishment } = require('../../library/db/entities/PunishmentEntity');
 const { PunishmentType } = require('../../library/typings');
@@ -30,6 +31,10 @@ class WarnCommand extends Command {
                 message,
                 'You must provide a valid member to warn.'
             );
+
+        const rawDuration = await args.pickResult('string');
+        const duration = new Duration(rawDuration);
+        if (!duration.success || !duration) return this.container.utility.errReply(message, 'You must provide a valid duration for the warn.');
 
         const reason = await args.restResult('string');
         if (!reason.success)
@@ -63,7 +68,8 @@ class WarnCommand extends Command {
             message.author.id,
             rawMember.value.id,
             reason.value,
-            PunishmentType.WARN
+            PunishmentType.WARN,
+            duration.offset
         );
 
         await this.container.punishments.sendPunishmentEmbed(

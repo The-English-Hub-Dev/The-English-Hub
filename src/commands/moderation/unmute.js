@@ -70,7 +70,8 @@ class UnmuteCommand extends Command {
         await this.container.punishments.sendPunishmentEmbed(
             rawMember.value,
             message.guild,
-            PunishmentType.UNMUTE
+            PunishmentType.UNMUTE,
+            null
         );
 
         await member.timeout(null, reason.value);

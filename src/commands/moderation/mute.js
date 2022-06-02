@@ -72,7 +72,8 @@ class MuteCommand extends Command {
             message.author.id,
             rawMember.value.id,
             reason.value,
-            PunishmentType.MUTE
+            PunishmentType.MUTE,
+            duration.offset
         );
 
         await this.container.punishments.sendPunishmentEmbed(

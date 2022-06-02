@@ -65,6 +65,7 @@ class BanCommand extends Command {
             rawMember.value.id,
             reason.value,
             PunishmentType.BAN
+            // TODO duration
         );
 
         await this.container.punishments.sendPunishmentEmbed(

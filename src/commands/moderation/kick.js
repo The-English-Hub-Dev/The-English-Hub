@@ -63,7 +63,8 @@ class KickCommand extends Command {
             message.author.id,
             rawMember.value.id,
             reason.value,
-            PunishmentType.KICK
+            PunishmentType.KICK,
+            null
         );
 
         await this.container.punishments.sendPunishmentEmbed(
