@@ -29,10 +29,3 @@ export enum PunishmentType {
     BAN = 'BAN',
     UNBAN = 'UNBAN',
 }
-
-export interface PunishmentOptions {
-    moderator_id: string;
-    target_user_id: string;
-    guild_id: string;
-    duration?: string;
-}

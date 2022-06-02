@@ -1,6 +1,6 @@
 const EntitySchema = require('typeorm').EntitySchema;
 const { container } = require('@sapphire/framework');
-const { DiscordSnowflake } = require('@sapphire/snowflake');
+const { DiscordSnowflake, Snowflake } = require('@sapphire/snowflake');
 require('reflect-metadata');
 
 const punishmentEntity = new EntitySchema({

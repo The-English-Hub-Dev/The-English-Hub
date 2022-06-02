@@ -16,6 +16,14 @@ class GuildMemberAddListener extends Listener {
      * @param { GuildMember } member
      */
     async run(member) {
+        await this.welcomeMember(member);
+    }
+
+    /**
+     * 
+     * @param { GuildMember } member 
+     */
+    async welcomeMember(member) {
         const channel = member.guild.channels.cache.get(welcomeChannel);
         if (!channel || channel.type !== 'GUILD_TEXT') return;
         return channel.send({
