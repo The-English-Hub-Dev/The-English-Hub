@@ -14,7 +14,7 @@ class StaffPrecondition extends Precondition {
             return this.ok();
         return staffRoles.some((role) => message.member.roles.cache.has(role))
             ? this.ok()
-            : this.error('User is not a staff member');
+            : this.error();
     }
 }
 module.exports = { StaffPrecondition };
