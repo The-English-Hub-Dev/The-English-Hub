@@ -1,5 +1,6 @@
 const { time, TimestampStyles } = require("@discordjs/builders");
 const { GuildMember, User, Guild, MessageEmbed, Message } = require("discord.js");
+const { Punishment } = require("./db/entities/PunishmentEntity");
 const { PunishmentType } = require("./typings");
 
 class Punishments {
@@ -21,9 +22,10 @@ class Punishments {
 	/**
 	 * 
 	 * @param { GuildMember } member 
+	 * @param { Punishment } punishment
 	 * @param { PunishmentType } type 
 	 */
-	async getChatPunishmentEmbed(member, type) {
+	async getChatPunishmentEmbed(member, punishment, type) {
 		return new MessageEmbed().setDescription('not ready'); // TODO
 	}
 

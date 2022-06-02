@@ -1,6 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
-const { PunishmentEntity } = require('../../library/db/entities/PunishmentEntity');
+const { Punishment } = require('../../library/db/entities/PunishmentEntity');
 const { PunishmentType } = require('../../library/typings');
 
 class BanCommand extends Command {
@@ -15,7 +15,7 @@ class BanCommand extends Command {
             name: 'ban',
             preconditions: ['Staff'],
             options: ['delete-days'],
-            description: 'Bans a user from the server.',
+            description: 'Bans a member from the server.',
         });
     }
 
@@ -25,11 +25,11 @@ class BanCommand extends Command {
      * @param { Args } args
      */
     async messageRun(message, args) {
-        const rawUser = await args.pickResult('user');
-        if (!rawUser.success)
+        const rawMember = await args.pickResult('member');
+        if (!rawMember.success)
             return this.container.utility.errReply(
                 message,
-                'You must provide a valid user to ban.'
+                'You must provide a valid member to ban.'
             );
 
         const reason = await args.restResult('string');
@@ -39,43 +39,37 @@ class BanCommand extends Command {
                 'You must provide a reason to ban.'
             );
 
-        const member = message.guild.members.resolve(rawUser.value);
-        if (member) {
-            if (
-                member.roles.highest.position >
-                message.member.roles.highest.position
-            )
-                return this.container.utility.errReply(
-                    message,
-                    'You cannot ban a user equal or higher to you in hierarchy.'
-                );
-            if (!member.kickable)
-                return this.container.utility.errReply(
-                    message,
-                    'I do not have permissions to ban this member.'
-                );
-        }
+        const member = rawMember.value;
 
-        if (reason.value.length > 1000)
+        if (
+            member.roles.highest.position >
+            message.member.roles.highest.position
+        )
+            return this.container.utility.errReply(
+                message,
+                'You cannot kick a user equal or higher to you in hierarchy.'
+            );
+        if (!member.kickable)
+            return this.container.utility.errReply(
+                message,
+                'I do not have permissions to kick this member.'
+            );
+        if (reason.value.length > 100)
             return this.container.utility.errReply(
                 message,
                 'The reason must be less than 100 characters.'
             );
 
-        await member.ban({reason: reason.value, days: args.getOption('delete-days') ?? 5});
+        const punishment = new Punishment(message.author.id, rawMember.value.id, reason.value, PunishmentType.BAN);
 
-        const punishment = new PunishmentEntity({
-          moderator_id: message.author.id,
-          target_user_id: rawUser.value.id,
-          guild_id: message.guild.id,
-      });
+        await this.container.punishments.sendPunishmentEmbed(rawMember.value, message.guild, PunishmentType.BAN);
 
-      await punishment.save();
+        const delete_days = args.getOption('days') === 'null' ? 0 : Number(args.getOption('days'));
 
-      await this.container.punishments.sendPunishmentEmbed(rawUser.value, message.guild, PunishmentType.BAN);
+        await member.ban({reason: reason.value, days: delete_days})
 
-      const embed = await this.container.punishments.getChatPunishmentEmbed(); 
-      return message.channel.send({embeds: [embed]});
+        const embed = await this.container.punishments.getChatPunishmentEmbed(rawMember.value, punishment, PunishmentType.BAN); 
+        return message.channel.send({embeds: [embed]});
     }
 }
 

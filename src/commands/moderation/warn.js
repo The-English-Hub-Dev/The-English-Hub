@@ -3,7 +3,7 @@ const { Message } = require('discord.js');
 const { Punishment } = require('../../library/db/entities/PunishmentEntity');
 const { PunishmentType } = require('../../library/typings');
 
-class KickCommand extends Command {
+class WarnCommand extends Command {
     /**
      *
      * @param { Command.Context } context
@@ -12,9 +12,9 @@ class KickCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: 'kick',
+            name: 'warn',
             preconditions: ['Staff'],
-            description: 'Kicks a member from the server.',
+            description: 'Warns a member in the server.',
         });
     }
 
@@ -28,14 +28,14 @@ class KickCommand extends Command {
         if (!rawMember.success)
             return this.container.utility.errReply(
                 message,
-                'You must provide a valid member to kick.'
+                'You must provide a valid member to warn.'
             );
 
         const reason = await args.restResult('string');
         if (!reason.success)
             return this.container.utility.errReply(
                 message,
-                'You must provide a reason to kick.'
+                'You must provide a reason to warn.'
             );
 
         const member = rawMember.value;
@@ -46,12 +46,12 @@ class KickCommand extends Command {
         )
             return this.container.utility.errReply(
                 message,
-                'You cannot kick a user equal or higher to you in hierarchy.'
+                'You cannot warn a user equal or higher to you in hierarchy.'
             );
-        if (!member.kickable)
+        if (!member.manageable)
             return this.container.utility.errReply(
                 message,
-                'I do not have permissions to kick this member.'
+                'I do not have permissions to warn this member.'
             );
         if (reason.value.length > 100)
             return this.container.utility.errReply(
@@ -59,15 +59,13 @@ class KickCommand extends Command {
                 'The reason must be less than 100 characters.'
             );
 
-        const punishment = new Punishment(message.author.id, rawMember.value.id, reason.value, PunishmentType.KICK);
+        const punishment = new Punishment(message.author.id, rawMember.value.id, reason.value, PunishmentType.WARN);
 
-        await this.container.punishments.sendPunishmentEmbed(rawMember.value, message.guild, PunishmentType.KICK);
+        await this.container.punishments.sendPunishmentEmbed(rawMember.value, message.guild, PunishmentType.WARN);
 
-        await member.kick(reason.value);
-
-        const embed = await this.container.punishments.getChatPunishmentEmbed(rawMember.value, punishment, PunishmentType.KICK); 
+        const embed = await this.container.punishments.getChatPunishmentEmbed(rawMember.value, punishment, PunishmentType.WARN); 
         return message.channel.send({embeds: [embed]});
     }
 }
 
-module.exports = { KickCommand };
+module.exports = { WarnCommand };
