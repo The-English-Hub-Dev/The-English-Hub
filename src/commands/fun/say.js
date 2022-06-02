@@ -22,7 +22,7 @@ class SayCommand extends Command {
         if (!text.success)
             return this.container.utility.errReply(
                 message,
-                'You must provide something to say.'
+                'You must provide something for me to say.'
             );
 
         return message.channel.send({

@@ -59,12 +59,25 @@ class WarnCommand extends Command {
                 'The reason must be less than 100 characters.'
             );
 
-        const punishment = new Punishment(message.author.id, rawMember.value.id, reason.value, PunishmentType.WARN);
+        const punishment = new Punishment(
+            message.author.id,
+            rawMember.value.id,
+            reason.value,
+            PunishmentType.WARN
+        );
 
-        await this.container.punishments.sendPunishmentEmbed(rawMember.value, message.guild, PunishmentType.WARN);
+        await this.container.punishments.sendPunishmentEmbed(
+            rawMember.value,
+            message.guild,
+            PunishmentType.WARN
+        );
 
-        const embed = await this.container.punishments.getChatPunishmentEmbed(rawMember.value, punishment, PunishmentType.WARN); 
-        return message.channel.send({embeds: [embed]});
+        const embed = await this.container.punishments.getChatPunishmentEmbed(
+            rawMember.value,
+            punishment,
+            PunishmentType.WARN
+        );
+        return message.channel.send({ embeds: [embed] });
     }
 }
 

@@ -31,10 +31,14 @@ class MuteCommand extends Command {
                 message,
                 'You must provide a valid member to mute.'
             );
-        
+
         const rawDuration = await args.pickResult('string');
         const duration = new Duration(rawDuration.value);
-        if (!duration.success || !duration) return this.container.utility.errReply(message, 'You must provide a valid duration to mute for.');
+        if (!duration.success || !duration)
+            return this.container.utility.errReply(
+                message,
+                'You must provide a valid duration to mute for.'
+            );
 
         const reason = await args.restResult('string');
         if (!reason.success)
@@ -64,14 +68,27 @@ class MuteCommand extends Command {
                 'The reason must be less than 100 characters.'
             );
 
-        const punishment = new Punishment(message.author.id, rawMember.value.id, reason.value, PunishmentType.MUTE);
+        const punishment = new Punishment(
+            message.author.id,
+            rawMember.value.id,
+            reason.value,
+            PunishmentType.MUTE
+        );
 
-        await this.container.punishments.sendPunishmentEmbed(rawMember.value, message.guild, PunishmentType.MUTE);
+        await this.container.punishments.sendPunishmentEmbed(
+            rawMember.value,
+            message.guild,
+            PunishmentType.MUTE
+        );
 
         await member.timeout(duration.offset, reason.value);
 
-        const embed = await this.container.punishments.getChatPunishmentEmbed(rawMember.value, punishment, PunishmentType.MUTE); 
-        return message.channel.send({embeds: [embed]});
+        const embed = await this.container.punishments.getChatPunishmentEmbed(
+            rawMember.value,
+            punishment,
+            PunishmentType.MUTE
+        );
+        return message.channel.send({ embeds: [embed] });
     }
 }
 

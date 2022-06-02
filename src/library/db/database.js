@@ -2,14 +2,13 @@ const { container } = require('@sapphire/framework');
 const { DataSource } = require('typeorm');
 const { PunishmentEntity } = require('./entities/PunishmentEntity');
 
-
 class Database {
     constructor() {
         const ds = new DataSource({
             type: 'postgres',
             connectTimeoutMS: 5000,
             url: process.env.DATABASE_URL,
-            ssl: {rejectUnauthorized: true},
+            ssl: { rejectUnauthorized: true },
             logging: ['error'],
             synchronize: true,
             entities: [require('./entities/PunishmentEntity').punishmentEntity],
@@ -25,7 +24,7 @@ class Database {
         ds.initialize().catch((e) => container.logger.error(e));
 
         this.typeorm = ds;
-        this.punishments = this.typeorm.getRepository("PunishmentEntity");
+        this.punishments = this.typeorm.getRepository('PunishmentEntity');
     }
 
     async initializeDB() {

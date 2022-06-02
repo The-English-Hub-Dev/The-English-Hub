@@ -59,14 +59,27 @@ class KickCommand extends Command {
                 'The reason must be less than 100 characters.'
             );
 
-        const punishment = new Punishment(message.author.id, rawMember.value.id, reason.value, PunishmentType.KICK);
+        const punishment = new Punishment(
+            message.author.id,
+            rawMember.value.id,
+            reason.value,
+            PunishmentType.KICK
+        );
 
-        await this.container.punishments.sendPunishmentEmbed(rawMember.value, message.guild, PunishmentType.KICK);
+        await this.container.punishments.sendPunishmentEmbed(
+            rawMember.value,
+            message.guild,
+            PunishmentType.KICK
+        );
 
         await member.kick(reason.value);
 
-        const embed = await this.container.punishments.getChatPunishmentEmbed(rawMember.value, punishment, PunishmentType.KICK); 
-        return message.channel.send({embeds: [embed]});
+        const embed = await this.container.punishments.getChatPunishmentEmbed(
+            rawMember.value,
+            punishment,
+            PunishmentType.KICK
+        );
+        return message.channel.send({ embeds: [embed] });
     }
 }
 

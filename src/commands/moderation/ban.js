@@ -60,16 +60,32 @@ class BanCommand extends Command {
                 'The reason must be less than 100 characters.'
             );
 
-        const punishment = new Punishment(message.author.id, rawMember.value.id, reason.value, PunishmentType.BAN);
+        const punishment = new Punishment(
+            message.author.id,
+            rawMember.value.id,
+            reason.value,
+            PunishmentType.BAN
+        );
 
-        await this.container.punishments.sendPunishmentEmbed(rawMember.value, message.guild, PunishmentType.BAN);
+        await this.container.punishments.sendPunishmentEmbed(
+            rawMember.value,
+            message.guild,
+            PunishmentType.BAN
+        );
 
-        const delete_days = args.getOption('days') === 'null' ? 0 : Number(args.getOption('days'));
+        const delete_days =
+            args.getOption('days') === 'null'
+                ? 0
+                : Number(args.getOption('days'));
 
-        await member.ban({reason: reason.value, days: delete_days})
+        await member.ban({ reason: reason.value, days: delete_days });
 
-        const embed = await this.container.punishments.getChatPunishmentEmbed(rawMember.value, punishment, PunishmentType.BAN); 
-        return message.channel.send({embeds: [embed]});
+        const embed = await this.container.punishments.getChatPunishmentEmbed(
+            rawMember.value,
+            punishment,
+            PunishmentType.BAN
+        );
+        return message.channel.send({ embeds: [embed] });
     }
 }
 
