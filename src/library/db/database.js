@@ -6,7 +6,7 @@ class Database {
         const ds = new DataSource({
             type: 'postgres',
             connectTimeoutMS: 5000,
-            url: process.env.DATABASE_URL,
+            url: process.env.DB_URL,
             ssl: { rejectUnauthorized: true },
             logging: ['error'],
             synchronize: true,
