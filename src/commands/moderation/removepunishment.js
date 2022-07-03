@@ -1,3 +1,4 @@
+const { MessagePrompter } = require('@sapphire/discord.js-utilities');
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
 
@@ -32,6 +33,11 @@ class RemovepunishmentCommand extends Command {
 		const punishment = await this.container.db.punishments.findOneBy({punishment_id: id});
 
 		if (!punishment) return this.container.utility.errReply(message, 'That punishment ID does not exist.');
+		
+		const prompter = new MessagePrompter(`Are you sure you want to remove punishment ${id}?`)
+		const answer = await prompter.run(message.channel, message.author);
+
+		if (!answer) return message.reply('Canceled');
 
 		await this.container.db.punishments.remove(punishment);
 
