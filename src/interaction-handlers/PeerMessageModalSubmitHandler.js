@@ -18,6 +18,8 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
 		const member = await interaction.guild.members.fetch(rawID).catch(() => null);
 		if (!member) return interaction.reply({content: "You didn't provide a valid member id. See https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID- for information on how to get an ID.", ephemeral: true})
 
+		if (member.id === interaction.member.id) return interaction.reply({content: "You can't send a message to yourself :(", ephemeral: true});
+
 		// const ch = interaction.guild.channels.cache.get(peerMsgReviewChannelID);
 		// if (!ch || ch.type !== 'GUILD_TEXT') return interaction.reply({content: 'An error occured. Please try again.', ephemeral: true});
 		// testing
@@ -26,7 +28,8 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
 		const embed = new MessageEmbed()
 			.setTitle(`${interaction.user.tag} wants to send ${member.user.tag} a message!`)
 			.setDescription(`Message: ${msg}`)
-			.addField('Member to be sent to', `${member}`);
+			.addField('Sending member', `${interaction.member}`)
+			.addField('Recieving member', `${member}`, true)
 		
 		const buttons = new MessageActionRow().addComponents(
 			new MessageButton()
