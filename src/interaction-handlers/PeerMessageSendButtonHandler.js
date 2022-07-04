@@ -40,7 +40,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
 	 * @param { ButtonInteraction } interaction 
 	 */
 	async parse(interaction) {
-		if (!interaction.customId.startsWith('peer')) return this.none();
+		if (interaction.customId !== 'peer-request') return this.none();
 		
 		return this.some();
 	}

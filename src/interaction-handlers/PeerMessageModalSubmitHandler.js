@@ -1,5 +1,6 @@
 const { InteractionHandler, InteractionHandlerTypes } = require('@sapphire/framework');
-const { ModalSubmitInteraction } = require('discord.js');
+const { ModalSubmitInteraction, MessageEmbed, MessageActionRow, MessageButton } = require('discord.js');
+const { peerMsgReviewChannelID } = require('../../config.json');
 
 class PeerMessageModalSubmitHandler extends InteractionHandler {
 	constructor(ctx) {
@@ -12,13 +13,33 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
 	 */
 	async run(interaction) {
 		const rawID = interaction.fields.getTextInputValue('id');
+		const msg = interaction.fields.getTextInputValue('message');
 
 		const member = await interaction.guild.members.fetch(rawID).catch(() => null);
 		if (!member) return interaction.reply({content: "You didn't provide a valid member id. See https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID- for information on how to get an ID.", ephemeral: true})
 
-		await interaction.reply({content: 'Your message was recieved. It will now be removed and then sent to the member.', ephemeral: true});
-
+		const ch = interaction.guild.channels.cache.get(peerMsgReviewChannelID);
+		if (!ch || ch.type !== 'GUILD_TEXT') return interaction.reply({content: 'An error occured. Please try again.', ephemeral: true});
 		
+		const embed = new MessageEmbed()
+			.setTitle(`${interaction.user.tag} wants to send ${member.user.tag} a message!`)
+			.setDescription(`Message: ${msg}`)
+			.addField('Member to be sent to', `${member}`);
+		
+		const buttons = new MessageActionRow().addComponents(
+			new MessageButton()
+				.setLabel('Approve Peer Message')
+				.setCustomId('peer-approve')
+				.setStyle('SUCCESS'),
+			new MessageButton()
+				.setLabel('Deny Peer Message')
+				.setCustomId('peer-deny')
+				.setStyle('DANGER')
+		);
+
+		await ch.send({content: 'New Peer Message for review', embeds: [embed], components: [buttons]}).catch(() => { return interaction.reply({content: 'An error occured while sending your message for review', ephemeral: true})});
+
+		return interaction.reply({content: 'Your message was recieved. It will now be reviewed and then sent to the member.', ephemeral: true});
 	}
 
 	/**
