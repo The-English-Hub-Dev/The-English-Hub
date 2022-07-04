@@ -13,14 +13,16 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
 	 */
 	async run(interaction) {
 		const rawID = interaction.fields.getTextInputValue('id');
-		const msg = interaction.fields.getTextInputValue('message');
+		const msg = interaction.fields.getTextInputValue('msg');
 
 		const member = await interaction.guild.members.fetch(rawID).catch(() => null);
 		if (!member) return interaction.reply({content: "You didn't provide a valid member id. See https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID- for information on how to get an ID.", ephemeral: true})
 
-		const ch = interaction.guild.channels.cache.get(peerMsgReviewChannelID);
-		if (!ch || ch.type !== 'GUILD_TEXT') return interaction.reply({content: 'An error occured. Please try again.', ephemeral: true});
-		
+		// const ch = interaction.guild.channels.cache.get(peerMsgReviewChannelID);
+		// if (!ch || ch.type !== 'GUILD_TEXT') return interaction.reply({content: 'An error occured. Please try again.', ephemeral: true});
+		// testing
+		const ch = interaction.channel;
+
 		const embed = new MessageEmbed()
 			.setTitle(`${interaction.user.tag} wants to send ${member.user.tag} a message!`)
 			.setDescription(`Message: ${msg}`)
