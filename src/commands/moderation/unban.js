@@ -54,8 +54,14 @@ class UnbanCommand extends Command {
             null
         );
 
-        const isBanned = await message.guild.bans.fetch(rawUser.value.id).catch(() => null);
-        if (!isBanned) return this.container.utility.errReply(message, 'That user is not banned.');
+        const isBanned = await message.guild.bans
+            .fetch(rawUser.value.id)
+            .catch(() => null);
+        if (!isBanned)
+            return this.container.utility.errReply(
+                message,
+                'That user is not banned.'
+            );
 
         await message.guild.members.unban(rawUser.value.id, reason.value);
 

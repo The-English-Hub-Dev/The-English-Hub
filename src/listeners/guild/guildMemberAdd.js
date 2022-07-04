@@ -20,8 +20,8 @@ class GuildMemberAddListener extends Listener {
     }
 
     /**
-     * 
-     * @param { GuildMember } member 
+     *
+     * @param { GuildMember } member
      */
     async welcomeMember(member) {
         const channel = member.guild.channels.cache.get(welcomeChannel);

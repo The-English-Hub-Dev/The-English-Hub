@@ -34,7 +34,11 @@ class WarnCommand extends Command {
 
         const rawDuration = await args.pickResult('string');
         const duration = new Duration(rawDuration);
-        if (!duration.success || !duration) return this.container.utility.errReply(message, 'You must provide a valid duration for the warn.');
+        if (!duration.success || !duration)
+            return this.container.utility.errReply(
+                message,
+                'You must provide a valid duration for the warn.'
+            );
 
         const reason = await args.restResult('string');
         if (!reason.success)
