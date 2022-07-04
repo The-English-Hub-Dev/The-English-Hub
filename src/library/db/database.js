@@ -15,8 +15,7 @@ class Database {
                 type: 'ioredis',
                 duration: 20000,
                 options: {
-                    host: process.env.REDIS_HOST,
-                    port: process.env.REDIS_PORT,
+                    uri: process.env.REDIS_URI
                 },
             },
         });
