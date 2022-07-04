@@ -20,7 +20,7 @@ class Database {
                 },
             },
         });
-        ds.initialize().catch((e) => container.logger.error(e));
+        ds.initialize().catch((e) => console.log(e));
 
         this.typeorm = ds;
         this.punishments = this.typeorm.getRepository('PunishmentEntity');
