@@ -17,7 +17,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
 		
 		const idInput = new TextInputComponent()
 			.setCustomId('id')
-			.setLabel("What's the id of the user you want to send a message to?")
+			.setLabel("ID of user you want to send a message to")
 			.setStyle('SHORT')
 			.setRequired(true)
 		
