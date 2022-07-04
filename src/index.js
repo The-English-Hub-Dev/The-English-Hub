@@ -6,7 +6,7 @@ const { prefix } = require('../config.json');
 const { Database } = require('./library/db/database');
 
 process.on('uncaughtException', (error) => {
-    container.logger.error(error);
+    console.log(error);
 });
 
 container.db = new Database();
