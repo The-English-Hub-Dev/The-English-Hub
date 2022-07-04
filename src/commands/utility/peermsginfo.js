@@ -26,7 +26,7 @@ class PeerMsgInfoCommand extends Command {
 		const components = new MessageActionRow().addComponents(
 			new MessageButton()
 				.setLabel("Send a message!")
-				.setCustomId('peer-submit')
+				.setCustomId('peer-request')
 				.setStyle('PRIMARY')
 		);
 
@@ -41,7 +41,7 @@ class PeerMsgInfoCommand extends Command {
 		
 		await channel.send({embeds: [embed], components: [components]}).catch(() => { return message.reply(`There was an error sending the peer message information in ${channel}`) });
 
-		return message.reply(`Successfully send the peer message information to ${channel}`);
+		return message.reply(`Successfully sent the peer message information to ${channel}`);
 	}
 }
 
