@@ -26,7 +26,7 @@ class PeerMsgInfoCommand extends Command {
 		const components = new MessageActionRow().addComponents(
 			new MessageButton()
 				.setLabel("Send a message!")
-				.setCustomId('peer-request')
+				.setCustomId('peer-submit')
 				.setStyle('PRIMARY')
 		);
 

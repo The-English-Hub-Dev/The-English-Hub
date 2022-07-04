@@ -37,7 +37,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
      * @param { ButtonInteraction } interaction
      */
     async parse(interaction) {
-        if (['peer-approve', 'peer-deny'].includes(interaction.customId))
+        if (!['peer-approve', 'peer-deny'].includes(interaction.customId))
             return this.none();
 
         return this.some();
