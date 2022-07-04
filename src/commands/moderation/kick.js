@@ -1,7 +1,7 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
 const { Punishment } = require('../../library/db/entities/PunishmentEntity');
-const { PunishmentType } = require('../../library/typings');
+const { PunishmentType } = require('../../library/typings/index');
 
 class KickCommand extends Command {
     /**

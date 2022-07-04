@@ -2,7 +2,7 @@ const { Command, Args } = require('@sapphire/framework');
 const { Duration } = require('@sapphire/time-utilities');
 const { Message } = require('discord.js');
 const { Punishment } = require('../../library/db/entities/PunishmentEntity');
-const { PunishmentType } = require('../../library/typings');
+const { PunishmentType } = require('../../library/typings/index');
 
 class MuteCommand extends Command {
     /**
