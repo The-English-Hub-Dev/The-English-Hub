@@ -19,6 +19,7 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
 		if (!member) return interaction.reply({content: "You didn't provide a valid member id. See https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID- for information on how to get an ID.", ephemeral: true})
 
 		if (member.id === interaction.member.id) return interaction.reply({content: "You can't send a message to yourself :(", ephemeral: true});
+		if (member.user.bot) return interaction.reply({content: "You can't send a message to a bot", ephemeral: true});
 
 		// const ch = interaction.guild.channels.cache.get(peerMsgReviewChannelID);
 		// if (!ch || ch.type !== 'GUILD_TEXT') return interaction.reply({content: 'An error occured. Please try again.', ephemeral: true});
