@@ -29,7 +29,7 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
 		const embed = new MessageEmbed()
 			.setTitle(`${interaction.user.tag} wants to send ${member.user.tag} a message!`)
 			.setDescription(`Message: ${msg}`)
-			.addField('Sending member', `${interaction.member}`)
+			.addField('Sending member', `${interaction.member}`, true)
 			.addField('Recieving member', `${member}`, true)
 		
 		const buttons = new MessageActionRow().addComponents(
