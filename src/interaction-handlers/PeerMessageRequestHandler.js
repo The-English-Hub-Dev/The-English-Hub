@@ -13,11 +13,11 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
 	async run(interaction) {
 		const peerMsgSendModal = new Modal()
 			.setCustomId('peer-submit')
-			.setTitle('Message Send');
+			.setTitle('Send a message to a member!');
 		
 		const idInput = new TextInputComponent()
 			.setCustomId('id')
-			.setLabel("ID of user you want to send a message to")
+			.setLabel("ID of member you want to send a message to")
 			.setStyle('SHORT')
 			.setRequired(true)
 		
