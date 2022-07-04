@@ -1,3 +1,4 @@
+const { UserOrMemberMentionRegex } = require('@sapphire/discord-utilities');
 const {
     InteractionHandler,
     InteractionHandlerTypes,
@@ -20,6 +21,15 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
      */
     async run(interaction) {
         const isApprove = interaction.customId === 'peer-approve';
+
+		if (!isApprove) {
+			interaction.update({content: 'This message was denied.', components: []});
+
+			const rawMember = interaction.message.embeds[0].fields[1];
+			const sendingMember = await interaction.guild.members.fetch(UserOrMemberMentionRegex.exec(rawMember.value)[0]);
+			
+			sendingMember.send(`Your message was not approved by the staff to be send to the requested member`); // TODO: improve reply
+		}
     }
 
     /**
