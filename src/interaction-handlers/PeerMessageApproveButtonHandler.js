@@ -21,7 +21,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
      * @param { ButtonInteraction } interaction
      */
     async run(interaction) {
-        const isApprove = interaction.customId.split('-'[1]) == 'approve';
+        const isApprove = interaction.customId.split('-')[1] == 'approve';
 
 		if (!isApprove) {
 			interaction.update({content: 'This message was denied.', components: []});
