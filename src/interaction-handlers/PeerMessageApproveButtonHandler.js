@@ -8,6 +8,7 @@ const {
     Modal,
     TextInputComponent,
     MessageActionRow,
+    MessageEmbed,
 } = require('discord.js');
 
 class PeerMessageApproveButtonHandler extends InteractionHandler {
@@ -28,8 +29,25 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
 			const rawMember = interaction.message.embeds[0].fields[1];
 			const sendingMember = await interaction.guild.members.fetch(UserOrMemberMentionRegex.exec(rawMember.value)[0]);
 			
-			sendingMember.send(`Your message was not approved by the staff to be send to the requested member`); // TODO: improve reply
+			return sendingMember.send(`Your message was not approved by the staff to be send to the requested member`); // TODO: improve reply
 		}
+        else {
+            interaction.update({content: 'This message was denied.', components: []});
+            const rawMember = interaction.message.embeds[0].fields[1];
+            const sendingMember = await interaction.guild.members.fetch(UserOrMemberMentionRegex.exec(rawMember.value)[0]);
+
+            const recievingMember = await interaction.guild.members.fetch(UserOrMemberMentionRegex.exec(interaction.message.embeds[0].fields[1])[0]);
+
+            const embed = new MessageEmbed()
+                .setTitle(`New peer message`)
+                .setDescription(`Message from ${sendingMember} (${sendingMember.id})`)
+                .setColor('GOLD')
+                .setFooter({text: `Message from ${interaction.guild}`});
+            
+            await recievingMember.send({content: `You have recieved a message from another member in ${interaction.guild}`, embeds: [embed]});
+
+            return sendingMember.send(`Your message was approved by the staff and has been sent to the requested member`); // TODO: improve reply
+        }
     }
 
     /**
