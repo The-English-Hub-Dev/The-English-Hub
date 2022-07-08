@@ -39,7 +39,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
 
             const embed = new MessageEmbed()
                 .setTitle(`New peer message`)
-                .setDescription(`Message from ${sendingMember} (${sendingMember.id})`)
+                .setDescription(`Message from ${sendingMember} (${sendingMember.id}): ${msg}`)
                 .setColor('GOLD')
                 .setFooter({text: `Message from ${interaction.guild}`});
             
