@@ -86,7 +86,7 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
 
         return interaction.reply({
             content:
-                'Your message was recieved. It will now be reviewed and then sent to the member.',
+                'Your message was recieved. It will now be reviewed and then sent to the member if it is approved.',
             ephemeral: true,
         });
     }
