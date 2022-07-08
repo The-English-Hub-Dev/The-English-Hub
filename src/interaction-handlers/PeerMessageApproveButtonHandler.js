@@ -26,14 +26,14 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
 		if (!isApprove) {
 			interaction.update({content: 'This message was denied.', components: []});
 
-			const rawMember = interaction.message.embeds[0].fields[1];
+			const rawMember = interaction.message.embeds[0].fields[0];
 			const sendingMember = await interaction.guild.members.fetch(UserOrMemberMentionRegex.exec(rawMember.value)[1]);
 			
 			return sendingMember.send(`Your message was not approved by the staff to be send to the requested member`); // TODO: improve reply
 		}
         else {
             interaction.update({content: 'This message was denied.', components: []});
-            const rawMember = interaction.message.embeds[0].fields[1];
+            const rawMember = interaction.message.embeds[0].fields[0];
             const sendingMember = await interaction.guild.members.fetch(UserOrMemberMentionRegex.exec(rawMember.value)[1]);
 
             const recievingMember = await interaction.guild.members.fetch(UserOrMemberMentionRegex.exec(interaction.message.embeds[0].fields[1])[1]);
