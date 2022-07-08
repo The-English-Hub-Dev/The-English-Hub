@@ -27,14 +27,15 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
 			interaction.update({content: 'This message was denied.', components: []});
 
 			const sendingMember = await interaction.guild.members.fetch(UserOrMemberMentionRegex.exec(interaction.message.embeds[0].fields[0].value)[1]);
-			
-			return sendingMember.send(`Your message was not approved by the staff to be send to the requested member`); // TODO: improve reply
+			const msg = interaction.message.embeds[0].description.slice(8)
+
+			return sendingMember.send({embeds: [new MessageEmbed().setDescription(`Your message was not approved by the staff to be send to the requested member`).setColor('RED').addField('Your message', msg)]});
 		}
         else {
             interaction.update({content: 'This message was approved.', components: []});
             const sendingMember = await interaction.guild.members.fetch(UserOrMemberMentionRegex.exec(interaction.message.embeds[0].fields[0].value)[1]);
-
             const recievingMember = await interaction.guild.members.fetch(UserOrMemberMentionRegex.exec(interaction.message.embeds[0].fields[1].value)[1]);
+            const msg = interaction.message.embeds[0].description.slice(8)
 
             const embed = new MessageEmbed()
                 .setTitle(`New peer message`)
@@ -44,7 +45,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
             
             await recievingMember.send({content: `You have recieved a message from another member in ${interaction.guild}`, embeds: [embed]});
 
-            return sendingMember.send(`Your message was approved by the staff and has been sent to the requested member`); // TODO: improve reply
+            return sendingMember.send({embeds: [new MessageEmbed().setDescription(`Your message was approved by a staff member and sent to the requested member`).setColor('RED').addField('Your message', msg)]});
         }
     }
 
