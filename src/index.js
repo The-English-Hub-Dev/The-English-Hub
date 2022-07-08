@@ -2,6 +2,7 @@ const { SapphireClient, container } = require('@sapphire/framework');
 const Sentry = require('@sentry/node');
 const { Intents, Options } = require('discord.js');
 require('@sapphire/plugin-logger/register');
+require('dotenv').config();
 const { prefix } = require('../config.json');
 const { Database } = require('./library/db/database');
 
