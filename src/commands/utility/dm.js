@@ -29,7 +29,7 @@ class DmCommand extends Command {
 
 		const dmEmbed = new MessageEmbed()
 			.setTitle(`New DM sent by ${message.member.user.tag}`)
-			.setDescription(`Message: ${msg}`)
+			.setDescription(`Message: ${msg.value}`)
 			.setFooter({text: `Sent from ${message.guild.name}`})
 			.setColor('BLUE');
 
