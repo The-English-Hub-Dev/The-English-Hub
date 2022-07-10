@@ -5,12 +5,14 @@ require('@sapphire/plugin-logger/register');
 require('dotenv').config();
 const { prefix } = require('../config.json');
 const { Database } = require('./library/db/database');
+const { Utility } = require('./library/utility');
 
 process.on('uncaughtException', (error) => {
     console.log(error);
 });
 
 container.db = new Database();
+container.utility = new Utility();
 
 const client = new SapphireClient({
     intents: [
