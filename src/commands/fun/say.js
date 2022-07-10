@@ -18,6 +18,9 @@ class SayCommand extends Command {
      * @param { Args } args
      */
     async messageRun(message, args) {
+        const rawChannel = await args.pickResult('guildTextChannel');
+        const channel = rawChannel.value ?? message.channel;
+
         const text = await args.restResult('string');
         if (!text.success)
             return this.container.utility.errReply(
@@ -25,7 +28,7 @@ class SayCommand extends Command {
                 'You must provide something for me to say.'
             );
 
-        return message.channel.send({
+        return channel.send({
             content: text.value,
             allowedMentions: { users: [], roles: [], parse: [] },
         });
