@@ -21,7 +21,11 @@ class ReadyListener extends Listener {
             `Ping acknowledged by the API. ${client.ws.ping} ms. Bot is online.\n\n`
         );
 
-        client.user.setActivity('English Hub members', {type: 'WATCHING'});
+        setInterval(() => {
+            const guild = client.guilds.cache.get('801609515391778826');
+            client.user.setActivity(` ${guild.memberCount} members`, {type: 'WATCHING'})
+        }, 20000);
+        
     }
 }
 
