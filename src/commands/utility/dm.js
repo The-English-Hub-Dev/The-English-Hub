@@ -28,7 +28,7 @@ class DmCommand extends Command {
 		const member = rawMember.value;
 
 		const dmEmbed = new MessageEmbed()
-			.setDescription(`Message: ${msg.value}`)
+			.setDescription(`**Message:** ${msg.value}`)
 			.setFooter({text: `Sent from ${message.guild.name}`})
 			.setColor('BLUE');
 
