@@ -28,6 +28,8 @@ class SayCommand extends Command {
                 'You must provide something for me to say.'
             );
 
+        if (message.deletable) await message.delete();
+
         return channel.send({
             content: text.value,
             allowedMentions: { users: [], roles: [], parse: [] },
