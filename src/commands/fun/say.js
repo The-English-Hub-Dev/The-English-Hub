@@ -8,7 +8,7 @@ class SayCommand extends Command {
             name: 'say',
             description: 'Says things you tell the bot to say.',
             aliases: ['echo'],
-            preconditions: ['Admin'],
+            preconditions: ['Staff'],
         });
     }
 
