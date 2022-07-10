@@ -35,7 +35,7 @@ class DmCommand extends Command {
 
 		const successful = await member.send({embeds: [dmEmbed]}).catch(() => null);
 		if (!successful) return message.reply(`Couldn't send the message to that user. They most likely have their DM's closed.`);
-		return message.reply(`Successfully sent dm to ${member.user.tag}.`);
+		return message.reply(`Successfully sent DM to ${member.user.tag}.`);
 	}
 }
 
