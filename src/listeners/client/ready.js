@@ -20,6 +20,8 @@ class ReadyListener extends Listener {
         this.container.logger.info(
             `Ping acknowledged by the API. ${client.ws.ping} ms. Bot is online.\n\n`
         );
+
+        client.user.setActivity('English Hub members', {type: 'WATCHING'});
     }
 }
 
