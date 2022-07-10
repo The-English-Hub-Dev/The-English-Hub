@@ -36,7 +36,7 @@ class MessageCreateListener extends Listener {
             .setTitle(`I recieved a DM from ${message.author.tag}`)
             .setColor('RANDOM')
             .setDescription(`DM recieved: ${message.content}`)
-            .setFooter({text: `You can reply to this DM by using the ${ctx.commandPrefix}dm command`});
+            .setFooter({text: `You can reply to this DM by using the ${ctx.commandPrefix}dm command`, iconURL: message.guild.iconURL()});
         return redirCh.send({embeds: [embed]});
     }
 }
