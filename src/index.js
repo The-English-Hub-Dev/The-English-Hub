@@ -34,4 +34,4 @@ Sentry.init({
     integrations: [new Sentry.Integrations.Http({ tracing: true })],
 });
 
-client.login(process.env.DISCORD_TOKEN);
+client.login();
