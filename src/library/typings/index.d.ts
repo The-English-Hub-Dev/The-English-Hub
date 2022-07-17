@@ -21,6 +21,12 @@ declare module '@sapphire/pieces' {
     }
 }
 
+declare module '@sapphire/framework' {
+    interface Command {
+        usage: String;
+    }
+}
+
 export enum PunishmentType {
     WARN = 'WARN',
     UNMUTE = 'UNMUTE',
