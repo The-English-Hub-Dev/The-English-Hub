@@ -28,7 +28,7 @@ class Utility {
             content: error,
             allowedMentions: { users: [], roles: [], parse: [] },
         });
-        return setTimeout(() => reply.delete(), 3500);
+        return setTimeout(() => { reply.delete(); message.delete(); }, 3500);
     }
 }
 
