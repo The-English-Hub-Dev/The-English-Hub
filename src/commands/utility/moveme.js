@@ -43,7 +43,7 @@ class MovemeCommand extends Command {
         await message.member.voice
             .setChannel(
                 vc.value,
-                'Requested to be moved with the moveme command.'
+                `${message.member.user.tag} requested to be moved with the moveme command.`
             )
             .catch(() => {});
 
