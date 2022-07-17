@@ -23,9 +23,10 @@ class ReadyListener extends Listener {
 
         setInterval(() => {
             const guild = client.guilds.cache.get('801609515391778826');
-            client.user.setActivity(` ${guild.memberCount} members`, {type: 'WATCHING'})
+            client.user.setActivity(` ${guild.memberCount} members`, {
+                type: 'WATCHING',
+            });
         }, 20000);
-        
     }
 }
 

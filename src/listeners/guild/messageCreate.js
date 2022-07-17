@@ -22,20 +22,24 @@ class MessageCreateListener extends Listener {
     }
 
     /**
-     * 
-     * @param { Message } message 
+     *
+     * @param { Message } message
      */
     async redirectDM(message) {
-        const redirCh = this.container.client.guilds.cache.get(mainGuildID).channels.cache.get(redirectDMChannelID);
-        
+        const redirCh = this.container.client.guilds.cache
+            .get(mainGuildID)
+            .channels.cache.get(redirectDMChannelID);
+
         if (!redirCh || redirCh.type !== 'GUILD_TEXT') return;
 
         const embed = new MessageEmbed()
             .setTitle(`I recieved a DM from ${message.author.tag}`)
             .setColor('RANDOM')
             .setDescription(`DM recieved: ${message.content}`)
-            .setFooter({text: `You can reply to this DM by using the ?dm command`});
-        return redirCh.send({embeds: [embed]});
+            .setFooter({
+                text: `You can reply to this DM by using the ?dm command`,
+            });
+        return redirCh.send({ embeds: [embed] });
     }
 }
 

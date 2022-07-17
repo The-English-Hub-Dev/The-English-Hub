@@ -2,9 +2,7 @@ const {
     InteractionHandler,
     InteractionHandlerTypes,
 } = require('@sapphire/framework');
-const {
-    ButtonInteraction, GuildMember,
-} = require('discord.js');
+const { ButtonInteraction, GuildMember } = require('discord.js');
 
 class PeerMessageSendButtonHandler extends InteractionHandler {
     constructor(ctx) {
@@ -14,17 +12,16 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
     /**
      *
      * @param { ButtonInteraction } interaction
-	 * @param { GuildMember } member
+     * @param { GuildMember } member
      */
     async run(interaction, member) {
-		switch (interaction.customId.split('-')[1]) {
-			case value:
-				
-				break;
-		
-			default:
-				break;
-		}
+        switch (interaction.customId.split('-')[1]) {
+            case value:
+                break;
+
+            default:
+                break;
+        }
     }
 
     /**
@@ -32,9 +29,9 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
      * @param { ButtonInteraction } interaction
      */
     async parse(interaction) {
-		if (!interaction.customId.startsWith('role')) return this.none();
+        if (!interaction.customId.startsWith('role')) return this.none();
 
-		return this.some(interaction.member)
+        return this.some(interaction.member);
     }
 }
 
