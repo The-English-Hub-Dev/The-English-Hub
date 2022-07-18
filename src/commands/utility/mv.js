@@ -1,14 +1,13 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message, Permissions } = require('discord.js');
 
-class MovemeCommand extends Command {
+class MvCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: 'moveme',
-            aliases: ['movemevc'],
+            name: 'mv',
+            aliases: ['moveme', 'movevc', 'movemevc'],
             description: 'Moves you into a certain voice channel.',
-            preconditions: ['Staff'],
         });
     }
 
@@ -45,10 +44,10 @@ class MovemeCommand extends Command {
                 vc.value,
                 `${message.member.user.tag} requested to be moved with the moveme command.`
             )
-            .catch(() => {});
+            .catch(async() => { return message.reply(`You are not allowed to move yourself to that channel.`)});
 
         return message.reply(`You have been successfully moved to ${vc.value}`);
     }
 }
 
-module.exports = { MovemeCommand };
+module.exports = { MvCommand };
