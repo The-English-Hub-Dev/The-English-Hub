@@ -1,6 +1,7 @@
 const { SapphireClient, container } = require('@sapphire/framework');
 const Sentry = require('@sentry/node');
 const { Intents, Options } = require('discord.js');
+const Redis = require('ioredis');
 require('@sapphire/plugin-logger/register');
 require('dotenv').config();
 const { prefix } = require('../config.json');
@@ -11,6 +12,13 @@ process.on('uncaughtException', (error) => {
     console.log(error);
 });
 
+const redis = new Redis(process.env.REDIS_URL, {
+    tls: {
+      rejectUnauthorized: false,
+    },
+  });
+
+container.redis = redis;
 container.db = new Database();
 container.utility = new Utility();
 

@@ -6,6 +6,7 @@ import {
 import { Duration } from '@sapphire/time-utilities';
 import { GuildMember, Guild, Message, User } from 'discord.js';
 import { Database } from '../db/database';
+import { RedisCommander } from 'ioredis';
 import { Punishments } from '../punishments';
 import { Utility } from '../utility';
 
@@ -13,6 +14,7 @@ declare module '@sapphire/pieces' {
     interface Container {
         client: SapphireClient;
         utility: Utility;
+        redis: RedisCommander
         db: Database;
         punishments: Punishments;
         stores: StoreRegistry;
