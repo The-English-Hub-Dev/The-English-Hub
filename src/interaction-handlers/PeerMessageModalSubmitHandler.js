@@ -31,7 +31,7 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
         if (!member)
             return interaction.reply({
                 content:
-                    "You didn't provide a valid member id. See https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID- for information on how to get an ID.",
+                    "You didn't provide a valid member ID. See https://support.discord.com/hc/en-us/articles/206346498-Where-can-I-find-my-User-Server-Message-ID- for information on how to get an ID.",
                 ephemeral: true,
             });
 
@@ -42,22 +42,28 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
             });
         if (member.user.bot)
             return interaction.reply({
-                content: "You can't send a message to a bot",
+                content: "You can't send a message to a bot :(",
                 ephemeral: true,
             });
 
-        // const ch = interaction.guild.channels.cache.get(peerMsgReviewChannelID);
-        // if (!ch || ch.type !== 'GUILD_TEXT') return interaction.reply({content: 'An error occured. Please try again.', ephemeral: true});
-        // testing
-        const ch = interaction.channel;
+        const ch = interaction.guild.channels.cache.get(peerMsgReviewChannelID);
+        if (!ch || ch.type !== 'GUILD_TEXT')
+            return interaction.reply({
+                content: 'An error occured. Please try again.',
+                ephemeral: true,
+            });
 
         const embed = new MessageEmbed()
             .setTitle(
                 `${interaction.user.tag} wants to send ${member.user.tag} a message!`
             )
             .setDescription(`Message: ${msg}`)
-            .addField('Sending member', `${interaction.member}`, true)
-            .addField('Recieving member', `${member}`, true);
+            .addField(
+                'Sending member',
+                `${interaction.member} (${interaction.member.id})`,
+                true
+            )
+            .addField('Recieving member', `${member} (${member.id})`, true);
 
         const buttons = new MessageActionRow().addComponents(
             new MessageButton()
@@ -79,14 +85,19 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
             .catch(() => {
                 return interaction.reply({
                     content:
-                        'An error occured while sending your message for review',
+                        'An error occured while sending your message for review. Please try again.',
                     ephemeral: true,
                 });
             });
 
         return interaction.reply({
-            content:
-                'Your message was recieved. It will now be reviewed and then sent to the member if it is approved.',
+            embeds: [
+                new MessageEmbed()
+                    .setDescription(
+                        'Your message was recieved. It will now be reviewed and then sent to the member if it is approved. You will recieve a DM when it is approved or denied.'
+                    )
+                    .setColor('GREEN'),
+            ],
             ephemeral: true,
         });
     }

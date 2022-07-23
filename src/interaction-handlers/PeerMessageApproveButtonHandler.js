@@ -1,4 +1,3 @@
-const { UserOrMemberMentionRegex } = require('@sapphire/discord-utilities');
 const {
     InteractionHandler,
     InteractionHandlerTypes,
@@ -23,27 +22,36 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
     async run(interaction) {
         const isApprove = interaction.customId.split('-')[1] == 'approve';
 
+        const fieldZero = interaction.message.embeds[0].fields[0].value;
+        const fieldOne = interaction.message.embeds[0].fields[1].value;
+        const sendingMember = await interaction.guild.members.fetch(
+            fieldZero.slice(fieldZero.indexOf('('), fieldZero.length - 1)
+        );
+        const recievingMember = await interaction.guild.members.fetch(
+            fieldOne.slice(fieldOne.indexOf('('), fieldOne.length - 1)
+        );
+
         if (!isApprove) {
             interaction.update({
                 content: 'This message was denied.',
                 components: [],
             });
 
-            const sendingMember = await interaction.guild.members.fetch(
-                UserOrMemberMentionRegex.exec(
-                    interaction.message.embeds[0].fields[0].value
-                )[1]
-            );
             const msg = interaction.message.embeds[0].description.slice(8);
 
             return sendingMember.send({
                 embeds: [
                     new MessageEmbed()
                         .setDescription(
-                            `Your message was not approved by the staff to be send to the requested member`
+                            `Your message was **not approved** by the staff to be sent to the requested member.`
                         )
                         .setColor('RED')
-                        .addField('Your message', msg),
+                        .addField('Your message', msg, true)
+                        .addField(
+                            'Recieving Member',
+                            `${recievingMember} (${recievingMember.user.tag})`,
+                            true
+                        ),
                 ],
             });
         } else {
@@ -51,16 +59,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                 content: 'This message was approved.',
                 components: [],
             });
-            const sendingMember = await interaction.guild.members.fetch(
-                UserOrMemberMentionRegex.exec(
-                    interaction.message.embeds[0].fields[0].value
-                )[1]
-            );
-            const recievingMember = await interaction.guild.members.fetch(
-                UserOrMemberMentionRegex.exec(
-                    interaction.message.embeds[0].fields[1].value
-                )[1]
-            );
+
             const msg = interaction.message.embeds[0].description.slice(8);
 
             const embed = new MessageEmbed()
@@ -80,10 +79,15 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                 embeds: [
                     new MessageEmbed()
                         .setDescription(
-                            `Your message was approved by a staff member and sent to the requested member`
+                            `Your message was **approved** by a staff member and sent to the requested member.`
                         )
-                        .setColor('RED')
-                        .addField('Your message', msg),
+                        .setColor('GREEN')
+                        .addField('Your message', msg, true)
+                        .addField(
+                            'Recieving member',
+                            `${recievingMember} (${recievingMember.user.tag})`,
+                            true
+                        ),
                 ],
             });
         }
