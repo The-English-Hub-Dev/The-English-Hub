@@ -32,7 +32,7 @@ class BotInfoCommand extends Command {
         const dev = this.container.client.application.owner;
 
         const info = new MessageEmbed()
-            .setTitle('Bot Details')
+            .setTitle('Bot Information')
             .setFooter({
                 text: `${this.container.client.user.tag}`,
                 iconURL: this.container.client.user.displayAvatarURL(),
