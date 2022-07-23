@@ -70,16 +70,23 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                 .setColor('GOLD')
                 .setFooter({ text: `Message from ${interaction.guild}` });
 
-            await recievingMember.send({
-                content: `You have recieved a message from another member in ${interaction.guild}`,
-                embeds: [embed],
-            });
+            let success = true;
+            await recievingMember
+                .send({
+                    content: `You have recieved a message from another member in ${interaction.guild}`,
+                    embeds: [embed],
+                })
+                .catch(() => (success = false));
 
             return sendingMember.send({
                 embeds: [
                     new MessageEmbed()
                         .setDescription(
-                            `Your message was **approved** by a staff member and sent to the requested member.`
+                            `Your message was **approved** by a staff member and sent to the requested member. ${
+                                !success
+                                    ? 'However, the dms of the person you tried to send a message to were closed so I could not deliver your message.'
+                                    : ''
+                            }`
                         )
                         .setColor('GREEN')
                         .addField('Your message', msg, true)
