@@ -25,10 +25,10 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
         const fieldZero = interaction.message.embeds[0].fields[0].value;
         const fieldOne = interaction.message.embeds[0].fields[1].value;
         const sendingMember = await interaction.guild.members.fetch(
-            fieldZero.slice(fieldZero.indexOf('('), fieldZero.length - 1)
+            fieldZero.slice(fieldZero.indexOf('(') + 1, fieldZero.length - 1)
         );
         const recievingMember = await interaction.guild.members.fetch(
-            fieldOne.slice(fieldOne.indexOf('('), fieldOne.length - 1)
+            fieldOne.slice(fieldOne.indexOf('(') + 1, fieldOne.length - 1)
         );
 
         if (!isApprove) {
