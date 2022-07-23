@@ -37,7 +37,7 @@ class MessageCreateListener extends Listener {
             .setColor('RANDOM')
             .setDescription(`DM recieved: ${message.content}`)
             .setFooter({
-                text: `You can reply to this DM by using the ?dm command`,
+                text: `You can reply to this DM by using the ?dm command, User ID: ${message.author.id}`,
             });
         return redirCh.send({ embeds: [embed] });
     }
