@@ -56,21 +56,42 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
 
         switch (category) {
             case 'continent':
+                return this.updateRole(int)
                 break;
             case 'englishlevel':
                 break;
             case 'englishdialect':
                 break;
             case 'englishclasses':
-                return this.updateRole(interaction, member, englishClassesRole);
+                return this.updateRole(
+                    interaction,
+                    member,
+                    englishClassesRole,
+                    'n/a'
+                );
             case 'correctme':
-                return this.updateRole(interaction, member, correctMeRole);
+                return this.updateRole(
+                    interaction,
+                    member,
+                    correctMeRole,
+                    'n/a'
+                );
             case 'debateclub':
-                return this.updateRole(interaction, member, debateClubRole);
+                return this.updateRole(
+                    interaction,
+                    member,
+                    debateClubRole,
+                    'n/a'
+                );
             case 'wotd':
-                return this.updateRole(interaction, member, wotdRole);
+                return this.updateRole(interaction, member, wotdRole, 'n/a');
             case 'bookclub':
-                return this.updateRole(interaction, member, bookClubRole);
+                return this.updateRole(
+                    interaction,
+                    member,
+                    bookClubRole,
+                    'n/a'
+                );
             case 'notification':
                 break;
             default:
@@ -86,22 +107,27 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
      * @param { String } key
      */
     async updateRole(interaction, member, role, key) {
-        let isAdd;
-        if (member.roles.cache.has(role.id)) {
-            await member.roles.add(role);
-            isAdd = true;
-        } else {
-            await member.roles.remove(role);
-            isAdd = false;
+        if (key === 'n/a') {
+            let isAdd;
+            if (member.roles.cache.has(role.id)) {
+                await member.roles.add(role);
+                isAdd = true;
+            } else {
+                await member.roles.remove(role);
+                isAdd = false;
+            }
+
+            const updateEmbed = new MessageEmbed()
+                .setDescription(
+                    `Successfully ${isAdd ? 'added' : 'removed'} ${role}.`
+                )
+                .setColor(isAdd ? 'GREEN' : 'RED');
+
+            return interaction.followUp({ embeds: [updateEmbed] });
         }
+        else {
 
-        const updateEmbed = new MessageEmbed()
-            .setDescription(
-                `Successfully ${isAdd ? 'added' : 'removed'} ${role}.`
-            )
-            .setColor(isAdd ? 'GREEN' : 'RED');
-
-        return interaction.followUp({ embeds: [updateEmbed] });
+        }
     }
 
     /**
