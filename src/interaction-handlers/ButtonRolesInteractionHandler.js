@@ -126,7 +126,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
             return interaction.followUp({ embeds: [updateEmbed] });
         }
         else {
-
+            
         }
     }
 

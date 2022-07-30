@@ -25,3 +25,5 @@ class SendButtonRoleEmbedsCommand extends Command {
 		
     }
 }
+
+module.exports = { SendButtonRoleEmbedsCommand };
