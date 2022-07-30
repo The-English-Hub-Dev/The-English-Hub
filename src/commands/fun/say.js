@@ -30,6 +30,12 @@ class SayCommand extends Command {
 
         if (message.deletable) await message.delete();
 
+        if (!channel.sendable)
+            return this.container.utility.errReply(
+                message,
+                'I do not have permissions to send a message in that channel.'
+            );
+
         return channel.send({
             content: text.value,
             allowedMentions: { users: [], roles: [], parse: [] },
