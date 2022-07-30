@@ -8,7 +8,7 @@ class DmCommand extends Command {
             name: 'dm',
             aliases: ['dmmember'],
             description: 'DMs a member in the server with a specified message',
-            preconditions: ['Admin'],
+            preconditions: ['Staff'],
         });
     }
 
