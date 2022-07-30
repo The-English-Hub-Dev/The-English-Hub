@@ -27,8 +27,9 @@ class MessageCreateListener extends Listener {
      */
     async redirectDM(message) {
         if (message.author.bot) return;
-        await message.fetch();
-        await message.author.fetch();
+        await message
+            .fetch()
+            .then(message.channel.fetch().then(message.author.fetch()));
         const redirCh = this.container.client.guilds.cache
             .get(mainGuildID)
             .channels.cache.get(redirectDMChannelID);
