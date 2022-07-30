@@ -1,6 +1,6 @@
 const { Listener, Events } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Client } = require('discord.js');
+const { Client, MessageEmbed } = require('discord.js');
 
 class ReadyListener extends Listener {
     constructor(context, options) {
@@ -26,11 +26,17 @@ class ReadyListener extends Listener {
             const [channelID, restartTime] = hasRebooted.split(':');
             this.container.client.channels.cache
                 .get(channelID)
-                .send(
-                    `The bot restarted successfully in ${new DurationFormatter().format(
-                        Date.now() - restartTime
-                    )}`
-                );
+                .send({
+                    embeds: [
+                        new MessageEmbed()
+                            .setDescription(
+                                `The bot restarted successfully in ${new DurationFormatter().format(
+                                    Date.now() - restartTime
+                                )}`
+                            )
+                            .setColor('GREEN'),
+                    ],
+                });
             await this.container.redis.hdel('tasks', 'restart');
         }
 
