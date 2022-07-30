@@ -15,7 +15,7 @@ class PiecePostLoadListener extends Listener {
      * @param { Piece } piece
      */
     run(store, piece) {
-        this.container.logger.info(
+        this.container.logger.debug(
             `Loaded command ${piece.name} into store ${store.name}`
         );
     }
