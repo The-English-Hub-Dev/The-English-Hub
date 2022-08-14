@@ -67,7 +67,7 @@ class SendButtonRoleEmbedsCommand extends Command {
             )
             .setTitle('English Level');
 
-        const englishButtons = new MessageActionRow().addComponents(
+        const englishLevelButtons = new MessageActionRow().addComponents(
             new MessageButton()
                 .setCustomId('role-englishlevel-beginner')
                 .setEmoji('📕')
@@ -95,23 +95,126 @@ class SendButtonRoleEmbedsCommand extends Command {
                 .setStyle('SECONDARY')
         );
 
-        const englishDialectEmbed  = new MessageEmbed()
-            .setImage('https://media.discordapp.net/attachments/917885921423134741/992756666359631892/banner1.png')
+        const englishDialectEmbed = new MessageEmbed()
+            .setImage(
+                'https://media.discordapp.net/attachments/917885921423134741/992756666359631892/banner1.png'
+            )
             .setTitle('English Dialect');
-        
         const englishDialectButtons = new MessageActionRow().addComponents(
-            new MessageButton()
-                .setCustomId('role-englishdialect-british english')
-                
-        )
+            new MessageButton().setCustomId(
+                'role-englishdialect-british english'
+            )
+            // TODO finish roles
+        );
 
-        await message.channel.send({
+        const englishClassesEmbed = new MessageEmbed()
+            .setImage(
+                'https://media.discordapp.net/attachments/917885921423134741/992754077601632276/english_classes.png'
+            )
+            .setTitle('English Classes');
+        const englishClassesButton = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId('role-english classes')
+                .setEmoji('📚')
+                .setLabel('English Classes')
+                .setStyle('SECONDARY')
+        );
+
+        const correctmeEmbed = new MessageEmbed()
+            .setImage(
+                'https://media.discordapp.net/attachments/917885921423134741/992755038323740762/sample_5_1.png'
+            )
+            .setTitle('Correct Me');
+        const correctmeButton = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId('role-correct me')
+                .setEmoji('📝')
+                .setLabel('Correct Me')
+                .setStyle('SECONDARY')
+        );
+
+        const debateClubEmbed = new MessageEmbed()
+            .setImage(
+                'https://media.discordapp.net/attachments/917885921423134741/992755738357268500/event_sample_2.png'
+            )
+            .setTitle('Debate Club');
+        const debateClubButton = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId('role-debate club')
+                .setEmoji('🗣️')
+                .setLabel('Debate Club')
+                .setStyle('SECONDARY')
+        );
+
+        const wotdEmbed = new MessageEmbed()
+            .setImage(
+                'https://media.discordapp.net/attachments/917885921423134741/992759152734634065/WOTD.png'
+            )
+            .setTitle('Word of the Day');
+        const wotdButton = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId('role-wotd')
+                .setEmoji('📚')
+                .setLabel('Word of the Day')
+                .setStyle('SECONDARY')
+        );
+
+        const bookClubEmbed = new MessageEmbed()
+            .setImage(
+                'https://media.discordapp.net/attachments/917885921423134741/992759572932595732/book_club.png'
+            )
+            .setTitle('Book Club');
+        const bookClubButton = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId('role-book club')
+                .setEmoji('📑')
+                .setLabel('Book Club')
+                .setStyle('SECONDARY')
+        );
+
+        const notificationEmbed = new MessageEmbed()
+            .setImage(
+                'https://media.discordapp.net/attachments/917885921423134741/992760055575363684/IMG_20220630_124606.jpg'
+            )
+            .setTitle('Notifications');
+        const notificationButtons = new MessageActionRow().addComponents();
+        // TODO notification buttons
+
+        await channel.send({
             embeds: [continentEmbed],
             components: [continentButtons],
         });
-        await message.channel.send({
+        await channel.send({
             embeds: [englishLevelEmbed],
-            components: [englishButtons],
+            components: [englishLevelButtons],
+        });
+        await channel.send({
+            embeds: [englishDialectEmbed],
+            components: [englishDialectButtons],
+        });
+        await channel.send({
+            embeds: [englishClassesEmbed],
+            components: [englishClassesButton],
+        });
+        await channel.send({
+            embeds: [correctmeEmbed],
+            components: [correctmeButton],
+        });
+        await channel.send({
+            embeds: [debateClubEmbed],
+            components: [debateClubButton],
+        });
+        await channel.send({
+            embeds: [wotdEmbed],
+            components: [wotdButton],
+        });
+        await channel.send({
+            embeds: [bookClubEmbed],
+            components: [bookClubButton],
+        });
+        await channel.send({
+            embeds: [notificationEmbed],
+            components: [notificationButtons],
         });
     }
 }
