@@ -62,10 +62,9 @@ class EvalCommand extends Command {
             type = typeof err;
             error = true;
         }
-        // if (hiddenItems.some((item) => output.contains(item)))
-        //     hiddenItems.forEach(
-        //         (item) => (output = output.replace(item, '*HIDDEN*'))
-        //     );
+        hiddenItems.forEach(
+            (item) => (output = output.replace(item, '*HIDDEN*'))
+        );
         if (typeof output !== 'string')
             output = util.inspect(output, {
                 depth: args.getOption('depth') || 0,
@@ -97,13 +96,10 @@ class EvalCommand extends Command {
     }
 
     async createHastebin(text) {
-        const res = await fetch(
-            'https://www.toptal.com/developers/hastebin/documents',
-            {
-                method: 'POST',
-                body: text,
-            }
-        );
+        const res = await fetch('https://hastebin.com/documents', {
+            method: 'POST',
+            body: text,
+        });
         if (res.status !== 200) {
             return 'An error occurred while trying to upload the content to hastebin :(';
         }
