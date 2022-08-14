@@ -56,12 +56,26 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
 
         switch (category) {
             case 'continent':
-                return this.updateRole(int)
-                break;
+                return this.updateRole(
+                    interaction,
+                    member,
+                    continentRoles,
+                    category
+                );
             case 'englishlevel':
-                break;
+                return this.updateRole(
+                    interaction,
+                    member,
+                    englishLevelRoles,
+                    category
+                );
             case 'englishdialect':
-                break;
+                return this.updateRole(
+                    interaction,
+                    member,
+                    englishDialectRoles,
+                    category
+                );
             case 'englishclasses':
                 return this.updateRole(
                     interaction,
@@ -93,9 +107,16 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                     'n/a'
                 );
             case 'notification':
-                break;
+                return this.updateRole(
+                    interaction,
+                    member,
+                    notificationRoles,
+                    category
+                );
             default:
-                break;
+                return interaction.followUp(
+                    'An error occured. Please try again.'
+                );
         }
     }
 
@@ -103,30 +124,86 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
      *
      * @param { ButtonInteraction } interaction
      * @param { GuildMember } member
-     * @param { Role } role
+     * @param { Role | Role[] } role
      * @param { String } key
      */
     async updateRole(interaction, member, role, key) {
+        const continentRoles = [...continentRoleIDs].map((id) =>
+            interaction.guild.roles.cache.get(id)
+        );
+        const englishLevelRoles = [...englishLevelRoleIDs].map((id) =>
+            interaction.guild.roles.cache.get(id)
+        );
+        const englishDialectRoles = [...englishDialectRoleIDs].map((id) =>
+            interaction.guild.roles.cache.get(id)
+        );
+        const notificationRoles = [...notificationRoleIDs].map((id) =>
+            interaction.guild.roles.cache.get(id)
+        );
         if (key === 'n/a') {
-            let isAdd;
+            let isAddna;
             if (member.roles.cache.has(role.id)) {
-                await member.roles.add(role);
-                isAdd = true;
+                await member.roles.add(role, 'Reaction Role add');
+                isAddna = true;
             } else {
-                await member.roles.remove(role);
+                await member.roles.remove(role, 'Reaction Role remove');
+                isAddna = false;
+            }
+
+            const updateEmbedna = new MessageEmbed()
+                .setDescription(
+                    `Successfully ${isAddna ? 'added' : 'removed'} ${role}.`
+                )
+                .setColor(isAddna ? 'GREEN' : 'RED');
+
+            return interaction.followUp({ embeds: [updateEmbedna] });
+        } else {
+            let roleArray;
+            switch (key) {
+                case 'continent':
+                    roleArray = continentRoles;
+                    break;
+                case 'englishlevel':
+                    roleArray = englishLevelRoles;
+                    break;
+                case 'englishdialect':
+                    roleArray = englishDialectRoles;
+                    break;
+                case 'notification':
+                    roleArray = notificationRoles;
+                    break;
+                default:
+                    break;
+            }
+
+            const name = interaction.customId.split('-')[2];
+            let isAdd;
+            const r = continentRoles.find((r) => r.name.toLowerCase() === name);
+            if (!r)
+                return interaction.followUp(
+                    'An error occured while finding the role to add/remove. Please try again.'
+                );
+
+            if (member.roles.cache.has(r.id)) {
+                await member.roles.remove(r, 'Reaction Role remove');
                 isAdd = false;
+            } else {
+                for (const role of roleArray) {
+                    await member.roles.remove(role, 'Removing all other roles');
+                }
+                await member.roles.add(r, 'Reaction Role add');
+                isAdd = true;
             }
 
             const updateEmbed = new MessageEmbed()
                 .setDescription(
-                    `Successfully ${isAdd ? 'added' : 'removed'} ${role}.`
+                    `Successfully ${isAdd ? 'added' : 'removed'} ${role}.${
+                        isAdd ? 'Removed all other roles in the category.' : ''
+                    }`
                 )
                 .setColor(isAdd ? 'GREEN' : 'RED');
 
             return interaction.followUp({ embeds: [updateEmbed] });
-        }
-        else {
-            
         }
     }
 
