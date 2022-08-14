@@ -97,13 +97,10 @@ class EvalCommand extends Command {
     }
 
     async createHastebin(text) {
-        const res = await fetch(
-            'https://www.toptal.com/developers/hastebin/documents',
-            {
-                method: 'POST',
-                body: text,
-            }
-        );
+        const res = await fetch('https://hastebin.com/documents', {
+            method: 'POST',
+            body: text,
+        });
         if (res.status !== 200) {
             return 'An error occurred while trying to upload the content to hastebin :(';
         }
