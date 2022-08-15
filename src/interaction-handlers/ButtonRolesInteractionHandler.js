@@ -143,10 +143,22 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
         if (key === 'n/a') {
             let isAddna;
             if (member.roles.cache.has(role.id)) {
-                await member.roles.add(role, 'Reaction Role add');
+                try {
+                    await member.roles.add(role, 'Reaction Role add');
+                } catch (error) {
+                    return interaction.followUp(
+                        'An error occured. Please try again.'
+                    );
+                }
                 isAddna = true;
             } else {
-                await member.roles.remove(role, 'Reaction Role remove');
+                try {
+                    await member.roles.remove(role, 'Reaction Role remove');
+                } catch (error) {
+                    return interaction.followUp(
+                        'An error occured. Please try again.'
+                    );
+                }
                 isAddna = false;
             }
 
@@ -185,13 +197,34 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                 );
 
             if (member.roles.cache.has(r.id)) {
-                await member.roles.remove(r, 'Reaction Role remove');
+                try {
+                    await member.roles.remove(r, 'Reaction Role remove');
+                } catch (error) {
+                    return interaction.followUp(
+                        'An error occured. Please try again.'
+                    );
+                }
                 isAdd = false;
             } else {
                 for (const role of roleArray) {
-                    await member.roles.remove(role, 'Removing all other roles');
+                    try {
+                        await member.roles.remove(
+                            role,
+                            'Removing all other roles'
+                        );
+                    } catch (error) {
+                        return interaction.followUp(
+                            `An error occured: ${error}`
+                        );
+                    }
                 }
-                await member.roles.add(r, 'Reaction Role add');
+
+                try {
+                    await member.roles.add(r, 'Reaction Role add');
+                } catch (error) {
+                    return interaction.followUp(`An error occured: ${error}`);
+                }
+
                 isAdd = true;
             }
 
