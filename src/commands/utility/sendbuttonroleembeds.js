@@ -211,8 +211,23 @@ class SendButtonRoleEmbedsCommand extends Command {
                 'https://media.discordapp.net/attachments/917885921423134741/992760055575363684/IMG_20220630_124606.jpg'
             )
             .setTitle('Notifications');
-        const notificationButtons = new MessageActionRow().addComponents();
-        // TODO notification buttons
+        const notificationButtons = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId('role-notification-announcement')
+                .setEmoji('<:peepo_detective:982603597458059374>')
+                .setLabel('Announcements')
+                .setStyle('SECONDARY'),
+            new MessageButton()
+                .setCustomId('role-notification-vc available')
+                .setEmoji('<:blob_singer:940875809915277372>')
+                .setLabel('VC Available')
+                .setStyle('SECONDARY'),
+            new MessageButton()
+                .setCustomId('role-notification-events')
+                .setEmoji('<:high_cat:831304968174698516>')
+                .setLabel('Events')
+                .setStyle('SECONDARY')
+        );
 
         await channel.send({
             embeds: [continentEmbed],
