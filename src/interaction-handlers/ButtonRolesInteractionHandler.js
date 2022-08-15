@@ -163,9 +163,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
             }
 
             const updateEmbedna = new MessageEmbed()
-                .setDescription(
-                    `Successfully ${isAddna ? 'added' : 'removed'} ${role}.`
-                )
+                .setDescription(`${isAddna ? 'Added' : 'Removed'} ${role}.`)
                 .setColor(isAddna ? 'GREEN' : 'RED');
 
             return interaction.followUp({ embeds: [updateEmbedna] });
@@ -232,7 +230,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
 
             const updateEmbed = new MessageEmbed()
                 .setDescription(
-                    `Successfully ${isAdd ? 'added' : 'removed'} ${role}.${
+                    `${isAdd ? 'Added' : 'Removed'} ${role}.${
                         isAdd ? 'Removed all other roles in the category.' : ''
                     }`
                 )

@@ -6,11 +6,11 @@ const {
     MessageEmbed,
 } = require('discord.js');
 
-class PeerMsgInfoCommand extends Command {
+class PeerMsgEmbedCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: 'peermsginfo',
+            name: 'peermsgembed',
             aliases: ['peermessageinfo'],
             description:
                 'Sends the peer message embed in the specified channel(or the current one)',
@@ -62,4 +62,4 @@ class PeerMsgInfoCommand extends Command {
     }
 }
 
-module.exports = { PeerMsgInfoCommand };
+module.exports = { PeerMsgEmbedCommand };
