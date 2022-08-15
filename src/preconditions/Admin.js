@@ -12,12 +12,12 @@ class AdminPrecondition extends Precondition {
             return this.ok();
 
         if (
-            (
+            !(
                 await this.container.stores
                     .get('preconditions')
                     .get('Developer')
                     .messageRun(message)
-            ).success
+            ).isErr()
         )
             return this.ok();
         return this.error();
