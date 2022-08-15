@@ -59,11 +59,12 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
             [peerMessageCooldown] &&
             Date.now() - parseInt(peerMessageCooldown) < 600000
         ) {
-            return interaction.reply(
-                `You recently sent a peer message and are on a cooldown. Try again in ${new DurationFormatter().format(
+            return interaction.reply({
+                content: `You recently sent a peer message and are on a cooldown. Try again in ${new DurationFormatter().format(
                     600000 - (Date.now() - parseInt(peerMessageCooldown))
-                )}.`
-            );
+                )}.`,
+                ephemeral: true,
+            });
         }
 
         return this.some();
