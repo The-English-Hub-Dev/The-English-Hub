@@ -214,6 +214,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
     async parse(interaction) {
         if (!interaction.customId.startsWith('role')) return this.none();
 
+        interaction.deferReply({ ephemeral: true });
         return this.some(interaction.member);
     }
 }
