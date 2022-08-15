@@ -18,7 +18,7 @@ class MvCommand extends Command {
      */
     async messageRun(message, args) {
         const vc = await args.pickResult('guildVoiceChannel');
-        if (!vc.success)
+        if (vc.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a valid voice channel to be moved into.'
@@ -32,7 +32,7 @@ class MvCommand extends Command {
 
         if (
             !message.member
-                .permissionsIn(vc.value)
+                .permissionsIn(vc.unwrap())
                 .has(Permissions.FLAGS.VIEW_CHANNEL)
         )
             return this.container.utility.errReply(
@@ -41,12 +41,18 @@ class MvCommand extends Command {
             );
         await message.member.voice
             .setChannel(
-                vc.value,
+                vc.unwrap(),
                 `${message.member.user.tag} requested to be moved with the moveme command.`
             )
-            .catch(async() => { return message.reply(`You are not allowed to move yourself to that channel.`)});
+            .catch(async () => {
+                return message.reply(
+                    `You are not allowed to move yourself to that channel.`
+                );
+            });
 
-        return message.reply(`You have been successfully moved to ${vc.value}`);
+        return message.reply(
+            `You have been successfully moved to ${vc.unwrap()}`
+        );
     }
 }
 

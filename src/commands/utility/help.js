@@ -24,7 +24,7 @@ class HelpCommand extends Command {
         let commands = this.container.stores.get('commands');
         const command = await args.pickResult('string');
 
-        if (!command.success) {
+        if (command.isErr()) {
             const helpEmbed = new MessageEmbed()
                 .setColor('BLUE')
                 .setTitle('Help')
@@ -81,12 +81,12 @@ class HelpCommand extends Command {
         }
 
         let cmd = null;
-        if (!this.container.stores.get('commands').get(command.value)) {
+        if (!this.container.stores.get('commands').get(command.unwrap())) {
             return message.reply(
-                `No help found for command \`${command.value}\``
+                `No help found for command \`${command.unwrap()}\``
             );
         } else {
-            cmd = this.container.stores.get('commands').get(command.value);
+            cmd = this.container.stores.get('commands').get(command.unwrap());
         }
         commandsData.push(`**Name:** ${cmd.name}\n`);
 

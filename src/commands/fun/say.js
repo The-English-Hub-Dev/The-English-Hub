@@ -19,10 +19,12 @@ class SayCommand extends Command {
      */
     async messageRun(message, args) {
         const rawChannel = await args.pickResult('guildTextChannel');
-        const channel = rawChannel.value ?? message.channel;
+        const channel = rawChannel.isErr()
+            ? message.channel
+            : rawChannel.unwrap();
 
         const text = await args.restResult('string');
-        if (!text.success)
+        if (text.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide something for me to say.'
@@ -31,7 +33,7 @@ class SayCommand extends Command {
         if (message.deletable) await message.delete();
 
         return channel.send({
-            content: text.value,
+            content: text.unwrap(),
             allowedMentions: { users: [], roles: [], parse: [] },
         });
     }

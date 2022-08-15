@@ -26,20 +26,20 @@ class BanCommand extends Command {
      */
     async messageRun(message, args) {
         const rawMember = await args.pickResult('member');
-        if (!rawMember.success)
+        if (rawMember.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a valid member to ban.'
             );
 
         const reason = await args.restResult('string');
-        if (!reason.success)
+        if (reason.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a reason to ban.'
             );
 
-        const member = rawMember.value;
+        const member = rawMember.unwrap();
 
         if (
             member.roles.highest.position >
@@ -54,7 +54,7 @@ class BanCommand extends Command {
                 message,
                 'I do not have permissions to kick this member.'
             );
-        if (reason.value.length > 100)
+        if (reason.unwrap().length > 100)
             return this.container.utility.errReply(
                 message,
                 'The reason must be less than 100 characters.'
@@ -62,14 +62,14 @@ class BanCommand extends Command {
 
         const punishment = new Punishment(
             message.author.id,
-            rawMember.value.id,
-            reason.value,
+            rawMember.unwrap().id,
+            reason.unwrap(),
             PunishmentType.BAN
             // TODO duration
         );
 
         await this.container.punishments.sendPunishmentEmbed(
-            rawMember.value,
+            rawMember.unwrap(),
             message.guild,
             PunishmentType.BAN
         );
@@ -79,10 +79,10 @@ class BanCommand extends Command {
                 ? 0
                 : Number(args.getOption('days'));
 
-        await member.ban({ reason: reason.value, days: delete_days });
+        await member.ban({ reason: reason.unwrap(), days: delete_days });
 
         const embed = await this.container.punishments.getChatPunishmentEmbed(
-            rawMember.value,
+            rawMember.unwrap(),
             punishment,
             PunishmentType.BAN
         );
