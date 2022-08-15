@@ -8,7 +8,7 @@ const {
     MessageActionRow,
     MessageButton,
 } = require('discord.js');
-const { peerMsgReviewChannelID } = require('../../config');
+const { peerMsgReviewChannelID } = require('../../config.json');
 
 class PeerMessageModalSubmitHandler extends InteractionHandler {
     constructor(ctx) {

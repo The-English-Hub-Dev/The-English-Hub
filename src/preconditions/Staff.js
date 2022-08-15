@@ -1,6 +1,6 @@
 const { Precondition } = require('@sapphire/framework');
 const { Message, Permissions } = require('discord.js');
-const { staffRoles } = require('../../config');
+const { staffRoles, testingServerID } = require('../../config.json');
 
 class StaffPrecondition extends Precondition {
     /**

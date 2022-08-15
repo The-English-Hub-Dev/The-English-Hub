@@ -1,6 +1,6 @@
 const { Listener, Events } = require('@sapphire/framework');
 const { Message, MessageEmbed } = require('discord.js');
-const { redirectDMChannelID, mainGuildID } = require('../../../config');
+const { redirectDMChannelID, mainGuildID } = require('../../../config.json');
 
 class MessageCreateListener extends Listener {
     constructor(context, options) {

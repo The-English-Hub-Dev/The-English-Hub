@@ -1,6 +1,6 @@
 const { Listener, Events } = require('@sapphire/framework');
 const { GuildMember } = require('discord.js');
-const { welcomeChannel } = require('../../../config');
+const { welcomeChannel } = require('../../../config.json');
 
 class GuildMemberAddListener extends Listener {
     constructor(context, options) {
