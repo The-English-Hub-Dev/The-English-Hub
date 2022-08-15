@@ -76,21 +76,21 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                     englishDialectRoles,
                     category
                 );
-            case 'englishclasses':
+            case 'english classes':
                 return this.updateRole(
                     interaction,
                     member,
                     englishClassesRole,
                     'n/a'
                 );
-            case 'correctme':
+            case 'correct me':
                 return this.updateRole(
                     interaction,
                     member,
                     correctMeRole,
                     'n/a'
                 );
-            case 'debateclub':
+            case 'debate club':
                 return this.updateRole(
                     interaction,
                     member,
@@ -99,7 +99,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                 );
             case 'wotd':
                 return this.updateRole(interaction, member, wotdRole, 'n/a');
-            case 'bookclub':
+            case 'book club':
                 return this.updateRole(
                     interaction,
                     member,
@@ -115,7 +115,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                 );
             default:
                 return interaction.followUp(
-                    'An error occured. Please try again.'
+                    '**An error occured:** This button role exists but is not linked to a role.'
                 );
         }
     }
