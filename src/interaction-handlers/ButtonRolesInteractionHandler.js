@@ -178,7 +178,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
 
             const name = interaction.customId.split('-')[2];
             let isAdd;
-            const r = continentRoles.find((r) => r.name.toLowerCase() === name);
+            const r = roleArray.find((r) => r.name.toLowerCase() === name);
             if (!r)
                 return interaction.followUp(
                     'An error occured while finding the role to add/remove. Please try again.'
