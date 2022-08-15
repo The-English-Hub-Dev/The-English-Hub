@@ -26,6 +26,10 @@ class MessageCreateListener extends Listener {
      * @param { Message } message
      */
     async redirectDM(message) {
+        if (message.author.bot) return;
+        await message
+            .fetch()
+            .then(message.channel.fetch().then(message.author.fetch()));
         const redirCh = this.container.client.guilds.cache
             .get(mainGuildID)
             .channels.cache.get(redirectDMChannelID);
@@ -37,7 +41,7 @@ class MessageCreateListener extends Listener {
             .setColor('RANDOM')
             .setDescription(`DM recieved: ${message.content}`)
             .setFooter({
-                text: `You can reply to this DM by using the ?dm command`,
+                text: `You can reply to this DM by using the ?dm command, User ID: ${message.author.id}`,
             });
         return redirCh.send({ embeds: [embed] });
     }

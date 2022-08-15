@@ -8,10 +8,19 @@ class StaffPrecondition extends Precondition {
      * @param { Message } message
      * @returns
      */
-    messageRun(message) {
-        if (message.guild.id === testingServerID) return this.ok(); // return ok if testing server
+    async messageRun(message) {
         if (message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR))
             return this.ok();
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Developer')
+                    .messageRun(message)
+            ).success
+        )
+            return this.ok();
+
         return staffRoles.some((role) => message.member.roles.cache.has(role))
             ? this.ok()
             : this.error();

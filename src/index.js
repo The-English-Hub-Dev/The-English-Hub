@@ -4,7 +4,7 @@ const { Intents, Options } = require('discord.js');
 const Redis = require('ioredis');
 require('@sapphire/plugin-logger/register');
 require('dotenv').config();
-const { prefix } = require('../config.json');
+const { prefix, clientID } = require('../config.json');
 const { Database } = require('./library/db/database');
 const { Utility } = require('./library/utility');
 
@@ -14,9 +14,9 @@ process.on('uncaughtException', (error) => {
 
 const redis = new Redis(process.env.REDIS_URL, {
     tls: {
-      rejectUnauthorized: false,
+        rejectUnauthorized: false,
     },
-  });
+});
 
 container.redis = redis;
 container.db = new Database();
@@ -31,6 +31,17 @@ const client = new SapphireClient({
         Intents.FLAGS.DIRECT_MESSAGES,
         Intents.FLAGS.GUILD_VOICE_STATES,
     ],
+    sweepers: {
+        ...Options.defaultSweeperSettings,
+        guildMembers: {
+            interval: 5000,
+            filter: () => (m) => m.id !== clientID,
+        },
+        users: {
+            interval: 5000,
+            filter: () => (m) => m.id !== clientID,
+        },
+    },
     defaultPrefix: prefix,
     loadMessageCommandListeners: true,
     caseInsensitiveCommands: true,

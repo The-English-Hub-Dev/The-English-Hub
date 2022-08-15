@@ -1,5 +1,6 @@
 const { Listener, Events } = require('@sapphire/framework');
-const { Client } = require('discord.js');
+const { DurationFormatter } = require('@sapphire/time-utilities');
+const { Client, MessageEmbed } = require('discord.js');
 
 class ReadyListener extends Listener {
     constructor(context, options) {
@@ -16,10 +17,28 @@ class ReadyListener extends Listener {
      */
     async run(client) {
         this.container.logger.info(`Logged in as ${client.user.tag}!`);
-        this.container.logger.info(`Pinging...`);
         this.container.logger.info(
-            `Ping acknowledged by the API. ${client.ws.ping} ms. Bot is online.\n\n`
+            `Ping acknowledged by the API. Bot is online.\n\n`
         );
+
+        const hasRebooted = await this.container.redis.hget('tasks', 'restart');
+        if (hasRebooted) {
+            const [channelID, restartTime] = hasRebooted.split(':');
+            this.container.client.channels.cache
+                .get(channelID)
+                .send({
+                    embeds: [
+                        new MessageEmbed()
+                            .setDescription(
+                                `The bot restarted successfully in ${new DurationFormatter().format(
+                                    Date.now() - restartTime
+                                )}`
+                            )
+                            .setColor('GREEN'),
+                    ],
+                });
+            await this.container.redis.hdel('tasks', 'restart');
+        }
 
         setInterval(() => {
             const guild = client.guilds.cache.get('801609515391778826');
