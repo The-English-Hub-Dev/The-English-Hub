@@ -90,6 +90,12 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
                 });
             });
 
+        await this.container.redis.hset(
+            'peer-msg-cd',
+            interaction.member.user.id,
+            Date.now().toString()
+        );
+
         return interaction.reply({
             embeds: [
                 new MessageEmbed()

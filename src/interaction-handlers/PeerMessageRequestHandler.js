@@ -2,6 +2,7 @@ const {
     InteractionHandler,
     InteractionHandlerTypes,
 } = require('@sapphire/framework');
+const { DurationFormatter } = require('@sapphire/time-utilities');
 const {
     ButtonInteraction,
     Modal,
@@ -49,6 +50,21 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
      */
     async parse(interaction) {
         if (interaction.customId !== 'peer-request') return this.none();
+
+        const peerMessageCooldown = await this.container.redis.hget(
+            'peer-msg-cd',
+            interaction.member.user.id
+        );
+        if (
+            [peerMessageCooldown] &&
+            Date.now() - parseInt(peerMessageCooldown) < 600000
+        ) {
+            return interaction.reply(
+                `You recently sent a peer message and are on a cooldown. Try again in ${new DurationFormatter().format(
+                    600000 - (Date.now() - parseInt(peerMessageCooldown))
+                )}.`
+            );
+        }
 
         return this.some();
     }
