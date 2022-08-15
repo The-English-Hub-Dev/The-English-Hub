@@ -19,7 +19,7 @@ const {
     wotdRoleID,
     bookClubRoleID,
     notificationRoleIDs,
-} = require('../../config.json');
+} = require('../../config');
 
 class PeerMessageSendButtonHandler extends InteractionHandler {
     constructor(ctx) {
@@ -33,13 +33,13 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
      */
     async run(interaction, member) {
         const category = interaction.customId.split('-')[1];
-        const continentRoles = [...continentRoleIDs].map((id) =>
+        const continentRoles = continentRoleIDs.map((id) =>
             interaction.guild.roles.cache.get(id)
         );
-        const englishLevelRoles = [...englishLevelRoleIDs].map((id) =>
+        const englishLevelRoles = englishLevelRoleIDs.map((id) =>
             interaction.guild.roles.cache.get(id)
         );
-        const englishDialectRoles = [...englishDialectRoleIDs].map((id) =>
+        const englishDialectRoles = englishDialectRoleIDs.map((id) =>
             interaction.guild.roles.cache.get(id)
         );
         const englishClassesRole =
@@ -50,7 +50,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
             interaction.guild.roles.cache.get(debateClubRoleID);
         const wotdRole = interaction.guild.roles.cache.get(wotdRoleID);
         const bookClubRole = interaction.guild.roles.cache.get(bookClubRoleID);
-        const notificationRoles = [...notificationRoleIDs].map((id) =>
+        const notificationRoles = notificationRoleIDs.map((id) =>
             interaction.guild.roles.cache.get(id)
         );
 
@@ -128,16 +128,16 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
      * @param { String } key
      */
     async updateRole(interaction, member, role, key) {
-        const continentRoles = [...continentRoleIDs].map((id) =>
+        const continentRoles = continentRoleIDs.map((id) =>
             interaction.guild.roles.cache.get(id)
         );
-        const englishLevelRoles = [...englishLevelRoleIDs].map((id) =>
+        const englishLevelRoles = englishLevelRoleIDs.map((id) =>
             interaction.guild.roles.cache.get(id)
         );
-        const englishDialectRoles = [...englishDialectRoleIDs].map((id) =>
+        const englishDialectRoles = englishDialectRoleIDs.map((id) =>
             interaction.guild.roles.cache.get(id)
         );
-        const notificationRoles = [...notificationRoleIDs].map((id) =>
+        const notificationRoles = notificationRoleIDs.map((id) =>
             interaction.guild.roles.cache.get(id)
         );
         if (key === 'n/a') {

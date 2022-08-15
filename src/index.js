@@ -4,7 +4,7 @@ const { Intents, Options } = require('discord.js');
 const Redis = require('ioredis');
 require('@sapphire/plugin-logger/register');
 require('dotenv').config();
-const { prefix, clientID } = require('../config.json');
+const { prefix, clientID } = require('../config');
 const { Database } = require('./library/db/database');
 const { Utility } = require('./library/utility');
 
