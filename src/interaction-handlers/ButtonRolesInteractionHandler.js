@@ -147,7 +147,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                     await member.roles.add(role, 'Reaction Role add');
                 } catch (error) {
                     return interaction.followUp(
-                        `An error occured: ${error}`
+                        `**An error occured:** ${error}`
                     );
                 }
                 isAddna = true;
@@ -156,7 +156,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                     await member.roles.remove(role, 'Reaction Role remove');
                 } catch (error) {
                     return interaction.followUp(
-                        `An error occured. ${error}`
+                        `**An error occured:** ${error}`
                     );
                 }
                 isAddna = false;
@@ -201,7 +201,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                     await member.roles.remove(r, 'Reaction Role remove');
                 } catch (error) {
                     return interaction.followUp(
-                        `An error occured. ${error}`
+                        `**An error occured:** ${error}`
                     );
                 }
                 isAdd = false;
@@ -214,7 +214,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                         );
                     } catch (error) {
                         return interaction.followUp(
-                            `An error occured: ${error}`
+                            `**An error occured:** ${error}`
                         );
                     }
                 }
@@ -222,7 +222,9 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                 try {
                     await member.roles.add(r, 'Reaction Role add');
                 } catch (error) {
-                    return interaction.followUp(`An error occured: ${error}`);
+                    return interaction.followUp(
+                        `**An error occured:** ${error}`
+                    );
                 }
 
                 isAdd = true;
