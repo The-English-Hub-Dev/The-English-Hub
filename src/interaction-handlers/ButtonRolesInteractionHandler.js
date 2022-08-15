@@ -147,7 +147,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                     await member.roles.add(role, 'Reaction Role add');
                 } catch (error) {
                     return interaction.followUp(
-                        'An error occured. Please try again.'
+                        `An error occured: ${error}`
                     );
                 }
                 isAddna = true;
@@ -156,7 +156,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                     await member.roles.remove(role, 'Reaction Role remove');
                 } catch (error) {
                     return interaction.followUp(
-                        'An error occured. Please try again.'
+                        `An error occured. ${error}`
                     );
                 }
                 isAddna = false;
@@ -201,7 +201,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                     await member.roles.remove(r, 'Reaction Role remove');
                 } catch (error) {
                     return interaction.followUp(
-                        'An error occured. Please try again.'
+                        `An error occured. ${error}`
                     );
                 }
                 isAdd = false;
