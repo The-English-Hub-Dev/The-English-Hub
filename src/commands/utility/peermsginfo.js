@@ -26,7 +26,7 @@ class PeerMsgInfoCommand extends Command {
     async messageRun(message, args) {
         const rawCh = await args.pickResult('guildTextChannel');
 
-        const channel = rawCh.value ?? message.channel;
+        const channel = rawCh.unwrap() ?? message.channel;
         if (channel.type !== 'GUILD_TEXT')
             return message.reply('An error occured.');
 

@@ -26,18 +26,18 @@ class RemovepunishmentCommand extends Command {
         const rawID = await args.pickResult('string');
         const reason = await args.restResult('string');
 
-        if (!rawID.success)
+        if (rawID.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a valid punishment ID to remove.'
             );
-        if (!reason.success)
+        if (reason.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a reason to remove the punishment.'
             );
 
-        const id = rawID.value;
+        const id = rawID.unwrap();
         const punishment = await this.container.db.punishments.findOneBy({
             punishment_id: id,
         });

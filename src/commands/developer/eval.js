@@ -39,12 +39,12 @@ class EvalCommand extends Command {
     async messageRun(message, args) {
         const hiddenItems = [DISCORD_TOKEN];
         let code = await args.restResult('string');
-        if (!code.success)
+        if (code.isErr())
             return this.container.utility.error(
                 message,
                 'Provide code to evaluate.'
             );
-        code = code.value;
+        code = code.unwrap();
         let output, type;
         const evalTime = new Stopwatch();
         let error = false;

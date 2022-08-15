@@ -26,20 +26,20 @@ class UnmuteCommand extends Command {
      */
     async messageRun(message, args) {
         const rawMember = await args.pickResult('member');
-        if (!rawMember.success)
+        if (rawMember.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a valid member to unmute.'
             );
 
         const reason = await args.restResult('string');
-        if (!reason.success)
+        if (reason.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a reason to unmute.'
             );
 
-        const member = rawMember.value;
+        const member = rawMember.unwrap();
 
         if (
             member.roles.highest.position >
@@ -54,7 +54,7 @@ class UnmuteCommand extends Command {
                 message,
                 'I do not have permissions to unmute this member.'
             );
-        if (reason.value.length > 100)
+        if (reason.unwrap().length > 100)
             return this.container.utility.errReply(
                 message,
                 'The reason must be less than 100 characters.'
@@ -62,22 +62,22 @@ class UnmuteCommand extends Command {
 
         const punishment = new Punishment(
             message.author.id,
-            rawMember.value.id,
-            reason.value,
+            rawMember.unwrap().id,
+            reason.unwrap(),
             PunishmentType.UNMUTE
         );
 
         await this.container.punishments.sendPunishmentEmbed(
-            rawMember.value,
+            rawMember.unwrap(),
             message.guild,
             PunishmentType.UNMUTE,
             null
         );
 
-        await member.timeout(null, reason.value);
+        await member.timeout(null, reason.unwrap());
 
         const embed = await this.container.punishments.getChatPunishmentEmbed(
-            rawMember.value,
+            rawMember.unwrap(),
             punishment,
             PunishmentType.UNMUTE
         );

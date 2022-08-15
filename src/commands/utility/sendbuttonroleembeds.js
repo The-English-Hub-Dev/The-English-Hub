@@ -23,9 +23,8 @@ class SendButtonRoleEmbedsCommand extends Command {
      * @param { Args } args
      */
     async messageRun(message, args) {
-        const channel =
-            (await args.pickResult('guildTextChannel')).value ??
-            message.channel;
+        const rawCh = await args.pickResult('guildTextChannel');
+        const channel = rawCh.isErr() ? message.channel : rawCh.unwrap();
 
         const continentEmbed = new MessageEmbed()
             .setImage(

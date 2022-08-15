@@ -25,22 +25,22 @@ class UnbanCommand extends Command {
      */
     async messageRun(message, args) {
         const rawUser = await args.pickResult('user');
-        if (!rawMember.success)
+        if (rawUser.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a valid member to unban.'
             );
 
         const reason = await args.restResult('string');
-        if (!reason.success)
+        if (reason.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a reason to unban.'
             );
 
-        const member = rawMember.value;
+        const member = rawMember.unwrap();
 
-        if (reason.value.length > 100)
+        if (reason.unwrap().length > 100)
             return this.container.utility.errReply(
                 message,
                 'The reason must be less than 100 characters.'
@@ -48,14 +48,14 @@ class UnbanCommand extends Command {
 
         const punishment = new Punishment(
             message.author.id,
-            rawUser.value.id,
-            reason.value,
+            rawUser.unwrap().id,
+            reason.unwrap(),
             PunishmentType.UNBAN,
             null
         );
 
         const isBanned = await message.guild.bans
-            .fetch(rawUser.value.id)
+            .fetch(rawUser.unwrap().id)
             .catch(() => null);
         if (!isBanned)
             return this.container.utility.errReply(
@@ -63,10 +63,10 @@ class UnbanCommand extends Command {
                 'That user is not banned.'
             );
 
-        await message.guild.members.unban(rawUser.value.id, reason.value);
+        await message.guild.members.unban(rawUser.unwrap().id, reason.unwrap());
 
         const embed = await this.container.punishments.getChatPunishmentEmbed(
-            rawMember.value,
+            rawMember.unwrap(),
             punishment,
             PunishmentType.BAN
         );

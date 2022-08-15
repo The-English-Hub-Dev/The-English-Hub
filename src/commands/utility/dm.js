@@ -19,28 +19,28 @@ class DmCommand extends Command {
      */
     async messageRun(message, args) {
         const rawMember = await args.pickResult('member');
-        if (!rawMember.success)
+        if (rawMember.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a valid member to send a DM to.'
             );
 
         const msg = await args.restResult('string');
-        if (!msg.success)
+        if (msg.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a message to send to the member.'
             );
-        if (msg.value.length > 1000)
+        if (msg.unwrap().length > 1000)
             return this.container.utility.errReply(
                 message,
                 'The message length may not be greater than 1000 characters.'
             );
 
-        const member = rawMember.value;
+        const member = rawMember.unwrap();
 
         const dmEmbed = new MessageEmbed()
-            .setDescription(`**Message:** ${msg.value}`)
+            .setDescription(`**Message:** ${msg.unwrap()}`)
             .setFooter({ text: `Sent from ${message.guild.name}` })
             .setColor('BLUE');
 
