@@ -9,7 +9,8 @@ const { Database } = require('./library/db/database');
 const { Utility } = require('./library/utility');
 
 process.on('uncaughtException', (error) => {
-    console.log(error);
+    if (!container) console.log(error);
+    else container.logger.error(error);
 });
 
 const redis = new Redis(process.env.REDIS_URL, {
