@@ -100,11 +100,45 @@ class SendButtonRoleEmbedsCommand extends Command {
                 'https://media.discordapp.net/attachments/917885921423134741/992756666359631892/banner1.png'
             )
             .setTitle('English Dialect');
-        const englishDialectButtons = new MessageActionRow().addComponents(
-            new MessageButton().setCustomId(
-                'role-englishdialect-british english'
-            )
-            // TODO finish roles
+        const englishDialectButtons1 = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId('role-englishdialect-british english')
+                .setEmoji('🇬🇧')
+                .setLabel('British English')
+                .setStyle('SECONDARY'),
+            new MessageButton()
+                .setCustomId('role-englishdialect-american english')
+                .setEmoji('🇺🇲')
+                .setLabel('American English')
+                .setStyle('SECONDARY'),
+            new MessageButton()
+                .setCustomId('role-englishdialect-canadian english')
+                .setEmoji('🇨🇦')
+                .setLabel('Canadian English')
+                .setStyle('SECONDARY'),
+            new MessageButton()
+                .setCustomId('role-englishdialect-australian english')
+                .setEmoji('🇦🇺')
+                .setLabel('Australian English')
+                .setStyle('SECONDARY'),
+            new MessageButton()
+                .setCustomId('role-englishdialect-new zealand english')
+                .setEmoji('🇳🇿')
+                .setLabel('New Zealand English')
+                .setStyle('SECONDARY')
+        );
+
+        const englishDialectButtons2 = new MessageActionRow().addComponents(
+            new MessageButton()
+                .setCustomId('role-englishdialect-indian english')
+                .setEmoji('🇮🇳')
+                .setLabel('Indian English')
+                .setStyle('SECONDARY'),
+            new MessageButton()
+                .setCustomId('role-englishdialect-south african english')
+                .setEmoji('🇿🇦')
+                .setLabel('South African English')
+                .setStyle('SECONDARY')
         );
 
         const englishClassesEmbed = new MessageEmbed()
@@ -190,7 +224,7 @@ class SendButtonRoleEmbedsCommand extends Command {
         });
         await channel.send({
             embeds: [englishDialectEmbed],
-            components: [englishDialectButtons],
+            components: [englishDialectButtons1, englishDialectButtons2],
         });
         await channel.send({
             embeds: [englishClassesEmbed],
