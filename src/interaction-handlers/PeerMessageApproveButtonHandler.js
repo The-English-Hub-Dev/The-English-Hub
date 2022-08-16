@@ -35,6 +35,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
             interaction.update({
                 content: 'This message was denied.',
                 components: [],
+                embeds: [interaction.message.embeds[0].setColor('RED')],
             });
 
             const msg = interaction.message.embeds[0].description.slice(8);
@@ -58,6 +59,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
             interaction.update({
                 content: 'This message was approved.',
                 components: [],
+                embeds: [interaction.message.embeds[0].setColor('GREEN')],
             });
 
             const msg = interaction.message.embeds[0].description.slice(8);
@@ -84,7 +86,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                         .setDescription(
                             `Your message was **approved** by a staff member and sent to the requested member. ${
                                 !success
-                                    ? 'However, the dms of the person you tried to send a message to were closed so I could not deliver your message.'
+                                    ? 'However, the dms of the person you tried to send a message to were closed so I could not deliver your message. You can try to send the message again.'
                                     : ''
                             }`
                         )

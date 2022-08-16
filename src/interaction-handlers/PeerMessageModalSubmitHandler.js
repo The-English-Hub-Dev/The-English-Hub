@@ -57,6 +57,7 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
             .setTitle(
                 `${interaction.user.tag} wants to send ${member.user.tag} a message!`
             )
+            .setColor('BLURPLE')
             .setDescription(`Message: ${msg}`)
             .addField(
                 'Sending member',
