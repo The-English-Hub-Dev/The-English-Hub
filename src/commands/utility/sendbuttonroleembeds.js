@@ -264,6 +264,8 @@ class SendButtonRoleEmbedsCommand extends Command {
             embeds: [notificationEmbed],
             components: [notificationButtons],
         });
+
+        return message.reply(`Sent the button role embeds in ${channel}!`);
     }
 }
 
