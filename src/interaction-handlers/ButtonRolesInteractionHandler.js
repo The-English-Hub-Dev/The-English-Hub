@@ -230,7 +230,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
 
             const updateEmbed = new MessageEmbed()
                 .setDescription(
-                    `${isAdd ? 'Added' : 'Removed'} ${role}.${
+                    `${isAdd ? 'Added' : 'Removed'} ${r}.${
                         isAdd ? 'Removed all other roles in the category.' : ''
                     }`
                 )
