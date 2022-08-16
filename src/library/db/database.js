@@ -6,8 +6,8 @@ class Database {
         const ds = new DataSource({
             type: 'postgres',
             connectTimeoutMS: 5000,
-            url: process.env.DB_URL,
-            ssl: { rejectUnauthorized: true },
+            url: process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false },
             logging: ['error'],
             synchronize: true,
             entities: [require('./entities/PunishmentEntity').punishmentEntity],
@@ -15,7 +15,7 @@ class Database {
                 type: 'ioredis',
                 duration: 20000,
                 options: {
-                    uri: process.env.REDIS_URI,
+                    uri: process.env.REDIS_URL,
                 },
             },
         });
