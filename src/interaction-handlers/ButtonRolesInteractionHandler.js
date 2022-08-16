@@ -144,15 +144,6 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
             let isAddna;
             if (member.roles.cache.has(role.id)) {
                 try {
-                    await member.roles.add(role, 'Reaction Role add');
-                } catch (error) {
-                    return interaction.followUp(
-                        `**An error occured:** ${error}`
-                    );
-                }
-                isAddna = true;
-            } else {
-                try {
                     await member.roles.remove(role, 'Reaction Role remove');
                 } catch (error) {
                     return interaction.followUp(
@@ -160,6 +151,15 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                     );
                 }
                 isAddna = false;
+            } else {
+                try {
+                    await member.roles.add(role, 'Reaction Role add');
+                } catch (error) {
+                    return interaction.followUp(
+                        `**An error occured:** ${error}`
+                    );
+                }
+                isAddna = true;
             }
 
             const updateEmbedna = new MessageEmbed()
