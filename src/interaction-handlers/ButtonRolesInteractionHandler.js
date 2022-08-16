@@ -164,7 +164,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
 
             const updateEmbedna = new MessageEmbed()
                 .setDescription(`${isAddna ? 'Added' : 'Removed'} ${role}.`)
-                .setColor(isAddna ? 'GREEN' : 'RED');
+                .setColor(isAddna ? 'DARK_GREEN' : 'DARK_RED');
 
             return interaction.followUp({ embeds: [updateEmbedna] });
         } else {
@@ -232,11 +232,11 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
 
             const updateEmbed = new MessageEmbed()
                 .setDescription(
-                    `${isAdd ? 'Added' : 'Removed'} ${r}.${
+                    `${isAdd ? 'Added' : 'Removed'} ${r}. ${
                         isAdd ? 'Removed all other roles in the category.' : ''
                     }`
                 )
-                .setColor(isAdd ? 'GREEN' : 'RED');
+                .setColor(isAdd ? 'DARK_GREEN' : 'DARK_RED');
 
             return interaction.followUp({ embeds: [updateEmbed] });
         }
