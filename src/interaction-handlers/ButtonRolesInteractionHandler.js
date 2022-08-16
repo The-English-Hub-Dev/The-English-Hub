@@ -233,7 +233,9 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
             const updateEmbed = new MessageEmbed()
                 .setDescription(
                     `${isAdd ? 'Added' : 'Removed'} ${r}. ${
-                        isAdd ? 'Removed all other roles in the category.' : ''
+                        isAdd && key !== 'notification'
+                            ? 'Removed all other roles in the category.'
+                            : ''
                     }`
                 )
                 .setColor(isAdd ? 'DARK_GREEN' : 'DARK_RED');
