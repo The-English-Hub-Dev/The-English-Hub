@@ -628,7 +628,8 @@ class TopicCommand extends Command {
         super(context, {
             ...options,
             name: 'topic',
-            description: 'Sends a random topic in the chat.',
+            description:
+                'Sends a random topic as a conversation starter in the chat.',
             aliases: ['conversationstarter'],
         });
     }
@@ -650,7 +651,7 @@ class TopicCommand extends Command {
             embeds: [
                 new MessageEmbed()
                     .setDescription(topic)
-                    .setFooter({ text: 'Source: yagpdb topic command' })
+                    .setFooter({ text: 'Source: yagpdb bot topic command' })
                     .setColor('RANDOM'),
             ],
             allowedMentions: { users: [], roles: [], parse: [] },
