@@ -204,16 +204,18 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
                 }
                 isAdd = false;
             } else {
-                for (const role of roleArray) {
-                    try {
-                        await member.roles.remove(
-                            role,
-                            'Removing all other roles'
-                        );
-                    } catch (error) {
-                        return interaction.followUp(
-                            `**An error occured:** ${error}`
-                        );
+                if (key !== 'notification') {
+                    for (const role of roleArray) {
+                        try {
+                            await member.roles.remove(
+                                role,
+                                'Removing all other roles'
+                            );
+                        } catch (error) {
+                            return interaction.followUp(
+                                `**An error occured:** ${error}`
+                            );
+                        }
                     }
                 }
 
