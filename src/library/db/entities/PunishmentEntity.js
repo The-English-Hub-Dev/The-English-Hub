@@ -1,6 +1,6 @@
 const EntitySchema = require('typeorm').EntitySchema;
 const { container } = require('@sapphire/framework');
-const { DiscordSnowflake, Snowflake } = require('@sapphire/snowflake');
+const { DiscordSnowflake } = require('@sapphire/snowflake');
 require('reflect-metadata');
 
 const punishmentEntity = new EntitySchema({
@@ -27,7 +27,7 @@ const punishmentEntity = new EntitySchema({
             type: 'text',
         },
         duration: {
-            type: 'text',
+            type: 'number',
         },
     },
 });
@@ -58,7 +58,7 @@ class Punishment {
     }
 
     async savePunishment(p) {
-        await container.database.punishments.save(p);
+        await container.db.punishments.save(p);
     }
 }
 
