@@ -58,7 +58,7 @@ class Punishment {
     }
 
     async savePunishment(p) {
-        await container.db.punishments.save(p);
+        return container.db.punishments.save(p);
     }
 }
 

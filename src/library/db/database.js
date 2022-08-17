@@ -16,6 +16,7 @@ class Database {
                 duration: 20000,
                 options: {
                     uri: process.env.REDIS_URL,
+                    ssl: { rejectUnauthorized: false },
                 },
             },
         });
