@@ -9,15 +9,13 @@ class StaffPrecondition extends Precondition {
      * @returns
      */
     async messageRun(message) {
-        if (message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR))
-            return this.ok();
         if (
-            !(
+            (
                 await this.container.stores
                     .get('preconditions')
-                    .get('Developer')
+                    .get('Admin')
                     .messageRun(message)
-            ).isErr()
+            ).isOk()
         )
             return this.ok();
 
