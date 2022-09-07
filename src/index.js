@@ -6,10 +6,11 @@ require('@sapphire/plugin-logger/register');
 require('dotenv').config();
 const { prefix, clientID } = require('../config.json');
 const { Database } = require('./library/db/database');
+const { Tasks } = require('./library/tasks');
 const { Utility } = require('./library/utility');
 
 process.on('uncaughtException', (error) => {
-    if (!container) console.log(error);
+    if (!container || container.logger) console.log(error);
     else container.logger.error(error);
 });
 
@@ -22,7 +23,7 @@ const redis = new Redis(process.env.REDIS_URL, {
 container.redis = redis;
 container.db = new Database();
 container.utility = new Utility();
-container.tasks = new Tasks()
+container.tasks = new Tasks();
 
 const client = new SapphireClient({
     intents: [
