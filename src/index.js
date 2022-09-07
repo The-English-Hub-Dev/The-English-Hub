@@ -10,7 +10,7 @@ const { Tasks } = require('./library/tasks');
 const { Utility } = require('./library/utility');
 
 process.on('uncaughtException', (error) => {
-    if (!container || container.logger) console.log(error);
+    if (!container || !container.logger) console.log(error);
     else container.logger.error(error);
 });
 
