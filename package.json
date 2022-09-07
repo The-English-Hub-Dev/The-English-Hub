@@ -33,6 +33,7 @@
         "discord.js": "^13.10.2",
         "dotenv": "^16.0.1",
         "ioredis": "^5.2.2",
+        "node-cron": "^3.0.2",
         "pg": "^8.7.3",
         "reflect-metadata": "^0.1.13",
         "typeorm": "^0.3.7"

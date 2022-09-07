@@ -22,6 +22,7 @@ const redis = new Redis(process.env.REDIS_URL, {
 container.redis = redis;
 container.db = new Database();
 container.utility = new Utility();
+container.tasks = new Tasks()
 
 const client = new SapphireClient({
     intents: [
