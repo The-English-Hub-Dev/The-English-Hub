@@ -20,7 +20,7 @@ class MessageCommandErrorListener extends Listener {
      */
     async run(error, payload) {
         this.container.logger.error(error);
-        payload.message.reply({
+        return payload.message.reply({
             content: `An error occured: ${error.message}`,
             allowedMentions: { users: [], roles: [], parse: [] },
         });
