@@ -7,6 +7,7 @@ class MvCommand extends Command {
             ...options,
             name: 'mv',
             aliases: ['moveme', 'movevc', 'movemevc'],
+            preconditions: ['PremiumMember'],
             description: 'Moves you into a certain voice channel.',
         });
     }
