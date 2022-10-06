@@ -40,7 +40,7 @@ class EvalCommand extends Command {
         const hiddenItems = [DISCORD_TOKEN];
         let code = await args.restResult('string');
         if (code.isErr())
-            return this.container.utility.error(
+            return this.container.utility.errReply(
                 message,
                 'Provide code to evaluate.'
             );
