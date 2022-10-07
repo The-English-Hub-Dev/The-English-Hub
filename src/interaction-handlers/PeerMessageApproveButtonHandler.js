@@ -98,7 +98,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                             true
                         ),
                 ],
-            });
+            }).catch(() => null);
         }
     }
 
