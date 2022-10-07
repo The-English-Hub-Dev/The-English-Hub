@@ -28,7 +28,7 @@
         "@sapphire/snowflake": "^3.2.2",
         "@sapphire/stopwatch": "^1.5.0",
         "@sapphire/time-utilities": "^1.7.8",
-        "@sentry/node": "^7.14.1",
+        "@sentry/node": "^7.14.2",
         "@sentry/tracing": "^7.14.1",
         "discord.js": "^13.11.0",
         "dotenv": "^16.0.3",
