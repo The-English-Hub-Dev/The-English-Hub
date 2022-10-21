@@ -39,7 +39,7 @@
         "typeorm": "^0.3.10"
     },
     "devDependencies": {
-        "eslint": "8.23.0",
+        "eslint": "8.26.0",
         "prettier": "2.7.1"
     }
 }
