@@ -13,7 +13,7 @@ class StaffPrecondition extends Precondition {
             (
                 await this.container.stores
                     .get('preconditions')
-                    .get('Admin')
+                    .get('Staff')
                     .messageRun(message)
             ).isOk()
         )
