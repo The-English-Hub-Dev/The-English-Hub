@@ -1,6 +1,6 @@
 const { Listener, Events } = require('@sapphire/framework');
 const { VoiceState, GuildMember } = require('discord.js');
-const { smallRoomVC1 } = require('../../../config.json');
+const { smallRoomCreateVC } = require('../../../config.json');
 
 class VoiceStateUpdateListener extends Listener {
     constructor(context, options) {
@@ -17,8 +17,18 @@ class VoiceStateUpdateListener extends Listener {
      * @param { VoiceState } newVS
      */
     async run(oldVS, newVS) {
-        if (oldVS.channel === null && newVS.channel.id === smallRoomVC1) {
-            await this.handleSmallRoomVC(newVS.member);
+        if (!oldVS.channel && newVS.channel.id === smallRoomCreateVC) {
+            await this.handleSmallRoomCreate(newVS.member);
+        }
+
+        if (oldVS.channel && !newVS) {
+            if (
+                oldVS.channel.name.startsWith('Small Room') &&
+                !oldVS.channel.members.size
+            ) {
+                if (oldVS.channel.deletable)
+                    await oldVS.channel.delete('Inactive Small Room');
+            }
         }
     }
 
@@ -26,7 +36,7 @@ class VoiceStateUpdateListener extends Listener {
      *
      * @param { GuildMember } member
      */
-    async handleSmallRoomVC(member) {
+    async handleSmallRoomCreate(member) {
         const currentSmallRooms = member.guild.channels.cache
             .filter((ch) => ch.name.startsWith('Small Room'))
             .sort(
@@ -36,10 +46,14 @@ class VoiceStateUpdateListener extends Listener {
         const lastRoom = currentSmallRooms.last();
         if (lastRoom.name.endsWith('20')) return; // max small room channel limit
         const newSmallVC = member.guild.channels.create(
-            `Small Room ${Number(lastRoom.name[lastRoom.name.length]) + 1}`
+            `Small Room ${Number(lastRoom.name[lastRoom.name.length]) + 1}`,
+            {
+                userLimit: 2,
+                reason: 'Creating a new small VC',
+            }
         );
 
-        await member.voice.setChannel(newSmallVC);
+        return member.voice.setChannel(newSmallVC);
     }
 }
 
