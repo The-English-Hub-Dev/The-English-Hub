@@ -14,11 +14,7 @@ process.on('uncaughtException', (error) => {
     else container.logger.error(error);
 });
 
-const redis = new Redis(process.env.REDIS_URL, {
-    tls: {
-        rejectUnauthorized: false,
-    },
-});
+const redis = new Redis(process.env.REDIS_URL, {});
 
 container.redis = redis;
 container.db = new Database();

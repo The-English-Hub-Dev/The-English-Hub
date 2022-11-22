@@ -21,14 +21,8 @@ class VoiceStateUpdateListener extends Listener {
             await this.handleSmallRoomCreate(newVS.member);
         }
 
-        if (oldVS.channel && !newVS) {
-            if (
-                oldVS.channel.name.startsWith('Small Room') &&
-                !oldVS.channel.members.size
-            ) {
-                if (oldVS.channel.deletable)
-                    await oldVS.channel.delete('Inactive Small Room');
-            }
+        if (oldVS.channel && oldVS.name.startsWith('Small Room') && !newVS) {
+            await this.handleInactiveRoomDeletion(oldVS);
         }
     }
 
@@ -54,6 +48,16 @@ class VoiceStateUpdateListener extends Listener {
         );
 
         return member.voice.setChannel(newSmallVC);
+    }
+
+    /**
+     *
+     * @param { VoiceState } oldVS
+     */
+    async handleInactiveRoomDeletion(oldVS) {
+        if (!oldVS.channel.members.size && oldVS.channel.deletable) {
+            await oldVS.channel.delete('Inactive Small Room');
+        }
     }
 }
 
