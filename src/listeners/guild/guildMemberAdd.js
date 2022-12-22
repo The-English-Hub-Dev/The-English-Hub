@@ -27,7 +27,7 @@ class GuildMemberAddListener extends Listener {
         const channel = member.guild.channels.cache.get(welcomeChannel);
         if (!channel || channel.type !== 'GUILD_TEXT') return;
         return channel.send({
-            content: `Ahoy ${member}, Welcome to ${member.guild.name}!\nSelect <#942012209146515496> to get started. <a:enghub:932293018185244742>`,
+            content: `Ahoy ${member}, Welcome to ${member.guild.name}!\nSelect <id:customize> to get started. <a:enghub:932293018185244742>`,
             allowedMentions: { users: [member.id], roles: [], parse: [] },
         });
     }
