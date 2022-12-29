@@ -80,25 +80,27 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                 })
                 .catch(() => (success = false));
 
-            return sendingMember.send({
-                embeds: [
-                    new MessageEmbed()
-                        .setDescription(
-                            `Your message was **approved** by a staff member and sent to the requested member. ${
-                                !success
-                                    ? 'However, the dms of the person you tried to send a message to were closed so I could not deliver your message. You can try to send the message again.'
-                                    : ''
-                            }`
-                        )
-                        .setColor('GREEN')
-                        .addField('Your message', msg, true)
-                        .addField(
-                            'Recieving member',
-                            `${recievingMember} (${recievingMember.user.tag})`,
-                            true
-                        ),
-                ],
-            }).catch(() => null);
+            return sendingMember
+                .send({
+                    embeds: [
+                        new MessageEmbed()
+                            .setDescription(
+                                `Your message was **approved** by a staff member and sent to the requested member. ${
+                                    !success
+                                        ? 'However, the dms of the person you tried to send a message to were closed so I could not deliver your message. You can try to send the message again.'
+                                        : ''
+                                }`
+                            )
+                            .setColor('GREEN')
+                            .addField('Your message', msg, true)
+                            .addField(
+                                'Recieving member',
+                                `${recievingMember} (${recievingMember.user.tag})`,
+                                true
+                            ),
+                    ],
+                })
+                .catch(() => null);
         }
     }
 
