@@ -93,4 +93,4 @@ class MuteCommand extends Command {
     }
 }
 
-module.exports = { KickCommand };
+module.exports = { MuteCommand };
