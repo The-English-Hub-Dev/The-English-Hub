@@ -38,7 +38,9 @@ class UnbanCommand extends Command {
                 'You must provide a reason to unban.'
             );
 
-        const member = rawMember.unwrap();
+        const rawMember = await message.guild.members
+            .fetch(rawUser)
+            .catch(() => null);
 
         if (reason.unwrap().length > 100)
             return this.container.utility.errReply(
