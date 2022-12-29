@@ -14,7 +14,7 @@ declare module '@sapphire/pieces' {
     interface Container {
         client: SapphireClient;
         utility: Utility;
-        redis: RedisCommander
+        redis: RedisCommander;
         db: Database;
         punishments: Punishments;
         stores: StoreRegistry;

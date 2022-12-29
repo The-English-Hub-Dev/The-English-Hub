@@ -1,18 +1,18 @@
-const cron = require('../../node_modules/node-cron')
+const cron = require('../../node_modules/node-cron');
 
 class Tasks {
-	constructor() {
-		this.initializeTasks();
-		this.intervals = [];
-	}
+    constructor() {
+        this.initializeTasks();
+        this.intervals = [];
+    }
 
-	initializeTasks() {
-		this.initializeDailyMemberReset();
-	}
+    initializeTasks() {
+        this.initializeDailyMemberReset();
+    }
 
-	initializeDailyMemberReset() {
-		cron.schedule('')
-	}
+    initializeDailyMemberReset() {
+        cron.schedule('');
+    }
 }
 
 module.exports = { Tasks };
