@@ -1,0 +1,37 @@
+name: Syntax Check + Formatting
+
+on:
+    push:
+    pull_request_review:
+    workflow_dispatch:
+
+jobs:
+    eslint:
+        if: "!contains(github.event.head_commit.message, '[skip eslint]')"
+        name: ESLint Syntax Check
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repo
+              uses: actions/checkout@v3
+            - name: Setup node environment
+              uses: actions/setup-node@v3
+              with:
+                  node-version: '18'
+            - run: npm install -g eslint
+            - run: npx eslint -v
+            - run: npx eslint . --ext .js
+
+    prettier:
+        if: "!contains(github.event.head_commit.message, '[skip prettier]')"
+        name: Run Prettier
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout Repo
+              uses: actions/checkout@v3
+              with:
+                  ref: ${{ github.head_ref }}
+            - name: Run Prettier on code and push
+              uses: creyD/prettier_action@v4.2
+              with:
+                  prettier_options: -w ./src/**/*
+                  commit_message: 'chore(formatting[auto]): run prettier on code'
