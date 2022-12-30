@@ -1,3 +1,2 @@
-- Finish modal and sending to staff and approving
-- finish punishment database
-- finish up mod commands
+-   finish punishment database
+-   finish up mod commands
