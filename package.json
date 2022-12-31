@@ -1,6 +1,6 @@
 {
     "name": "the-english-hub",
-    "version": "1.6.0",
+    "version": "1.7.0",
     "description": "A custom moderaton bot for the server The English Hub",
     "main": "src/index.js",
     "scripts": {
@@ -13,7 +13,7 @@
         "url": "git+https://github.com/The-English-Hub/The-English-Hub.git"
     },
     "keywords": [],
-    "author": "",
+    "author": "Grav <grav4029@gmail.com>",
     "license": "ISC",
     "bugs": {
         "url": "https://github.com/The-English-Hub/The-English-Hub/issues"
