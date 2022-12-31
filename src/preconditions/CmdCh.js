@@ -27,8 +27,15 @@ class CommandChPrecondition extends Precondition {
             ).isOk()
         )
             return this.ok();
-		
-		else return cmdChannels.includes(message.channel.id) ? this.ok() : this.error({ message: 'This command can only be used in the following channels: <#'+cmdChannels.join('>, <#')+'>.' });
+        else
+            return cmdChannels.includes(message.channel.id)
+                ? this.ok()
+                : this.error({
+                      message:
+                          'This command can only be used in the following channels: <#' +
+                          cmdChannels.join('>, <#') +
+                          '>.',
+                  });
     }
 }
 module.exports = { CommandChPrecondition };
