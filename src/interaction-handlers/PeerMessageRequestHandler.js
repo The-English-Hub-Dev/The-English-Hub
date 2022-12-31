@@ -52,7 +52,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
         if (interaction.customId !== 'peer-request') return this.none();
 
         const peerMessageCooldown = await this.container.redis.hget(
-            'peer-msg-cd',
+            'peer-msg-inqueue',
             interaction.member.user.id
         );
         if (
@@ -60,9 +60,7 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
             Date.now() - parseInt(peerMessageCooldown) < 600000
         ) {
             return interaction.reply({
-                content: `You recently sent a peer message and are on a cooldown. Try again in **${new DurationFormatter().format(
-                    600000 - (Date.now() - parseInt(peerMessageCooldown))
-                )}**.`,
+                content: `You currently have a peer message waiting to be approved or denied. Try again when it has been sent.`,
                 ephemeral: true,
             });
         }

@@ -92,9 +92,9 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
             });
 
         await this.container.redis.hset(
-            'peer-msg-cd',
+            'peer-msg-inqueue',
             interaction.member.user.id,
-            Date.now().toString()
+            'yes'
         );
 
         return interaction.reply({
