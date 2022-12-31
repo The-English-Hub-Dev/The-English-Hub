@@ -51,14 +51,11 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
     async parse(interaction) {
         if (interaction.customId !== 'peer-request') return this.none();
 
-        const peerMessageCooldown = await this.container.redis.hget(
+        const peerMessageInqueue = await this.container.redis.hget(
             'peer-msg-inqueue',
             interaction.member.user.id
         );
-        if (
-            [peerMessageCooldown] &&
-            Date.now() - parseInt(peerMessageCooldown) < 600000
-        ) {
+        if (peerMessageInqueue) {
             return interaction.reply({
                 content: `You currently have a peer message waiting to be approved or denied. Try again when it has been sent.`,
                 ephemeral: true,
