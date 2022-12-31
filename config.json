@@ -41,5 +41,6 @@
     ],
     "premiumMemberRoleID": "984522935123447860",
     "moveMeRoles": ["852980655776595978"],
-    "smallRoomCreateVC": "852869178268712980"
+    "smallRoomCreateVC": "852869178268712980",
+    "cmdChannels": [""]
 }
