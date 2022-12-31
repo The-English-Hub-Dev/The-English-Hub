@@ -651,7 +651,11 @@ class TopicCommand extends Command {
             embeds: [
                 new MessageEmbed()
                     .setDescription(topic)
-                    .setFooter({ text: 'Source: yagpdb bot topic command' })
+                    .setTitle('New Topic')
+                    .setFooter({
+                        text: `${message.guild.name} * Source: yagpdb bot topic command + other sources`,
+                        iconURL: message.guild.iconURL(),
+                    })
                     .setColor('RANDOM'),
             ],
             allowedMentions: { users: [], roles: [], parse: [] },
