@@ -30,39 +30,47 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
         const recievingMember = await interaction.guild.members.fetch(
             fieldOne.slice(fieldOne.indexOf('(') + 1, fieldOne.length - 1)
         );
+        const msg = interaction.message.embeds[0].description.slice(8);
+
+        // allow the user to send another peer message
+        await this.container.redis.hdel('peer-msg-inqueue', sendingMember.id);
 
         if (!isApprove) {
-            interaction.update({
+            await interaction.update({
                 content: 'This message was denied.',
                 components: [],
                 embeds: [interaction.message.embeds[0].setColor('RED')],
             });
 
-            const msg = interaction.message.embeds[0].description.slice(8);
-
-            return sendingMember.send({
-                embeds: [
-                    new MessageEmbed()
-                        .setDescription(
-                            `Your message was **not approved** by the staff to be sent to the requested member.`
-                        )
-                        .setColor('RED')
-                        .addField('Your message', msg, true)
-                        .addField(
-                            'Recieving Member',
-                            `${recievingMember} (${recievingMember.user.tag})`,
-                            true
-                        ),
-                ],
-            });
+            await sendingMember
+                .send({
+                    embeds: [
+                        new MessageEmbed()
+                            .setDescription(
+                                `Your message was **not approved** by the staff to be sent to the requested member.`
+                            )
+                            .setColor('RED')
+                            .addField('Your message', msg, true)
+                            .addField(
+                                'Recieving Member',
+                                `${recievingMember} (${recievingMember.user.tag})`,
+                                true
+                            ),
+                    ],
+                })
+                .catch(
+                    async () =>
+                        await interaction.update({
+                            content:
+                                'This message was denied. However, the dms of the person who sent the message were closed so I could not deliver the message to them.',
+                        })
+                );
         } else {
             interaction.update({
                 content: 'This message was approved.',
                 components: [],
                 embeds: [interaction.message.embeds[0].setColor('GREEN')],
             });
-
-            const msg = interaction.message.embeds[0].description.slice(8);
 
             const embed = new MessageEmbed()
                 .setTitle(`New peer message`)
@@ -72,35 +80,60 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                 .setColor('GOLD')
                 .setFooter({ text: `Message from ${interaction.guild}` });
 
-            let success = true;
-            await recievingMember
-                .send({
+            try {
+                await recievingMember.send({
                     content: `You have recieved a message from another member in ${interaction.guild}`,
                     embeds: [embed],
-                })
-                .catch(() => (success = false));
-
-            return sendingMember
-                .send({
-                    embeds: [
-                        new MessageEmbed()
-                            .setDescription(
-                                `Your message was **approved** by a staff member and sent to the requested member. ${
-                                    !success
-                                        ? 'However, the dms of the person you tried to send a message to were closed so I could not deliver your message. You can try to send the message again.'
-                                        : ''
-                                }`
-                            )
-                            .setColor('GREEN')
-                            .addField('Your message', msg, true)
-                            .addField(
-                                'Recieving member',
-                                `${recievingMember} (${recievingMember.user.tag})`,
-                                true
-                            ),
-                    ],
-                })
-                .catch(() => null);
+                });
+                return sendingMember
+                    .send({
+                        embeds: [
+                            new MessageEmbed()
+                                .setDescription(
+                                    `Your message was **approved** by a staff member and sent to the requested member. You can now send another peer message using the system.`
+                                )
+                                .setColor('GREEN')
+                                .addField('Your message', msg, true)
+                                .addField(
+                                    'Recieving member',
+                                    `${recievingMember} (${recievingMember.user.tag})`,
+                                    true
+                                ),
+                        ],
+                    })
+                    .catch(
+                        async () =>
+                            await interaction.update({
+                                content:
+                                    'This message was approved. However, the dms of the person who sent the message were closed so I could not deliver the message to them.',
+                            })
+                    );
+            } catch (error) {
+                // DMs were closed
+                return sendingMember
+                    .send({
+                        embeds: [
+                            new MessageEmbed()
+                                .setDescription(
+                                    `Your message was **approved** by a staff member but was not able to be sent to the requested member. The dms of the member were closed. You may try to send another peer message when the user's dms are open.`
+                                )
+                                .setColor('GREEN')
+                                .addField('Your message', msg, true)
+                                .addField(
+                                    'Recieving member',
+                                    `${recievingMember} (${recievingMember.user.tag})`,
+                                    true
+                                ),
+                        ],
+                    })
+                    .catch(
+                        async () =>
+                            await interaction.update({
+                                content:
+                                    'This message was denied. However, the dms of the person who sent the message were closed so I could not deliver the message to them.',
+                            })
+                    );
+            }
         }
     }
 
