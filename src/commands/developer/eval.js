@@ -68,16 +68,14 @@ class EvalCommand extends Command {
         //     );
         if (typeof output !== 'string')
             output = util.inspect(output, {
-                depth: args.getOption('depth').unwrapOr(0),
+                depth: args.getOption('depth') ?? 0,
                 showHidden: args.getFlags('showh'),
                 showProxy: args.getFlags('showp'),
                 compact: !args.getFlags('notcompact'),
                 sorted: args.getFlags('sorted'),
-                breakLength: args.getOption('breakLength').unwrapOr(80),
-                maxArrayLength: args.getOption('maxarraylength').unwrapOr(100),
-                maxStringLength: args
-                    .getOption('maxstringlength')
-                    .unwrapOr(10000),
+                breakLength: args.getOption('breakLength') ?? 80,
+                maxArrayLength: args.getOption('maxarraylength') ?? 100,
+                maxStringLength: args.getOption('maxstringlength') ?? 10000,
             });
         if (output.length >= 2000) {
             let hastebinOutput = await this.createHastebin(output);
