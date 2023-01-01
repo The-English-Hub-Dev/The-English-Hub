@@ -16,6 +16,7 @@ class MessageCreateListener extends Listener {
      * @param { Message } message
      */
     async run(message) {
+        await message.channel.fetch();
         if (message.channel.type === 'DM') {
             return this.redirectDM(message);
         }
