@@ -15,7 +15,7 @@ class UnbanCommand extends Command {
             name: 'unban',
             preconditions: ['Staff'],
             description: 'Unbans a user from the server.',
-            enabled: false
+            enabled: false,
         });
     }
 

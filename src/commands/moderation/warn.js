@@ -15,7 +15,7 @@ class WarnCommand extends Command {
             name: 'warn',
             preconditions: ['Staff'],
             description: 'Warns a member in the server.',
-            enabled: false
+            enabled: false,
         });
     }
 
