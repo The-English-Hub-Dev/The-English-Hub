@@ -68,7 +68,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                     async () =>
                         await interaction.message.edit({
                             content:
-                                'This message was denied. However, the dms of the person who sent the message were closed so I could not deliver the message to them.',
+                                'This message was denied. **However, the dms of the person who sent the message were closed so I could not deliver the message to them.**',
                         })
                 );
         } else {
@@ -84,7 +84,10 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                     `Message from ${sendingMember} (${sendingMember.id}): ${msg}`
                 )
                 .setColor('GOLD')
-                .setFooter({ text: `Message from ${interaction.guild}` });
+                .setFooter({
+                    text: `Message from ${interaction.guild}`,
+                    iconURL: sendingMember.avatarURL(),
+                });
 
             try {
                 await recievingMember.send({
@@ -109,14 +112,13 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                     })
                     .catch(
                         async () =>
-                            await interaction.update({
-                                content:
-                                    'This message was approved. However, the dms of the person who sent the message were closed so I could not deliver the message to them.',
+                            await interaction.message.edit({
+                                content: `${interaction.message.content} *However, the dms of the person who sent the message were closed so I could not tell them the status of their message.*`,
                             })
                     );
             } catch (error) {
                 // DMs were closed
-                return sendingMember
+                await sendingMember
                     .send({
                         embeds: [
                             new MessageEmbed()
@@ -134,11 +136,13 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                     })
                     .catch(
                         async () =>
-                            await interaction.update({
-                                content:
-                                    'This message was denied. However, the dms of the person who sent the message were closed so I could not deliver the message to them.',
+                            await interaction.message.edit({
+                                content: `${interaction.message.content} **This peer message was not sent because of the recieving member's dms being closed. The sender has not been notified since their dms are closed**.`,
                             })
                     );
+                await interaction.message.edit({
+                    content: `${interaction.message.content} **This peer message was not sent because of the recieving member's dms being closed. The sender has been notified**.`,
+                });
             }
         }
     }
