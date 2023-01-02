@@ -14,6 +14,7 @@ class RemovepunishmentCommand extends Command {
             name: 'removepunishment',
             description: 'Removes a punishment from a user.',
             preconditions: ['Staff'],
+            enabled: false
         });
     }
 

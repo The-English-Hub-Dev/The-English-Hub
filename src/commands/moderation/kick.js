@@ -14,6 +14,7 @@ class KickCommand extends Command {
             name: 'kick',
             preconditions: ['Staff'],
             description: 'Kicks a member from the server.',
+            enabled: false,
         });
     }
 

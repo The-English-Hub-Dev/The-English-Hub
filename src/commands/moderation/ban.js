@@ -15,6 +15,7 @@ class BanCommand extends Command {
             preconditions: ['Staff'],
             options: ['delete-days'],
             description: 'Bans a member from the server.',
+            enabled: false,
         });
     }
 

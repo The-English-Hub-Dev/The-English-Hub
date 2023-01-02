@@ -16,6 +16,7 @@ class MuteCommand extends Command {
             name: 'mute',
             preconditions: ['Staff'],
             description: 'Mutes a member in the server.',
+            enabled: false
         });
     }
 

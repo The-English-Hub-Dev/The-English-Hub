@@ -16,6 +16,7 @@ class UnmuteCommand extends Command {
             name: 'unmute',
             preconditions: ['Staff'],
             description: 'Unmutes a member in the server.',
+            enabled: false
         });
     }
 
