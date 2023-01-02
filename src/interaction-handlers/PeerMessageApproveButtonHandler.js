@@ -22,6 +22,8 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
     async run(interaction) {
         const isApprove = interaction.customId.split('-')[1] == 'approve';
 
+        await interaction.message.fetch();
+
         const fieldZero = interaction.message.embeds[0].fields[0].value;
         const fieldOne = interaction.message.embeds[0].fields[1].value;
         const sendingMember = await interaction.guild.members.fetch(
@@ -31,6 +33,10 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
             fieldOne.slice(fieldOne.indexOf('(') + 1, fieldOne.length - 1)
         );
         const msg = interaction.message.embeds[0].description.slice(8);
+        if (!msg.length)
+            return interaction.channel.send(
+                'I was not able to fetch the message for this interaction, please try again. Contact the developer if this error continues.'
+            );
 
         // allow the user to send another peer message
         await this.container.redis.hdel('peer-msg-inqueue', sendingMember.id);
@@ -60,7 +66,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                 })
                 .catch(
                     async () =>
-                        await interaction.update({
+                        await interaction.message.edit({
                             content:
                                 'This message was denied. However, the dms of the person who sent the message were closed so I could not deliver the message to them.',
                         })
