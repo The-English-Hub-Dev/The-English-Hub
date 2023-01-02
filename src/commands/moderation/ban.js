@@ -1,7 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
 const { Punishment } = require('../../library/db/entities/PunishmentEntity');
-const { PunishmentType } = require('../../library/typings/index');
 
 class BanCommand extends Command {
     /**
@@ -64,14 +63,14 @@ class BanCommand extends Command {
             message.author.id,
             rawMember.unwrap().id,
             reason.unwrap(),
-            PunishmentType.BAN
+            'BAN'
             // TODO duration
         );
 
         await this.container.punishments.sendPunishmentEmbed(
             rawMember.unwrap(),
             message.guild,
-            PunishmentType.BAN
+            'BAN'
         );
 
         const delete_days =
@@ -84,7 +83,7 @@ class BanCommand extends Command {
         const embed = await this.container.punishments.getChatPunishmentEmbed(
             rawMember.unwrap(),
             punishment,
-            PunishmentType.BAN
+            'BAN'
         );
         return message.channel.send({ embeds: [embed] });
     }

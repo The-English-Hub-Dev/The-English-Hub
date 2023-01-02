@@ -27,7 +27,7 @@ const punishmentEntity = new EntitySchema({
             type: 'text',
         },
         duration: {
-            type: 'number',
+            type: 'int',
         },
     },
 });

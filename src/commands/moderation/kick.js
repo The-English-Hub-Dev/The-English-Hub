@@ -1,7 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
 const { Punishment } = require('../../library/db/entities/PunishmentEntity');
-const { PunishmentType } = require('../../library/typings/index');
 
 class KickCommand extends Command {
     /**
@@ -63,14 +62,14 @@ class KickCommand extends Command {
             message.author.id,
             rawMember.unwrap().id,
             reason.unwrap(),
-            PunishmentType.KICK,
+            'KICK',
             null
         );
 
         await this.container.punishments.sendPunishmentEmbed(
             rawMember.unwrap(),
             message.guild,
-            PunishmentType.KICK
+            'KICK'
         );
 
         await member.kick(reason.unwrap());
@@ -78,7 +77,7 @@ class KickCommand extends Command {
         const embed = await this.container.punishments.getChatPunishmentEmbed(
             rawMember.unwrap(),
             punishment,
-            PunishmentType.KICK
+            'KICK'
         );
         return message.channel.send({ embeds: [embed] });
     }

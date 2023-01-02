@@ -79,7 +79,7 @@ class MuteCommand extends Command {
         await this.container.punishments.sendPunishmentEmbed(
             rawMember.unwrap(),
             message.guild,
-            PunishmentType.MUTE
+            'MUTE'
         );
 
         await member.timeout(duration.offset, reason.unwrap());
@@ -87,7 +87,7 @@ class MuteCommand extends Command {
         const embed = await this.container.punishments.getChatPunishmentEmbed(
             rawMember.unwrap(),
             punishment,
-            PunishmentType.MUTE
+            'MUTE'
         );
         return message.channel.send({ embeds: [embed] });
     }

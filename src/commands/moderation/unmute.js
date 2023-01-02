@@ -64,7 +64,7 @@ class UnmuteCommand extends Command {
             message.author.id,
             rawMember.unwrap().id,
             reason.unwrap(),
-            PunishmentType.UNMUTE
+            'UNMUTE'
         );
 
         await this.container.punishments.sendPunishmentEmbed(
@@ -79,7 +79,7 @@ class UnmuteCommand extends Command {
         const embed = await this.container.punishments.getChatPunishmentEmbed(
             rawMember.unwrap(),
             punishment,
-            PunishmentType.UNMUTE
+            'UNMUTE'
         );
         return message.channel.send({ embeds: [embed] });
     }

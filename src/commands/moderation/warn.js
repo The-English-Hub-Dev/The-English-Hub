@@ -2,7 +2,6 @@ const { Command, Args } = require('@sapphire/framework');
 const { Duration } = require('@sapphire/time-utilities');
 const { Message } = require('discord.js');
 const { Punishment } = require('../../library/db/entities/PunishmentEntity');
-const { PunishmentType } = require('../../library/typings/index');
 
 class WarnCommand extends Command {
     /**
@@ -72,20 +71,20 @@ class WarnCommand extends Command {
             message.author.id,
             rawMember.unwrap().id,
             reason.unwrap(),
-            PunishmentType.WARN,
+            'WARN',
             duration.offset
         );
 
         await this.container.punishments.sendPunishmentEmbed(
             rawMember.unwrap(),
             message.guild,
-            PunishmentType.WARN
+            'WARN'
         );
 
         const embed = await this.container.punishments.getChatPunishmentEmbed(
             rawMember.unwrap(),
             punishment,
-            PunishmentType.WARN
+            'WARN'
         );
         return message.channel.send({ embeds: [embed] });
     }
