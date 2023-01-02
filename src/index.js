@@ -32,6 +32,7 @@ const client = new SapphireClient({
         Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
         Intents.FLAGS.GUILD_VOICE_STATES,
     ],
+    partials: ['CHANNEL'],
     sweepers: {
         ...Options.defaultSweeperSettings,
         guildMembers: {
