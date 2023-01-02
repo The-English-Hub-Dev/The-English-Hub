@@ -118,7 +118,10 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                     );
             } catch (error) {
                 // DMs were closed
-                await sendingMember
+                await interaction.message.edit({
+                    content: `${interaction.message.content} **This peer message was not sent because of the recieving member's dms being closed. The sender has been notified**.`,
+                });
+                return sendingMember
                     .send({
                         embeds: [
                             new MessageEmbed()
@@ -140,9 +143,6 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                                 content: `${interaction.message.content} **This peer message was not sent because of the recieving member's dms being closed. The sender has not been notified since their dms are closed**.`,
                             })
                     );
-                await interaction.message.edit({
-                    content: `${interaction.message.content} **This peer message was not sent because of the recieving member's dms being closed. The sender has been notified**.`,
-                });
             }
         }
     }
