@@ -9,8 +9,9 @@ const { Database } = require('./library/db/database');
 const { Tasks } = require('./library/tasks');
 const { Utility } = require('./library/utility');
 
-process.on('uncaughtException', (error) => {
-    if (!container || !container.logger) console.log(error);
+process.on('uncaughtException', async (error) => {
+    if (!container || !container.utility)
+        await container.utility.exception(error, 'Uncaught');
     else container.logger.error(error);
 });
 
