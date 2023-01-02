@@ -140,7 +140,8 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                     .catch(
                         async () =>
                             await interaction.message.edit({
-                                content: `${interaction.message.content} **This peer message was not sent because of the recieving member's dms being closed. The sender has not been notified since their dms are closed**.`,
+                                content:
+                                    "This message was approved. **This peer message was not sent because of the recieving member's dms being closed. The sender has not been notified since their dms are closed**.",
                             })
                     );
             }
