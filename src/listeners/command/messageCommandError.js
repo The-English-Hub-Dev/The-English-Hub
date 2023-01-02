@@ -20,7 +20,7 @@ class MessageCommandErrorListener extends Listener {
      * @param { MessageCommandErrorPayload } payload
      */
     async run(error, payload) {
-        await this.container.utility.exception(error, 'Command')
+        await this.container.utility.exception(error, 'Command');
         return payload.message.reply({
             content: `An error occured: ${error.message}`,
             allowedMentions: { users: [], roles: [], parse: [] },
