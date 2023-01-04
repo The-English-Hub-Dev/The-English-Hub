@@ -1,6 +1,7 @@
 const { Listener, Events } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
 const { Client, MessageEmbed } = require('discord.js');
+let statusNum = 1;
 
 class ReadyListener extends Listener {
     constructor(context, options) {
@@ -39,13 +40,22 @@ class ReadyListener extends Listener {
         }
 
         setInterval(() => {
-            const guild = client.guilds.cache.get('801609515391778826');
-            client.user.setActivity(
-                ` ${guild.memberCount.toLocaleString()} members`,
-                {
-                    type: 'WATCHING',
-                }
-            );
+            if (statusNum == 2) {
+                const guild = client.guilds.cache.get('801609515391778826');
+                client.user.setActivity(
+                    ` ${guild.memberCount.toLocaleString()} members`,
+                    {
+                        type: 'WATCHING',
+                    }
+                );
+                statusNum--;
+            } else {
+                client.user.setActivity(
+                    'DM me to report or to ask a question!',
+                    { type: 'PLAYING' }
+                );
+                statusNum++;
+            }
         }, 20000);
     }
 }
