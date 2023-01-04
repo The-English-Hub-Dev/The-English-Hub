@@ -34,14 +34,29 @@ class MessageCreateListener extends Listener {
 
         if (!redirCh || redirCh.type !== 'GUILD_TEXT') return;
 
+        const attachments =
+            message.attachments.size > 0
+                ? [...message.attachments.values()]
+                : null;
+
         const embed = new MessageEmbed()
             .setTitle(`I recieved a DM from ${message.author.tag}`)
             .setColor('RANDOM')
-            .setDescription(`DM recieved: ${message.content}`)
+            .setDescription(
+                `DM recieved: ${
+                    message.content.length > 0 ? message.content : 'No content'
+                }`
+            )
+            .addFields({
+                name: 'This message contained attachments.',
+                value: `The following attachments were sent with this message:\n ${attachments.map(a => a.url).join('\n')}\n **They are also attached to this message.**`,
+            })
             .setFooter({
                 text: `You can reply to this DM by using the ?dm command, User ID: ${message.author.id}`,
             });
-        return redirCh.send({ embeds: [embed] });
+
+
+        return redirCh.send({ embeds: [embed], attachments: attachments });
     }
 }
 
