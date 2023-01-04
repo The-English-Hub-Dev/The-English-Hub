@@ -43,7 +43,7 @@ class MessageCreateListener extends Listener {
             .setTitle(`I recieved a DM from ${message.author.tag}`)
             .setColor('RANDOM')
             .setDescription(
-                `DM recieved: ${
+                `Content of DM recieved: ${
                     message.content.length > 0 ? message.content : 'No content'
                 }`
             )
@@ -51,13 +51,19 @@ class MessageCreateListener extends Listener {
                 name: 'This message contained attachments.',
                 value: `The following attachments were sent with this message:\n ${attachments
                     .map((a) => a.url)
-                    .join('\n')}\n **They are also attached to this message.**`,
+                    .join('\n')}\n *They are also attached to this message.*`,
             })
             .setFooter({
                 text: `You can reply to this DM by using the ?dm command, User ID: ${message.author.id}`,
             });
 
-        return redirCh.send({ embeds: [embed], attachments: attachments });
+        return redirCh.send({
+            content: attachments.length
+                ? 'DM Recieved with embeds'
+                : 'Plain text DM recieved',
+            embeds: [embed],
+            files: attachments,
+        });
     }
 }
 
