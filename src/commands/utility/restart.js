@@ -18,7 +18,7 @@ class RestartCommand extends Command {
      * @returns
      */
     async messageRun(message) {
-        await message.reply('The bot is restarting...');
+        await message.reply('The bot will now restart...');
         this.container.logger.warn(
             `Restart signal sent by ${message.member.user.tag}`
         );
@@ -29,7 +29,16 @@ class RestartCommand extends Command {
             `${message.channel.id}:${Date.now().toString()}`
         );
 
-        return process.exit();
+        return fetch(
+            'https://control.sparkedhost.us/api/client/servers/ffcf973d/power?signal=restart',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: process.env.SPARKEDHOST_API_KEY,
+                },
+            }
+        );
     }
 }
 
