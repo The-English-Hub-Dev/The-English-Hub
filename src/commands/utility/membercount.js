@@ -43,8 +43,12 @@ class MembercountCommand extends Command {
             guild.members.cache.filter((member) => !member.user.bot).size -
             staff;
 
-        const memberGrowth = guild.members.cache.filter(
+        const memberGrowth24h = guild.members.cache.filter(
             (member) => member.joinedTimestamp > Date.now() - 86400000
+        ).size;
+
+        const memberGrowth7d = guild.members.cache.filter(
+            (member) => member.joinedTimestamp > Date.now() - 604800000
         ).size;
 
         sw.stop();
@@ -56,8 +60,8 @@ class MembercountCommand extends Command {
                 {
                     name: '**Members**',
                     value: `${(
-                        members - memberGrowth
-                    ).toLocaleString()} + *${memberGrowth}*`,
+                        members - memberGrowth24h
+                    ).toLocaleString()} + *${memberGrowth24h}*`,
                     inline: true,
                 },
                 {
@@ -72,10 +76,13 @@ class MembercountCommand extends Command {
                 },
             ])
             .setDescription(
-                `Total Members: ${guild.memberCount.toLocaleString()}. \nTotal Member growth in the last 24 hours(since ${time(
+                `Total Members: ${guild.memberCount.toLocaleString()}. \nTotal member growth since ${time(
                     new Date(Date.now() - 86400000),
                     TimestampStyles.ShortDateTime
-                )}): ${memberGrowth.toLocaleString()}`
+                )}): ${memberGrowth24h.toLocaleString()}\nTotal member growth since ${time(
+                    new Date(Date.now() - 604800000),
+                    TimestampStyles.ShortDateTime
+                )}): ${memberGrowth7d.toLocaleString()}`
             )
             .setFooter({
                 text: `Requested by ${message.author.tag}`,
