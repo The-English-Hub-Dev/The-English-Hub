@@ -29,7 +29,7 @@ class BotInfoCommand extends Command {
 
         if (!this.container.client.application.owner)
             await this.container.client.application.fetch();
-        const dev = this.container.client.application.owner;
+        const dev = this.container.client.application.owner.members.first();
 
         const info = new MessageEmbed()
             .setTitle('Bot Information')
