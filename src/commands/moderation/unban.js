@@ -52,7 +52,7 @@ class UnbanCommand extends Command {
             message.author.id,
             rawUser.unwrap().id,
             reason.unwrap(),
-            PunishmentType.UNBAN,
+            'UNBAN',
             null
         );
 
@@ -70,7 +70,7 @@ class UnbanCommand extends Command {
         const embed = await this.container.punishments.getChatPunishmentEmbed(
             rawMember.unwrap(),
             punishment,
-            PunishmentType.BAN
+            'UNBAN'
         );
         return message.channel.send({ embeds: [embed] });
     }

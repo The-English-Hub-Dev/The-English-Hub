@@ -72,7 +72,7 @@ class MuteCommand extends Command {
             message.author.id,
             rawMember.unwrap().id,
             reason.unwrap(),
-            PunishmentType.MUTE,
+            'MUTE',
             duration.offset
         );
 
