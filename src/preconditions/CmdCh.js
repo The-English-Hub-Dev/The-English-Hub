@@ -1,6 +1,6 @@
 const { Precondition } = require('@sapphire/framework');
 const { Message, Permissions } = require('discord.js');
-const { cmdChannels } = require('../config.json');
+const { cmdChannels } = require('../../config.json');
 
 class CommandChPrecondition extends Precondition {
     /**
