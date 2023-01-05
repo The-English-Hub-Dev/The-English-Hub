@@ -1,6 +1,6 @@
 const { Precondition } = require('@sapphire/framework');
 const { Message } = require('discord.js');
-const { testingServerID, developerRoles } = require('../../config.json');
+const { testingServerID } = require('../../config.json');
 
 class DeveloperPrecondition extends Precondition {
     /**
@@ -10,9 +10,11 @@ class DeveloperPrecondition extends Precondition {
      */
     async messageRun(message) {
         if (message.guild.id === testingServerID) return this.ok();
-        if (!this.container.client.application.owner)
+        if (!this.container.client.application.owner.members)
             await this.container.client.application.fetch();
-        return message.author.id === this.container.client.application.owner.id
+        return this.container.client.application.owner.members.has(
+            message.author.id
+        )
             ? this.ok()
             : this.error('User is not a developer');
     }
