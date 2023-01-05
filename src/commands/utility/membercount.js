@@ -27,6 +27,8 @@ class MembercountCommand extends Command {
         );
         const sw = new Stopwatch().start();
 
+        await message.guild.members.fetch();
+
         const bots = guild.members.cache.filter(
             (member) => member.user.bot
         ).size;
@@ -47,9 +49,21 @@ class MembercountCommand extends Command {
             .setTitle(`${guild.name} Membercount Details`)
             .setColor('RANDOM')
             .addFields([
-                { name: '**Members**', value: members, inline: true },
-                { name: '**Bots**', value: bots, inline: true },
-                { name: '**Staff**', value: staff, inline: true },
+                {
+                    name: '**Members**',
+                    value: members.toLocaleString(),
+                    inline: true,
+                },
+                {
+                    name: '**Bots**',
+                    value: bots.toLocaleString(),
+                    inline: true,
+                },
+                {
+                    name: '**Staff**',
+                    value: staff.toLocaleString(),
+                    inline: true,
+                },
             ])
             .setDescription(
                 `Total Members: ${guild.memberCount.toLocaleString()}. Total Member growth in the last 24 hours(since ${time(
