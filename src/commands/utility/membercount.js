@@ -57,7 +57,7 @@ class MembercountCommand extends Command {
                     name: '**Members**',
                     value: `${(
                         members - memberGrowth
-                    ).toLocaleString()} + *${memberGrowth}*}`,
+                    ).toLocaleString()} + *${memberGrowth}*`,
                     inline: true,
                 },
                 {
