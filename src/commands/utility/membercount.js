@@ -43,15 +43,21 @@ class MembercountCommand extends Command {
             guild.members.cache.filter((member) => !member.user.bot).size -
             staff;
 
+        const memberGrowth = guild.members.cache.filter(
+            (member) => member.joinedTimestamp > Date.now() - 86400000
+        ).size;
+
         sw.stop();
 
         const embed = new MessageEmbed()
-            .setTitle(`${guild.name} Membercount Details`)
-            .setColor('RANDOM')
+            .setTitle(`${guild.name} Member Details`)
+            .setColor('LUMINOUS_VIVID_PINK')
             .addFields([
                 {
                     name: '**Members**',
-                    value: members.toLocaleString(),
+                    value: `${(
+                        members - memberGrowth
+                    ).toLocaleString()} + *${memberGrowth}*}`,
                     inline: true,
                 },
                 {
@@ -66,15 +72,10 @@ class MembercountCommand extends Command {
                 },
             ])
             .setDescription(
-                `Total Members: ${guild.memberCount.toLocaleString()}. Total Member growth in the last 24 hours(since ${time(
-                    Date.now() - 86400000,
-                    TimestampStyles.LongDateTime
-                )}): ${guild.members.cache
-                    .filter(
-                        (member) =>
-                            member.joinedTimestamp > Date.now() - 86400000
-                    )
-                    .size.toLocaleString()}`
+                `Total Members: ${guild.memberCount.toLocaleString()}. \nTotal Member growth in the last 24 hours(since ${time(
+                    new Date(Date.now() - 86400000),
+                    TimestampStyles.ShortDateTime
+                )}): ${memberGrowth.toLocaleString()}`
             )
             .setFooter({
                 text: `Requested by ${message.author.tag}`,
