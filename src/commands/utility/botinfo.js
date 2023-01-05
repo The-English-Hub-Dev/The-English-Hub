@@ -11,7 +11,7 @@ class BotInfoCommand extends Command {
             name: 'botinfo',
             description: 'Shows you information about the bot.',
             aliases: ['info', 'stats', 'botdetails'],
-            preconditions: ['Staff'],
+            preconditions: ['CmdCh'],
         });
     }
 
