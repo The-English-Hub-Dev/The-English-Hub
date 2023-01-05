@@ -10,11 +10,12 @@ class CommandChPrecondition extends Precondition {
      */
     async messageRun(message) {
         if (
-            this.container.stores
-                .get('preconditions')
-                .get('Staff')
-                .messageRun(message)
-                .isOk()
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Staff')
+                    .messageRun(message)
+            ).isOk()
         )
             return this.ok();
 
