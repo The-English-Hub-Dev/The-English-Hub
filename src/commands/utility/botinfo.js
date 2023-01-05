@@ -39,7 +39,7 @@ class BotInfoCommand extends Command {
             })
             .setColor('RANDOM')
             .addField('Bot Version', packageInfo.version, true)
-            .addField('Developer', dev.tag)
+            .addField('Developer', dev.user.tag)
             .addField(
                 'Memory Usage(RSS)',
                 `\`${(processMem.rss / 1024 / 1024).toFixed(3)} MiB\``,
