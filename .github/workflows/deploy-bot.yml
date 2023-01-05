@@ -38,7 +38,7 @@ jobs:
                   commit_message: 'chore(formatting[auto]): run prettier on code'
     deploment:
         if: "!contains(github.event.head_commit.message, '[skip deploy]')"
-        name: Deploy new version(send restart signal to server)
+        name: Deploy new version
         runs-on: ubuntu-latest
         needs: [eslint]
         steps:
@@ -51,5 +51,3 @@ jobs:
                   bearerToken: ${{ secrets.SPARKEDHOST_API_KEY }}
                   customheaders: '{"Content-Type": "application/json"}'
                   data: '{"signal": "restart"}'
-            - name: Echo API response
-              run: echo ${{ steps.sendapireq.outputs.response }}
