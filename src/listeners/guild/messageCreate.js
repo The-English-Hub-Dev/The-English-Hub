@@ -47,15 +47,18 @@ class MessageCreateListener extends Listener {
                     message.content.length > 0 ? message.content : 'No content'
                 }`
             )
-            .addFields({
+            .setFooter({
+                text: `You can reply to this DM by using the ?dm command, User ID: ${message.author.id}`,
+            });
+
+        if (attachments.length) {
+            embed.addFields({
                 name: 'This message contained attachments.',
                 value: `The following attachments were sent with this message:\n ${attachments
                     .map((a) => a.url)
                     .join('\n')}\n *They are also attached to this message.*`,
-            })
-            .setFooter({
-                text: `You can reply to this DM by using the ?dm command, User ID: ${message.author.id}`,
             });
+        }
 
         return redirCh.send({
             content: attachments.length
