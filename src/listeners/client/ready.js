@@ -1,6 +1,6 @@
-const { Listener, Events } = require('@sapphire/framework');
+const { Listener, Events, MessageCommand } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Client, MessageEmbed } = require('discord.js');
+const { Client, MessageEmbed, GuildMember } = require('discord.js');
 let statusNum = 1;
 
 class ReadyListener extends Listener {
@@ -38,6 +38,8 @@ class ReadyListener extends Listener {
             });
             await this.container.redis.hdel('tasks', 'restart');
         }
+
+        this.container.logger.commandLogs = [];
 
         setInterval(() => {
             if (statusNum == 2) {

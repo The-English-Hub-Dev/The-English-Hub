@@ -23,6 +23,10 @@ class MessageCommandFinishListener extends Listener {
                 allowedMentions: { repliedUser: false },
             });
         }
+
+        this.container.logger.commandLogs.push(
+            `Command ${command.name} executed by ${message.author.tag}.`
+        );
         this.container.logger.info(
             `Command ${command.name} executed by ${message.author.tag}.`
         );

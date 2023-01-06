@@ -3,6 +3,7 @@ import {
     ILogger,
     SapphireClient,
 } from '@sapphire/framework';
+import { ILogger } from '@sapphire/plugin-logger';
 import { Duration } from '@sapphire/time-utilities';
 import { GuildMember, Guild, Message, User } from 'discord.js';
 import { Database } from '../db/database';
@@ -24,8 +25,8 @@ declare module '@sapphire/pieces' {
 }
 
 declare module '@sapphire/framework' {
-    interface Command {
-        usage: String;
+    interface ILogger {
+        commandLogs: String[];
     }
 }
 
