@@ -51,7 +51,7 @@ class MessageCreateListener extends Listener {
                 text: `You can reply to this DM by using the ?dm command, User ID: ${message.author.id}`,
             });
 
-        if (attachments.length) {
+        if (attachments) {
             embed.addFields({
                 name: 'This message contained attachments.',
                 value: `The following attachments were sent with this message:\n ${attachments
@@ -61,7 +61,7 @@ class MessageCreateListener extends Listener {
         }
 
         return redirCh.send({
-            content: attachments.length
+            content: attachments
                 ? 'DM Recieved with embeds'
                 : 'Plain text DM recieved',
             embeds: [embed],
