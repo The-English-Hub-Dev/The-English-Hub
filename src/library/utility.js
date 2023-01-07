@@ -12,6 +12,7 @@ class Utility {
      */
     async exception(exception, type) {
         const sentryID = Sentry.captureException(exception);
+        container.logger.errorLogs.push(exception);
         container.logger.error(
             `${type} exception with ID ${sentryID} sent to Sentry`
         );

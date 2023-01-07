@@ -27,6 +27,7 @@ declare module '@sapphire/pieces' {
 declare module '@sapphire/framework' {
     interface ILogger {
         commandLogs: String[];
+        errorLogs: String[];
     }
 }
 
