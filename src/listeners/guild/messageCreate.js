@@ -60,6 +60,16 @@ class MessageCreateListener extends Listener {
             });
         }
 
+        message.reply({
+            embeds: [
+                new MessageEmbed()
+                    .setDescription(
+                        'Your DM has been sent to the server staff.'
+                    )
+                    .setColor('GREEN'),
+            ],
+        });
+
         return redirCh.send({
             content: attachments
                 ? 'DM Recieved with attachments'
