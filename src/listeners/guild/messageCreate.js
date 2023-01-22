@@ -60,7 +60,7 @@ class MessageCreateListener extends Listener {
             });
         }
 
-        message.reply({
+        await message.reply({
             embeds: [
                 new MessageEmbed()
                     .setDescription(
