@@ -31,6 +31,12 @@ class MvCommand extends Command {
                 'You must be in a voice channel to use this command.'
             );
 
+        if (vc.unwrap().parent.id !== '852806050684076053') {
+            return this.container.utility.errReply(
+                message,
+                'You can only move yourself to channels in the `Practice English` Category'
+            );
+        }
         if (
             !message.member
                 .permissionsIn(vc.unwrap())
@@ -38,18 +44,18 @@ class MvCommand extends Command {
         )
             return this.container.utility.errReply(
                 message,
-                'You cannot move yourself to that channel.'
+                "You are not allowed to move yourself to that channel as it isn't visible to you."
             );
-        await message.member.voice
-            .setChannel(
+        try {
+            await message.member.voice.setChannel(
                 vc.unwrap(),
                 `${message.member.user.tag} requested to be moved with the moveme command.`
-            )
-            .catch(async () => {
-                return message.reply(
-                    `You are not allowed to move yourself to that channel.`
-                );
-            });
+            );
+        } catch (error) {
+            return message.reply(
+                `I could not move you to that channel. Error: ${error}`
+            );
+        }
 
         return message.reply(
             `You have been successfully moved to ${vc.unwrap()}`
