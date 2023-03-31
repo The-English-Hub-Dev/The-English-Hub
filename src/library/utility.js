@@ -30,8 +30,8 @@ class Utility {
             allowedMentions: { users: [], roles: [], parse: [] },
         });
         return setTimeout(() => {
-            reply.delete();
             message.delete();
+            reply.delete();
         }, 3500);
     }
 }
