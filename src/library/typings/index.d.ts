@@ -10,6 +10,7 @@ import { Database } from '../db/database';
 import { RedisCommander } from 'ioredis';
 import { Punishments } from '../punishments';
 import { Utility } from '../utility';
+import { AutomodManager } from '../managers/automodManager';
 
 declare module '@sapphire/pieces' {
     interface Container {
@@ -21,6 +22,7 @@ declare module '@sapphire/pieces' {
         stores: StoreRegistry;
         logger: ILogger;
         intervals: {};
+        automodManager: AutomodManager;
         applicationCommandRegistries: ApplicationCommandRegistry;
     }
 }

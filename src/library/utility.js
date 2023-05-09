@@ -1,6 +1,7 @@
 const { container } = require('@sapphire/pieces');
 const Sentry = require('@sentry/node');
 const { Message } = require('discord.js');
+const { staffRoles } = require('../../config.json');
 
 class Utility {
     constructor() {}
@@ -33,6 +34,19 @@ class Utility {
             message.delete();
             reply.delete();
         }, 3500);
+    }
+
+    /**
+     *
+     * @param { Message } message
+     */
+    async isStaff(message) {
+        return (
+            await container.stores
+                .get('preconditions')
+                .get('Staff')
+                .messageRun(message)
+        ).isOk();
     }
 }
 

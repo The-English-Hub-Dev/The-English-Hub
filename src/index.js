@@ -8,6 +8,7 @@ const { prefix, clientID } = require('../config.json');
 const { Database } = require('./library/db/database');
 const { Tasks } = require('./library/tasks');
 const { Utility } = require('./library/utility');
+const { AutomodManager } = require('./library/managers/automodManager');
 
 process.on('uncaughtException', async (error) => {
     if (!container || !container.utility)
@@ -20,6 +21,7 @@ const redis = new Redis(process.env.REDIS_URL, {});
 container.redis = redis;
 container.db = new Database();
 container.utility = new Utility();
+container.automodManager = new AutomodManager();
 // container.tasks = new Tasks();
 
 const client = new SapphireClient({

@@ -20,6 +20,8 @@ class MessageCreateListener extends Listener {
         if (message.channel.type === 'DM') {
             return this.redirectDM(message);
         }
+
+        await this.container.automodManager.runAutomodOnMessage(message);
     }
 
     /**
