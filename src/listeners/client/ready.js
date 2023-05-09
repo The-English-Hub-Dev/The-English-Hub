@@ -40,8 +40,9 @@ class ReadyListener extends Listener {
         }
 
         this.container.logger.commandLogs = [];
+        this.container.intervals = {};
 
-        setInterval(() => {
+        const statusInterval = setInterval(() => {
             if (statusNum == 2) {
                 const guild = client.guilds.cache.get('801609515391778826');
                 client.user.setActivity(
@@ -59,6 +60,8 @@ class ReadyListener extends Listener {
                 statusNum++;
             }
         }, 20000);
+
+        this.container.intervals.status = statusInterval;
     }
 }
 

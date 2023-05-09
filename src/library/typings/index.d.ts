@@ -20,6 +20,7 @@ declare module '@sapphire/pieces' {
         punishments: Punishments;
         stores: StoreRegistry;
         logger: ILogger;
+        intervals: {};
         applicationCommandRegistries: ApplicationCommandRegistry;
     }
 }
