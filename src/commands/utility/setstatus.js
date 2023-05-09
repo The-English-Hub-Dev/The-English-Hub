@@ -20,10 +20,10 @@ class SetstatusCommand extends Command {
      */
     async messageRun(message, args) {
         const rawType = await args.pickResult('enum', {
-            enums: ['PLAYING', 'WATCHING', 'LISTENING', 'COMPETING'],
+            enum: ['playing', 'watching', 'listening', 'competing'],
         });
 
-        const type = rawType.unwrapOr('PLAYING');
+        const type = rawType.unwrapOr('playing');
         const status = await args.restResult('string');
 
         if (status.isErr())
@@ -33,7 +33,9 @@ class SetstatusCommand extends Command {
             );
 
         clearInterval(this.container.intervals.status);
-        this.container.client.user.setActivity(status.unwrap(), { type: type });
+        this.container.client.user.setActivity(status.unwrap(), {
+            type: type.toUpperCase(),
+        });
 
         return message.reply(
             `Successfully set the bots status to ${type.toLowerCase()}: ${status.unwrap()}`
