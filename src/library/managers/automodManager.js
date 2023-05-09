@@ -12,7 +12,7 @@ class AutomodManager {
     async runAutomodOnMessage(message) {
         let msgOk = true;
         if (await container.utility.isStaff(message)) return true;
-        while (msgOk) msgOk = await this.discordInviteCheck(message);
+        msgOk = await this.discordInviteCheck(message);
 
         return msgOk;
     }
