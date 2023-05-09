@@ -45,6 +45,7 @@ class ReadyListener extends Listener {
         const statusInterval = setInterval(() => {
             if (statusNum == 2) {
                 const guild = client.guilds.cache.get('801609515391778826');
+                if (!guild) return;
                 client.user.setActivity(
                     ` ${guild.memberCount.toLocaleString()} members`,
                     {
