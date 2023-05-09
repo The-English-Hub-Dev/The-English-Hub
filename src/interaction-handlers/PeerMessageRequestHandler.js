@@ -7,7 +7,7 @@ const {
     ButtonInteraction,
     ModalBuilder,
     TextInputBuilder,
-    MessageActionRow,
+    ActionRowBuilder,
 } = require('discord.js');
 
 class PeerMessageSendButtonHandler extends InteractionHandler {
@@ -36,8 +36,8 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
             .setStyle('PARAGRAPH')
             .setRequired(true);
 
-        const row1 = new MessageActionRow().addComponents(idInput);
-        const row2 = new MessageActionRow().addComponents(msgInput);
+        const row1 = new ActionRowBuilder().addComponents(idInput);
+        const row2 = new ActionRowBuilder().addComponents(msgInput);
 
         peerMsgSendModal.addComponents(row1, row2);
 

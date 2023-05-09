@@ -6,7 +6,7 @@ const {
     ButtonInteraction,
     ModalBuilder,
     TextInputBuilder,
-    MessageActionRow,
+    ActionRowBuilder,
     EmbedBuilder,
 } = require('discord.js');
 

@@ -1,7 +1,7 @@
 const { Command, Args } = require('@sapphire/framework');
 const {
     Message,
-    MessageActionRow,
+    ActionRowBuilder,
     MessageButton,
     EmbedBuilder,
     ChannelType,
