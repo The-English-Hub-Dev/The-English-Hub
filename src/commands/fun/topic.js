@@ -1,6 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message, MessageEmbed } = require('discord.js');
-const {Regex} = require('@sapphire/discord-utilities')
+const { Regex } = require('@sapphire/discord-utilities');
 
 const topics = [
     'What was the last funny video you saw?',
