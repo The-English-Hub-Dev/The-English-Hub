@@ -1,6 +1,6 @@
 const { SapphireClient, container } = require('@sapphire/framework');
 const Sentry = require('@sentry/node');
-const { Intents, Options } = require('discord.js');
+const { GatewayIntentBits, Options, Partials } = require('discord.js');
 const Redis = require('ioredis');
 require('@sapphire/plugin-logger/register');
 require('dotenv').config();
@@ -26,16 +26,16 @@ container.automodManager = new AutomodManager();
 
 const client = new SapphireClient({
     intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_BANS,
-        Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.DIRECT_MESSAGES,
-        Intents.FLAGS.DIRECT_MESSAGE_TYPING,
-        Intents.FLAGS.DIRECT_MESSAGE_REACTIONS,
-        Intents.FLAGS.GUILD_VOICE_STATES,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildModeration,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.DirectMessageTyping,
+        GatewayIntentBits.DirectMessageReactions,
+        GatewayIntentBits.GuildVoiceStates,
     ],
-    partials: ['CHANNEL'],
+    partials: [Partials.Channel],
     sweepers: {
         ...Options.defaultSweeperSettings,
         guildMembers: {

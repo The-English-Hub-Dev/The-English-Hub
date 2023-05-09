@@ -1,7 +1,7 @@
 const { time, TimestampStyles } = require('@discordjs/builders');
 const { Command, Args } = require('@sapphire/framework');
 const { Stopwatch } = require('@sapphire/stopwatch');
-const { Message, Permissions, MessageEmbed } = require('discord.js');
+const { Message, Permissions, EmbedBuilder } = require('discord.js');
 
 class MembercountCommand extends Command {
     constructor(context, options) {
@@ -53,7 +53,7 @@ class MembercountCommand extends Command {
 
         sw.stop();
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(`${guild.name} Member Details`)
             .setColor('LUMINOUS_VIVID_PINK')
             .addFields([

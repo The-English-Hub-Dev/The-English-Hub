@@ -4,7 +4,7 @@ const {
 } = require('@sapphire/framework');
 const {
     ModalSubmitInteraction,
-    MessageEmbed,
+    EmbedBuilder,
     MessageActionRow,
     MessageButton,
 } = require('discord.js');
@@ -53,18 +53,24 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
                 ephemeral: true,
             });
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(
                 `${interaction.user.tag} wants to send ${member.user.tag} a message!`
             )
             .setColor('BLURPLE')
             .setDescription(`Message: ${msg}`)
-            .addField(
-                'Sending member',
-                `${interaction.member} (${interaction.member.id})`,
-                true
-            )
-            .addField('Recieving member', `${member} (${member.id})`, true);
+            .addFields(
+                {
+                    name: 'Sending member',
+                    value: `${interaction.member} (${interaction.member.id})`,
+                    inline: true,
+                },
+                {
+                    name: 'Recieving member',
+                    value: `${member} (${member.id})`,
+                    inline: true,
+                }
+            );
 
         const buttons = new MessageActionRow().addComponents(
             new MessageButton()
@@ -99,7 +105,7 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
 
         return interaction.reply({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setDescription(
                         'Your message was recieved. It will now be reviewed and then sent to the member if it is approved. You will recieve a DM when it is approved or denied.'
                     )

@@ -5,8 +5,8 @@ const {
 const { DurationFormatter } = require('@sapphire/time-utilities');
 const {
     ButtonInteraction,
-    Modal,
-    TextInputComponent,
+    ModalBuilder,
+    TextInputBuilder,
     MessageActionRow,
 } = require('discord.js');
 
@@ -20,17 +20,17 @@ class PeerMessageSendButtonHandler extends InteractionHandler {
      * @param { ButtonInteraction } interaction
      */
     async run(interaction) {
-        const peerMsgSendModal = new Modal()
+        const peerMsgSendModal = new ModalBuilder()
             .setCustomId('peer-submit')
             .setTitle('Send a message to a member!');
 
-        const idInput = new TextInputComponent()
+        const idInput = new TextInputBuilder()
             .setCustomId('id')
             .setLabel('ID of member you want to send a message to')
             .setStyle('SHORT')
             .setRequired(true);
 
-        const msgInput = new TextInputComponent()
+        const msgInput = new TextInputBuilder()
             .setCustomId('msg')
             .setLabel("What's the message you want to send?")
             .setStyle('PARAGRAPH')

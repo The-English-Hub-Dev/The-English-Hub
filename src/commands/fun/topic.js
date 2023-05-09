@@ -1,5 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, MessageEmbed } = require('discord.js');
+const { Message, EmbedBuilder } = require('discord.js');
 const { Regex } = require('@sapphire/discord-utilities');
 
 const topics = [
@@ -650,7 +650,7 @@ class TopicCommand extends Command {
             queryResult ?? topics[Math.floor(Math.random() * topics.length)];
         return message.channel.send({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setDescription(topic)
                     .setTitle('Topic')
 

@@ -1,6 +1,6 @@
 const { Listener, Events, MessageCommand } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Client, MessageEmbed, GuildMember } = require('discord.js');
+const { Client, EmbedBuilder, GuildMember } = require('discord.js');
 let statusNum = 1;
 
 class ReadyListener extends Listener {
@@ -27,7 +27,7 @@ class ReadyListener extends Listener {
             const [channelID, restartTime] = hasRebooted.split(':');
             this.container.client.channels.cache.get(channelID).send({
                 embeds: [
-                    new MessageEmbed()
+                    new EmbedBuilder()
                         .setDescription(
                             `The bot restarted successfully in ${new DurationFormatter().format(
                                 Date.now() - restartTime
