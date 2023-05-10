@@ -1,6 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Message, MessageEmbed } = require('discord.js');
+const { Message, EmbedBuilder } = require('discord.js');
 
 class SetstatusCommand extends Command {
     constructor(context, options) {

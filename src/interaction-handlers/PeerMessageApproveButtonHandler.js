@@ -4,10 +4,11 @@ const {
 } = require('@sapphire/framework');
 const {
     ButtonInteraction,
-    Modal,
-    TextInputComponent,
-    MessageActionRow,
-    MessageEmbed,
+    ModalBuilder,
+    TextInputBuilder,
+    ActionRowBuilder,
+    EmbedBuilder,
+    Colors,
 } = require('discord.js');
 
 class PeerMessageApproveButtonHandler extends InteractionHandler {
@@ -45,22 +46,28 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
             await interaction.update({
                 content: 'This message was denied.',
                 components: [],
-                embeds: [interaction.message.embeds[0].setColor('RED')],
+                embeds: [interaction.message.embeds[0].setColor(Colors.Red)],
             });
 
             await sendingMember
                 .send({
                     embeds: [
-                        new MessageEmbed()
+                        new EmbedBuilder()
                             .setDescription(
                                 `Your message was **not approved** by the staff to be sent to the requested member.`
                             )
-                            .setColor('RED')
-                            .addField('Your message', msg, true)
-                            .addField(
-                                'Recieving Member',
-                                `${recievingMember} (${recievingMember.user.tag})`,
-                                true
+                            .setColor(Colors.Red)
+                            .addFields(
+                                {
+                                    name: 'Your message',
+                                    value: msg,
+                                    inline: true,
+                                },
+                                {
+                                    name: 'Recieving member',
+                                    value: `${recievingMember} (${recievingMember.user.tag})`,
+                                    inline: true,
+                                }
                             ),
                     ],
                 })
@@ -75,15 +82,15 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
             interaction.update({
                 content: 'This message was approved.',
                 components: [],
-                embeds: [interaction.message.embeds[0].setColor('GREEN')],
+                embeds: [interaction.message.embeds[0].setColor(Colors.Green)],
             });
 
-            const embed = new MessageEmbed()
+            const embed = new EmbedBuilder()
                 .setTitle(`New peer message`)
                 .setDescription(
                     `Message from ${sendingMember} (${sendingMember.id}): ${msg}`
                 )
-                .setColor('GOLD')
+                .setColor(Colors.Gold)
                 .setFooter({
                     text: `Message from ${interaction.guild}`,
                     iconURL: sendingMember.avatarURL(),
@@ -97,16 +104,22 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                 return sendingMember
                     .send({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setDescription(
                                     `Your message was **approved** by a staff member and sent to the requested member. You can now send another peer message using the system.`
                                 )
-                                .setColor('GREEN')
-                                .addField('Your message', msg, true)
-                                .addField(
-                                    'Recieving member',
-                                    `${recievingMember} (${recievingMember.user.tag})`,
-                                    true
+                                .setColor(Colors.Green)
+                                .addFields(
+                                    {
+                                        name: 'Your message',
+                                        value: msg,
+                                        inline: true,
+                                    },
+                                    {
+                                        name: 'Recieving member',
+                                        value: `${recievingMember} (${recievingMember.user.tag})`,
+                                        inline: true,
+                                    }
                                 ),
                         ],
                     })
@@ -124,16 +137,22 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                 return sendingMember
                     .send({
                         embeds: [
-                            new MessageEmbed()
+                            new EmbedBuilder()
                                 .setDescription(
                                     `Your message was **approved** by a staff member but was not able to be sent to the requested member. The dms of the member were closed. You may try to send another peer message when the user's dms are open.`
                                 )
-                                .setColor('GREEN')
-                                .addField('Your message', msg, true)
-                                .addField(
-                                    'Recieving member',
-                                    `${recievingMember} (${recievingMember.user.tag})`,
-                                    true
+                                .setColor(Colors.Green)
+                                .addFields(
+                                    {
+                                        name: 'Your message',
+                                        value: msg,
+                                        inline: true,
+                                    },
+                                    {
+                                        name: 'Recieving member',
+                                        value: `${recievingMember} (${recievingMember.user.tag})`,
+                                        inline: true,
+                                    }
                                 ),
                         ],
                     })

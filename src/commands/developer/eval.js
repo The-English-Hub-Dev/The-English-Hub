@@ -1,6 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Stopwatch } = require('@sapphire/stopwatch');
-const { MessageEmbed, Message } = require('discord.js');
+const { EmbedBuilder, Message } = require('discord.js');
 const { codeBlock } = require('@discordjs/builders');
 const util = require('util');
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;

@@ -3,7 +3,7 @@ const {
     GuildMember,
     User,
     Guild,
-    MessageEmbed,
+    EmbedBuilder,
     Message,
 } = require('discord.js');
 const { Punishment } = require('./db/entities/PunishmentEntity');
@@ -17,14 +17,14 @@ class Punishments {
      * @param { PunishmentType } type
      */
     async sendPunishmentEmbed(member, guild, type) {
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setColor(await this.getPunishmentColor(type))
             .setTitle(await this.getTitle(type))
-            .addField(
-                'Time',
-                time(new Date(), TimestampStyles.LongDateTime),
-                true
-            );
+            .addFields({
+                name: 'Time',
+                value: time(new Date(), TimestampStyles.LongDateTime),
+                inline: true,
+            });
 
         return embed;
     }
@@ -36,7 +36,7 @@ class Punishments {
      * @param { PunishmentType } type
      */
     async getChatPunishmentEmbed(member, punishment, type) {
-        return new MessageEmbed().setDescription('not ready'); // TODO
+        return new EmbedBuilder().setDescription('not ready'); // TODO
     }
 
     /**

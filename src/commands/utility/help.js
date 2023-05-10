@@ -1,6 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { isNullOrUndefinedOrEmpty } = require('@sapphire/utilities');
-const { Message, MessageEmbed } = require('discord.js');
+const { Message, EmbedBuilder, APIEmbedField, Colors } = require('discord.js');
 const { prefix } = require('../../../config.json');
 class HelpCommand extends Command {
     constructor(context, options) {
@@ -25,8 +25,8 @@ class HelpCommand extends Command {
         const command = await args.pickResult('string');
 
         if (command.isErr()) {
-            const helpEmbed = new MessageEmbed()
-                .setColor('BLUE')
+            const helpEmbed = new EmbedBuilder()
+                .setColor(Colors.Blue)
                 .setTitle('Help')
                 .setFooter({
                     text: `${
@@ -67,16 +67,18 @@ class HelpCommand extends Command {
                     }
                 }
             });
-
+            const fields = [];
             for (var i = 0; i < categories.length; i++) {
                 if (isNullOrUndefinedOrEmpty(categoryCommands[i])) continue;
-                helpEmbed.addField(
-                    `${categories[i].charAt(0).toUpperCase()}${categories[
+                fields.push({
+                    name: `${categories[i].charAt(0).toUpperCase()}${categories[
                         i
                     ].slice(1)}`,
-                    categoryCommands[i].join(', ')
-                );
+                    value: categoryCommands[i].join(', '),
+                });
             }
+            helpEmbed.addFields(fields);
+
             return message.reply({ embeds: [helpEmbed] });
         }
 
@@ -119,8 +121,8 @@ class HelpCommand extends Command {
             );
         if (!cmd.enabled) commandsData.push(`*This command is disabled*\n`);
         const commandsDataString = commandsData.join(' ');
-        const commandHelpEmbed = new MessageEmbed()
-            .setColor('BLUE')
+        const commandHelpEmbed = new EmbedBuilder()
+            .setColor(Colors.Blue)
             .setTitle(`Information for ${cmd.name}`)
             .setDescription(`${commandsDataString}`);
         return message.reply({ embeds: [commandHelpEmbed] });

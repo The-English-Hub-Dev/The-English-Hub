@@ -1,5 +1,5 @@
 const { Precondition } = require('@sapphire/framework');
-const { Message, Permissions } = require('discord.js');
+const { Message, PermissionFlagsBits } = require('discord.js');
 
 class AdminPrecondition extends Precondition {
     /**
@@ -8,7 +8,7 @@ class AdminPrecondition extends Precondition {
      * @returns
      */
     async messageRun(message) {
-        if (message.member.permissions.has(Permissions.FLAGS.ADMINISTRATOR))
+        if (message.member.permissions.has(PermissionFlagsBits.Administrator))
             return this.ok();
 
         if (

@@ -1,5 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, MessageEmbed } = require('discord.js');
+const { Message, EmbedBuilder, Colors } = require('discord.js');
 
 class DmCommand extends Command {
     constructor(context, options) {
@@ -39,10 +39,10 @@ class DmCommand extends Command {
 
         const member = rawMember.unwrap();
 
-        const dmEmbed = new MessageEmbed()
+        const dmEmbed = new EmbedBuilder()
             .setDescription(`**Message:** ${msg.unwrap()}`)
             .setFooter({ text: `Sent from ${message.guild.name}` })
-            .setColor('BLUE');
+            .setColor(Colors.Blue);
 
         const successful = await member
             .send({ embeds: [dmEmbed] })

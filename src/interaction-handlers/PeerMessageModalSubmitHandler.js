@@ -4,9 +4,10 @@ const {
 } = require('@sapphire/framework');
 const {
     ModalSubmitInteraction,
-    MessageEmbed,
-    MessageActionRow,
-    MessageButton,
+    EmbedBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    Colors,
 } = require('discord.js');
 const { peerMsgReviewChannelID } = require('../../config.json');
 
@@ -53,28 +54,34 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
                 ephemeral: true,
             });
 
-        const embed = new MessageEmbed()
+        const embed = new EmbedBuilder()
             .setTitle(
                 `${interaction.user.tag} wants to send ${member.user.tag} a message!`
             )
-            .setColor('BLURPLE')
+            .setColor(Colors.Blurple)
             .setDescription(`Message: ${msg}`)
-            .addField(
-                'Sending member',
-                `${interaction.member} (${interaction.member.id})`,
-                true
-            )
-            .addField('Recieving member', `${member} (${member.id})`, true);
+            .addFields(
+                {
+                    name: 'Sending member',
+                    value: `${interaction.member} (${interaction.member.id})`,
+                    inline: true,
+                },
+                {
+                    name: 'Recieving member',
+                    value: `${member} (${member.id})`,
+                    inline: true,
+                }
+            );
 
-        const buttons = new MessageActionRow().addComponents(
-            new MessageButton()
+        const buttons = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
                 .setLabel('Approve Peer Message')
                 .setCustomId('peer-approve')
-                .setStyle('SUCCESS'),
-            new MessageButton()
+                .setStyle('Success'),
+            new ButtonBuilder()
                 .setLabel('Deny Peer Message')
                 .setCustomId('peer-deny')
-                .setStyle('DANGER')
+                .setStyle('Danger')
         );
 
         await ch
@@ -99,11 +106,11 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
 
         return interaction.reply({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setDescription(
                         'Your message was recieved. It will now be reviewed and then sent to the member if it is approved. You will recieve a DM when it is approved or denied.'
                     )
-                    .setColor('GREEN'),
+                    .setColor(Colors.Green),
             ],
             ephemeral: true,
         });

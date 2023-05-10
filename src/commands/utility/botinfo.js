@@ -1,6 +1,6 @@
 const { Command } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Message, MessageEmbed } = require('discord.js');
+const { Message, EmbedBuilder } = require('discord.js');
 const packageInfo = require(`${process.cwd()}/package.json`);
 const formatter = new DurationFormatter();
 
@@ -31,35 +31,49 @@ class BotInfoCommand extends Command {
             await this.container.client.application.fetch();
         const dev = this.container.client.application.owner.members.first();
 
-        const info = new MessageEmbed()
+        const info = new EmbedBuilder()
             .setTitle('Bot Information')
             .setFooter({
                 text: `${this.container.client.user.tag}`,
                 iconURL: this.container.client.user.displayAvatarURL(),
             })
-            .setColor('RANDOM')
-            .addField('Bot Version', packageInfo.version, true)
-            .addField('Developer', dev.user.tag)
-            .addField(
-                'Memory Usage(RSS)',
-                `\`${(processMem.rss / 1024 / 1024).toFixed(3)} MiB\``,
-                true
-            )
-            .addField(
-                'Memory Usage(Heap)',
-                `\`${(processMem.heapUsed / 1024 / 1024).toFixed(3)} MiB\``,
-                true
-            )
-            .addField('Redis Memory Usage', `\`${redisMem} MiB\``, true)
-            .addField(
-                'Current Cached Users',
-                `${this.container.client.users.cache.size}`,
-                true
-            )
-            .addField(
-                'Bot Uptime',
-                `${formatter.format(this.container.client.uptime)}`,
-                true
+            .setColor('Random')
+            .addFields(
+                {
+                    name: 'Bot Version',
+                    value: packageInfo.version,
+                    inline: true,
+                },
+                { name: 'Developer', value: dev.user.tag },
+                {
+                    name: 'Memory Usage(RSS)',
+                    value: `\`${(processMem.rss / 1024 / 1024).toFixed(
+                        3
+                    )} MiB\``,
+                    inline: true,
+                },
+                {
+                    name: 'Memory Usage(Heap)',
+                    value: `\`${(processMem.heapUsed / 1024 / 1024).toFixed(
+                        3
+                    )} MiB\``,
+                    inline: true,
+                },
+                {
+                    name: 'Redis Memory Usage',
+                    value: `\`${redisMem} MiB\``,
+                    inline: true,
+                },
+                {
+                    name: 'Current Cached Users',
+                    value: `${this.container.client.users.cache.size}`,
+                    inline: true,
+                },
+                {
+                    name: 'Bot Uptime',
+                    value: `${formatter.format(this.container.client.uptime)}`,
+                    inline: true,
+                }
             );
         return message.reply({ embeds: [info] });
     }

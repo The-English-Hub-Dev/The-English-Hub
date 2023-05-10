@@ -1,5 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, MessageEmbed } = require('discord.js');
+const { Message, EmbedBuilder, Colors } = require('discord.js');
 const { Regex } = require('@sapphire/discord-utilities');
 
 const topics = [
@@ -650,7 +650,7 @@ class TopicCommand extends Command {
             queryResult ?? topics[Math.floor(Math.random() * topics.length)];
         return message.channel.send({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setDescription(topic)
                     .setTitle('Topic')
 
@@ -658,7 +658,7 @@ class TopicCommand extends Command {
                         text: `${message.guild.name} - Source: yagpdb bot topic command + other sources`,
                         iconURL: message.guild.iconURL(),
                     })
-                    .setColor('RANDOM'),
+                    .setColor('Random'),
             ],
             allowedMentions: { users: [], roles: [], parse: [] },
         });

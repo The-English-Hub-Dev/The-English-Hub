@@ -1,6 +1,6 @@
 const { Listener, Events, MessageCommand } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Client, MessageEmbed, GuildMember } = require('discord.js');
+const { Client, EmbedBuilder, GuildMember, Colors } = require('discord.js');
 let statusNum = 1;
 
 class ReadyListener extends Listener {
@@ -27,24 +27,26 @@ class ReadyListener extends Listener {
             const [channelID, restartTime] = hasRebooted.split(':');
             this.container.client.channels.cache.get(channelID).send({
                 embeds: [
-                    new MessageEmbed()
+                    new EmbedBuilder()
                         .setDescription(
                             `The bot restarted successfully in ${new DurationFormatter().format(
                                 Date.now() - restartTime
                             )}`
                         )
-                        .setColor('GREEN'),
+                        .setColor(Colors.Green),
                 ],
             });
             await this.container.redis.hdel('tasks', 'restart');
         }
 
         this.container.logger.commandLogs = [];
+        this.container.logger.errorLogs = [];
         this.container.intervals = {};
 
         const statusInterval = setInterval(() => {
             if (statusNum == 2) {
                 const guild = client.guilds.cache.get('801609515391778826');
+                if (!guild) return;
                 client.user.setActivity(
                     ` ${guild.memberCount.toLocaleString()} members`,
                     {
