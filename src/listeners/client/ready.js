@@ -40,6 +40,7 @@ class ReadyListener extends Listener {
         }
 
         this.container.logger.commandLogs = [];
+        this.container.logger.errorLogs = [];
         this.container.intervals = {};
 
         const statusInterval = setInterval(() => {
