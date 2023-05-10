@@ -5,6 +5,7 @@ const {
     ButtonBuilder,
     EmbedBuilder,
     ChannelType,
+    ButtonStyle,
 } = require('discord.js');
 
 class PeerMsgEmbedCommand extends Command {
@@ -35,7 +36,7 @@ class PeerMsgEmbedCommand extends Command {
             new ButtonBuilder()
                 .setLabel('Send a message!')
                 .setCustomId('peer-request')
-                .setStyle('PRIMARY')
+                .setStyle(ButtonStyle.Primary)
         );
 
         const embed = new EmbedBuilder()

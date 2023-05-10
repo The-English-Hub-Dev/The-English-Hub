@@ -77,11 +77,11 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
             new ButtonBuilder()
                 .setLabel('Approve Peer Message')
                 .setCustomId('peer-approve')
-                .setStyle('SUCCESS'),
+                .setStyle('Success'),
             new ButtonBuilder()
                 .setLabel('Deny Peer Message')
                 .setCustomId('peer-deny')
-                .setStyle('DANGER')
+                .setStyle('Danger')
         );
 
         await ch
