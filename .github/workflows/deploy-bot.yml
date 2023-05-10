@@ -2,6 +2,8 @@ name: Deploy The English Hub to production
 
 on:
     push:
+        branches:
+            - master
     pull_request_review:
     workflow_dispatch:
 
