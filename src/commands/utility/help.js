@@ -1,6 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { isNullOrUndefinedOrEmpty } = require('@sapphire/utilities');
-const { Message, EmbedBuilder, APIEmbedField } = require('discord.js');
+const { Message, EmbedBuilder, APIEmbedField, Colors } = require('discord.js');
 const { prefix } = require('../../../config.json');
 class HelpCommand extends Command {
     constructor(context, options) {
@@ -26,7 +26,7 @@ class HelpCommand extends Command {
 
         if (command.isErr()) {
             const helpEmbed = new EmbedBuilder()
-                .setColor('BLUE')
+                .setColor(Colors.Blue)
                 .setTitle('Help')
                 .setFooter({
                     text: `${
