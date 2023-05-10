@@ -6,7 +6,7 @@ const {
     ModalSubmitInteraction,
     EmbedBuilder,
     ActionRowBuilder,
-    MessageButton,
+    ButtonBuilder,
     Colors,
 } = require('discord.js');
 const { peerMsgReviewChannelID } = require('../../config.json');
@@ -74,11 +74,11 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
             );
 
         const buttons = new ActionRowBuilder().addComponents(
-            new MessageButton()
+            new ButtonBuilder()
                 .setLabel('Approve Peer Message')
                 .setCustomId('peer-approve')
                 .setStyle('SUCCESS'),
-            new MessageButton()
+            new ButtonBuilder()
                 .setLabel('Deny Peer Message')
                 .setCustomId('peer-deny')
                 .setStyle('DANGER')

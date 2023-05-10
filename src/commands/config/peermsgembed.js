@@ -2,7 +2,7 @@ const { Command, Args } = require('@sapphire/framework');
 const {
     Message,
     ActionRowBuilder,
-    MessageButton,
+    ButtonBuilder,
     EmbedBuilder,
     ChannelType,
 } = require('discord.js');
@@ -32,7 +32,7 @@ class PeerMsgEmbedCommand extends Command {
             return message.reply('An error occured.');
 
         const components = new ActionRowBuilder().addComponents(
-            new MessageButton()
+            new ButtonBuilder()
                 .setLabel('Send a message!')
                 .setCustomId('peer-request')
                 .setStyle('PRIMARY')
