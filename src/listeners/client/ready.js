@@ -1,6 +1,6 @@
 const { Listener, Events, MessageCommand } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Client, EmbedBuilder, GuildMember } = require('discord.js');
+const { Client, EmbedBuilder, GuildMember, Colors } = require('discord.js');
 let statusNum = 1;
 
 class ReadyListener extends Listener {
@@ -33,7 +33,7 @@ class ReadyListener extends Listener {
                                 Date.now() - restartTime
                             )}`
                         )
-                        .setColor('GREEN'),
+                        .setColor(Colors.Green),
                 ],
             });
             await this.container.redis.hdel('tasks', 'restart');

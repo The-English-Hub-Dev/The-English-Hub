@@ -658,7 +658,7 @@ class TopicCommand extends Command {
                         text: `${message.guild.name} - Source: yagpdb bot topic command + other sources`,
                         iconURL: message.guild.iconURL(),
                     })
-                    .setColor(Colors.Random),
+                    .setColor('Random'),
             ],
             allowedMentions: { users: [], roles: [], parse: [] },
         });

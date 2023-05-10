@@ -1,5 +1,5 @@
 const { Listener, Events } = require('@sapphire/framework');
-const { Message, EmbedBuilder, ChannelType } = require('discord.js');
+const { Message, EmbedBuilder, ChannelType, Colors } = require('discord.js');
 const { redirectDMChannelID, mainGuildID } = require('../../../config.json');
 
 class MessageCreateListener extends Listener {
@@ -43,7 +43,7 @@ class MessageCreateListener extends Listener {
 
         const embed = new EmbedBuilder()
             .setTitle(`I recieved a DM from ${message.author.tag}`)
-            .setColor('RANDOM')
+            .setColor('Random')
             .setDescription(
                 `Content of DM recieved: ${
                     message.content.length > 0 ? message.content : 'No content'
@@ -68,7 +68,7 @@ class MessageCreateListener extends Listener {
                     .setDescription(
                         'Your DM has been sent to the server staff.'
                     )
-                    .setColor('GREEN'),
+                    .setColor(Colors.Green),
             ],
         });
 

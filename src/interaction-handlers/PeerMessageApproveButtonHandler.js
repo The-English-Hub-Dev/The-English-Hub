@@ -8,6 +8,7 @@ const {
     TextInputBuilder,
     ActionRowBuilder,
     EmbedBuilder,
+    Colors,
 } = require('discord.js');
 
 class PeerMessageApproveButtonHandler extends InteractionHandler {
@@ -45,7 +46,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
             await interaction.update({
                 content: 'This message was denied.',
                 components: [],
-                embeds: [interaction.message.embeds[0].setColor('RED')],
+                embeds: [interaction.message.embeds[0].setColor(Colors.Red)],
             });
 
             await sendingMember
@@ -55,7 +56,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                             .setDescription(
                                 `Your message was **not approved** by the staff to be sent to the requested member.`
                             )
-                            .setColor('RED')
+                            .setColor(Colors.Red)
                             .addFields(
                                 {
                                     name: 'Your message',
@@ -81,7 +82,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
             interaction.update({
                 content: 'This message was approved.',
                 components: [],
-                embeds: [interaction.message.embeds[0].setColor('GREEN')],
+                embeds: [interaction.message.embeds[0].setColor(Colors.Green)],
             });
 
             const embed = new EmbedBuilder()
@@ -89,7 +90,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                 .setDescription(
                     `Message from ${sendingMember} (${sendingMember.id}): ${msg}`
                 )
-                .setColor('GOLD')
+                .setColor(Colors.Gold)
                 .setFooter({
                     text: `Message from ${interaction.guild}`,
                     iconURL: sendingMember.avatarURL(),
@@ -107,7 +108,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                                 .setDescription(
                                     `Your message was **approved** by a staff member and sent to the requested member. You can now send another peer message using the system.`
                                 )
-                                .setColor('GREEN')
+                                .setColor(Colors.Green)
                                 .addFields(
                                     {
                                         name: 'Your message',
@@ -140,7 +141,7 @@ class PeerMessageApproveButtonHandler extends InteractionHandler {
                                 .setDescription(
                                     `Your message was **approved** by a staff member but was not able to be sent to the requested member. The dms of the member were closed. You may try to send another peer message when the user's dms are open.`
                                 )
-                                .setColor('GREEN')
+                                .setColor(Colors.Green)
                                 .addFields(
                                     {
                                         name: 'Your message',

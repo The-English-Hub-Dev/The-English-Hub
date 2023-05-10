@@ -37,7 +37,7 @@ class BotInfoCommand extends Command {
                 text: `${this.container.client.user.tag}`,
                 iconURL: this.container.client.user.displayAvatarURL(),
             })
-            .setColor('RANDOM')
+            .setColor('Random')
             .addFields(
                 {
                     name: 'Bot Version',

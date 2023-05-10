@@ -122,7 +122,7 @@ class HelpCommand extends Command {
         if (!cmd.enabled) commandsData.push(`*This command is disabled*\n`);
         const commandsDataString = commandsData.join(' ');
         const commandHelpEmbed = new EmbedBuilder()
-            .setColor('BLUE')
+            .setColor(Colors.Blue)
             .setTitle(`Information for ${cmd.name}`)
             .setDescription(`${commandsDataString}`);
         return message.reply({ embeds: [commandHelpEmbed] });

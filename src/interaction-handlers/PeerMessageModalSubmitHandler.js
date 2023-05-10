@@ -7,6 +7,7 @@ const {
     EmbedBuilder,
     ActionRowBuilder,
     MessageButton,
+    Colors,
 } = require('discord.js');
 const { peerMsgReviewChannelID } = require('../../config.json');
 
@@ -57,7 +58,7 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
             .setTitle(
                 `${interaction.user.tag} wants to send ${member.user.tag} a message!`
             )
-            .setColor('BLURPLE')
+            .setColor(Colors.Blurple)
             .setDescription(`Message: ${msg}`)
             .addFields(
                 {
@@ -109,7 +110,7 @@ class PeerMessageModalSubmitHandler extends InteractionHandler {
                     .setDescription(
                         'Your message was recieved. It will now be reviewed and then sent to the member if it is approved. You will recieve a DM when it is approved or denied.'
                     )
-                    .setColor('GREEN'),
+                    .setColor(Colors.Green),
             ],
             ephemeral: true,
         });
