@@ -41,7 +41,7 @@ class Utility {
      * @param { Message } message
      */
     async isStaff(message) {
-        await message.member.fetch();
+        if (!message.member) return false;
         return (
             await container.stores
                 .get('preconditions')
