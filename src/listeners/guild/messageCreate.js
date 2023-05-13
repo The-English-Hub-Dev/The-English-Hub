@@ -21,7 +21,7 @@ class MessageCreateListener extends Listener {
             return this.redirectDM(message);
         }
 
-        await this.container.automodManager.runAutomodOnMessage(message);
+        // await this.container.automodManager.runAutomodOnMessage(message);
     }
 
     /**
