@@ -1,5 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, Permissions } = require('discord.js');
+const { Message, PermissionFlagsBits } = require('discord.js');
 
 class MvCommand extends Command {
     constructor(context, options) {
@@ -40,7 +40,7 @@ class MvCommand extends Command {
         if (
             !message.member
                 .permissionsIn(vc.unwrap())
-                .has(Permissions.FLAGS.VIEW_CHANNEL)
+                .has(PermissionFlagsBits.ViewChannel)
         )
             return this.container.utility.errReply(
                 message,
