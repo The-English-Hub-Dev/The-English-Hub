@@ -34,7 +34,7 @@ class MessageCreateListener extends Listener {
             .get(mainGuildID)
             .channels.cache.get(redirectDMChannelID);
 
-        if (!redirCh || redirCh.type !== 'GUILD_TEXT') return;
+        if (!redirCh || redirCh.type !== ChannelType.GuildText) return;
 
         const attachments =
             message.attachments.size > 0
