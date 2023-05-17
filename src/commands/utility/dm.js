@@ -40,8 +40,9 @@ class DmCommand extends Command {
         const member = rawMember.unwrap();
 
         const dmEmbed = new EmbedBuilder()
-            .setDescription(`**Message:** ${msg.unwrap()}`)
-            .setFooter({ text: `Sent from ${message.guild.name}` })
+            .setTitle("You've recieved a new message!")
+            .setDescription(`**Message:** ${msg.unwrap()}\n\n`)
+            .setFooter({ text: `Sent by ${message.guild.name} Staff` })
             .setColor(Colors.Blue);
 
         const successful = await member
@@ -51,6 +52,11 @@ class DmCommand extends Command {
             return message.reply(
                 `Couldn't send the message to that user. They most likely have their DM's closed.`
             );
+        else {
+            member.send(
+                'To reply to this message, just reply to me. Your message will be sent to the staff team.'
+            );
+        }
         return message.reply({
             content: `Successfully sent DM to ${member} (${member.user.tag}).`,
             allowedMentions: {
