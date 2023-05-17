@@ -42,16 +42,19 @@ class MessageCreateListener extends Listener {
                 : null;
 
         const embed = new EmbedBuilder()
-            .setTitle(`I recieved a DM from ${message.author.tag}`)
+            .setTitle(`${message.author.tag} sent a DM!`)
             .setColor('Random')
             .setDescription(
-                `Content of DM recieved: ${
-                    message.content.length > 0 ? message.content : 'No content'
+                `${
+                    message.content.length > 0
+                        ? message.content
+                        : 'No message content'
                 }`
             )
             .setFooter({
-                text: `You can reply to this DM by using the ?dm command, User ID: ${message.author.id}`,
-            });
+                text: `Message Recieved through DM system`,
+            })
+            .setTimestamp(message.createdTimestamp);
 
         if (attachments) {
             embed.addFields({
@@ -66,19 +69,22 @@ class MessageCreateListener extends Listener {
             embeds: [
                 new EmbedBuilder()
                     .setDescription(
-                        'Your DM has been sent to the server staff.'
+                        'Your DM has been sent to the server staff. ✅'
                     )
                     .setColor(Colors.Green),
             ],
         });
 
-        return redirCh.send({
+        await redirCh.send({
             content: attachments
-                ? 'DM Recieved with attachments'
-                : 'Plain text DM recieved',
+                ? 'DM recieved with attachments 🔗'
+                : 'DM recieved',
             embeds: [embed],
             files: attachments,
         });
+        await redirCh.send(
+            `You can reply to this DM by using the ?dm command\nUser Details: ${message.author} (${message.author.id})`
+        );
     }
 }
 
