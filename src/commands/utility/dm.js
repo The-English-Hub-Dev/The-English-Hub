@@ -51,7 +51,14 @@ class DmCommand extends Command {
             return message.reply(
                 `Couldn't send the message to that user. They most likely have their DM's closed.`
             );
-        return message.reply(`Successfully sent DM to ${member.user.tag}.`);
+        return message.reply({
+            content: `Successfully sent DM to ${member} (${member.user.tag}).`,
+            allowedMentions: {
+                users: [message.member.user.id],
+                roles: [],
+                parse: [],
+            },
+        });
     }
 }
 
