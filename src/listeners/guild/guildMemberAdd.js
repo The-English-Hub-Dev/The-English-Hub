@@ -5,6 +5,7 @@ const {
     EmbedBuilder,
     TimestampStyles,
     time,
+    Colors,
 } = require('discord.js');
 const { welcomeChannel } = require('../../../config.json');
 
@@ -50,16 +51,17 @@ class GuildMemberAddListener extends Listener {
 
         const milestoneEmbed = new EmbedBuilder()
             .setTitle(`We've hit a membercount milestone!`)
+            .setColor(Colors.LuminousVividPink)
             .setDescription(
-                `We've hit ${
+                `We've hit **${
                     member.guild.memberCount
-                } members!\nMilestone achieved at ${time(
+                }** members!\nMilestone achieved at ${time(
                     new Date(),
                     TimestampStyles.LongDateTime
                 )}`
             )
             .setFooter({
-                text: `Congratulations!`,
+                text: `Milestone reached!`,
             });
 
         return channel.send({

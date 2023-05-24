@@ -1,7 +1,12 @@
 const { time, TimestampStyles } = require('@discordjs/builders');
 const { Command, Args } = require('@sapphire/framework');
 const { Stopwatch } = require('@sapphire/stopwatch');
-const { Message, Permissions, EmbedBuilder, Colors } = require('discord.js');
+const {
+    Message,
+    EmbedBuilder,
+    Colors,
+    PermissionFlagsBits,
+} = require('discord.js');
 
 class MembercountCommand extends Command {
     constructor(context, options) {
@@ -36,7 +41,7 @@ class MembercountCommand extends Command {
         const staff = guild.members.cache.filter(
             (member) =>
                 !member.user.bot &&
-                member.permissions.has(Permissions.FLAGS.MANAGE_MESSAGES)
+                member.permissions.has(PermissionFlagsBits.ManageMessages)
         ).size;
 
         const members =
