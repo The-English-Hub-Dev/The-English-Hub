@@ -97,7 +97,9 @@ class MessageCreateListener extends Listener {
      * @param { Message } message
      */
     async logDM(message) {
-        const dmLog = message.guild.channels.cache.get(dmLogChannel);
+        const dmLog = this.container.client.guilds.cache
+            .get(mainGuildID)
+            .channels.cache.get(dmLogChannel);
         if (!dmLog || dmLog.type !== ChannelType.GuildText) return;
 
         const dmRecieveLogEmbed = new EmbedBuilder()
