@@ -1,5 +1,12 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, EmbedBuilder, Colors } = require('discord.js');
+const {
+    Message,
+    EmbedBuilder,
+    Colors,
+    GuildMember,
+    ChannelType,
+} = require('discord.js');
+const { dmLogChannel } = require('../../../config.json');
 
 class DmCommand extends Command {
     constructor(context, options) {
@@ -57,6 +64,9 @@ class DmCommand extends Command {
                 'To reply to this message, just reply to me. Your message will be sent to the staff team.'
             );
         }
+
+        await this.logDMSent(message, member, msg.unwrap());
+
         return message.reply({
             content: `Successfully sent DM to ${member} (${member.user.tag}).`,
             allowedMentions: {
@@ -65,6 +75,33 @@ class DmCommand extends Command {
                 parse: [],
             },
         });
+    }
+
+    /**
+     *
+     * @param { Message } message
+     * @param { GuildMember } member
+     * @param { String } dm
+     */
+    async logDMSent(message, member, dm) {
+        const dmLog = message.guild.channels.cache.get(dmLogChannel);
+        if (!dmLog || dmLog.type !== ChannelType.GuildText) return;
+
+        const dmSentEmbed = new EmbedBuilder().setTitle('DM Sent').setFields(
+            {
+                name: 'User sent to',
+                value: `${member} (${member.id})`,
+                inline: true,
+            },
+            {
+                name: 'Sending staff',
+                value: `${message.member} (${message.member.id})`,
+                inline: true,
+            },
+            { name: 'Message Content', value: dm }
+        );
+
+        return dmLog.send({ embeds: [dmSentEmbed] });
     }
 }
 

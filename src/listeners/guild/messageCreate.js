@@ -1,6 +1,10 @@
 const { Listener, Events } = require('@sapphire/framework');
 const { Message, EmbedBuilder, ChannelType, Colors } = require('discord.js');
-const { redirectDMChannelID, mainGuildID } = require('../../../config.json');
+const {
+    redirectDMChannelID,
+    mainGuildID,
+    dmLogChannel,
+} = require('../../../config.json');
 
 class MessageCreateListener extends Listener {
     constructor(context, options) {
@@ -18,7 +22,8 @@ class MessageCreateListener extends Listener {
     async run(message) {
         if (message.channel.partial) await message.channel.fetch();
         if (message.channel.type === ChannelType.DM) {
-            return this.redirectDM(message);
+            await this.redirectDM(message);
+            return this.logDM(message);
         }
 
         // await this.container.automodManager.runAutomodOnMessage(message);
@@ -85,6 +90,35 @@ class MessageCreateListener extends Listener {
         await redirCh.send(
             `You can reply to this DM by using the ?dm command\nUser Details: ${message.author} (${message.author.id})`
         );
+    }
+
+    /**
+     *
+     * @param { Message } message
+     */
+    async logDM(message) {
+        const dmLog = message.guild.channels.cache.get(dmLogChannel);
+        if (!dmLog || dmLog.type !== ChannelType.GuildText) return;
+
+        const dmRecieveLogEmbed = new EmbedBuilder()
+            .setTitle('DM Recieved')
+            .setFields(
+                {
+                    name: 'Message Author',
+                    value: `${message.author} (${message.author.id})`,
+                },
+                {
+                    name: 'Message Content',
+                    value: message.content,
+                }
+            )
+            .setFooter({
+                text: 'Message recieved at',
+                iconURL: message.author.avatarURL(),
+            })
+            .setTimestamp(message.createdTimestamp);
+
+        return dmLog.send({ embeds: [dmRecieveLogEmbed] });
     }
 }
 
