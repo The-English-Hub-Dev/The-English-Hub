@@ -21,7 +21,7 @@
     "homepage": "https://github.com/The-English-Hub/The-English-Hub#readme",
     "dependencies": {
         "@sapphire/discord-utilities": "^3.0.3",
-        "@sapphire/discord.js-utilities": "^6.1.0",
+        "@sapphire/discord.js-utilities": "^7.0.0",
         "@sapphire/framework": "^4.4.3",
         "@sapphire/plugin-logger": "^3.0.4",
         "@sapphire/snowflake": "^3.4.2",
