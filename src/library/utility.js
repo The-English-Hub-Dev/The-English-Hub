@@ -1,6 +1,6 @@
 const { container } = require('@sapphire/pieces');
 const Sentry = require('@sentry/node');
-const { Message } = require('discord.js');
+const { Message, EmbedBuilder, Colors } = require('discord.js');
 const { staffRoles } = require('../../config.json');
 
 class Utility {
@@ -26,14 +26,18 @@ class Utility {
      * @param { String } error
      */
     async errReply(message, error) {
+        const errEmbed = new EmbedBuilder()
+            .setDescription(error)
+            .setColor(Colors.Red);
+
         const reply = await message.reply({
-            content: error,
+            embeds: [errEmbed],
             allowedMentions: { users: [], roles: [], parse: [] },
         });
+
         return setTimeout(() => {
-            message.delete();
-            reply.delete();
-        }, 3500);
+            Promise.allSettled(message.delete(), reply.delete());
+        }, 5000);
     }
 
     /**

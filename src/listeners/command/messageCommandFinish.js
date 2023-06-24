@@ -16,14 +16,6 @@ class MessageCommandFinishListener extends Listener {
      * @param { MessageCommand } command
      */
     async run(message, command) {
-        if (command.category.toLowerCase() === 'moderation') {
-            message.reply({
-                content:
-                    'Moderation commands are not fully implemented yet. Use with caution.',
-                allowedMentions: { repliedUser: false },
-            });
-        }
-
         this.container.logger.commandLogs.push(
             `Command ${command.name} executed by ${message.author.tag}.`
         );

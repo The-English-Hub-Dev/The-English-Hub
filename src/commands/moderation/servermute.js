@@ -36,12 +36,18 @@ class ServerUnmuteCommand extends Command {
 
         const memberToUnmute = member.unwrap();
 
-        if (memberToUnmute.voice.mute) {
+        if (memberToUnmute.voice.serverMute) {
             return this.container.utility.errReply(
                 message,
                 'This member is already muted.'
             );
         }
+
+        if (!memberToUnmute.voice.channel)
+            return this.container.utility.errReply(
+                message,
+                'This member is not in a voice channel. You can only server mute members in voice channels.'
+            );
 
         await memberToUnmute.voice.setMute(true, reason.unwrap());
 
@@ -49,7 +55,7 @@ class ServerUnmuteCommand extends Command {
             embeds: [
                 new EmbedBuilder()
                     .setDescription(
-                        `Successfully server muted ${
+                        `Successfully **server muted** ${
                             memberToUnmute.user.tag
                         } for ${reason.unwrap()}`
                     )
