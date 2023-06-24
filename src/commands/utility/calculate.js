@@ -2,7 +2,7 @@ const { Command, Args } = require('@sapphire/framework');
 const { EmbedBuilder, Message } = require('discord.js');
 const { evaluate } = require('mathjs');
 
-class PingCommand extends Command {
+class CalculateCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
@@ -27,7 +27,7 @@ class PingCommand extends Command {
                 'Provide an expression to evaluate.'
             );
 
-        const result = evaluate(expr.value);
+        const result = evaluate(expr.unwrap());
 
         const contentEmbed = new EmbedBuilder()
             .setColor('Random')
@@ -47,4 +47,4 @@ class PingCommand extends Command {
     }
 }
 
-module.exports = { PingCommand };
+module.exports = { CalculateCommand };
