@@ -36,7 +36,7 @@ class Utility {
         });
 
         return setTimeout(() => {
-            Promise.allSettled(message.delete(), reply.delete());
+            message.delete().then(reply.delete());
         }, 5000);
     }
 
