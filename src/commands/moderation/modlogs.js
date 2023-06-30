@@ -1,6 +1,12 @@
-const { time, TimestampStyles, blockQuote } = require('@discordjs/builders');
 const { Command, Args } = require('@sapphire/framework');
-const { Message, EmbedBuilder, Colors } = require('discord.js');
+const {
+    Message,
+    EmbedBuilder,
+    Colors,
+    time,
+    TimestampStyles,
+    blockQuote,
+} = require('discord.js');
 const { staffRoles } = require('../../../config.json');
 
 class ModlogsCommand extends Command {
@@ -47,7 +53,7 @@ class ModlogsCommand extends Command {
                     `${punishments.length} punishments found for ${user}.`
                 )
                 .setAuthor({ name: user.tag, iconURL: user.avatarURL() })
-                .setColor(Colors.Red);
+                .setColor(Colors.LuminousVividPink);
 
             const warnsEmbedFields = [];
             for (var i = 0; i < punishments.length; ++i) {
@@ -56,16 +62,21 @@ class ModlogsCommand extends Command {
                     punishment.moderator_id
                 );
                 warnsEmbedFields.push({
-                    name: punishment.punishment_id,
+                    name: `Punishment ID: ${punishment.punishment_id} | Moderator: ${moderator.tag}`,
                     value: blockQuote(
                         `**Type:** ${punishment.type}\n**Reason:** ${
                             punishment.reason
-                        }\n**Moderator:** ${moderator.tag}\n**Date:** ${time(
+                        }\n**Date:** ${time(
                             punishment.timestamp,
                             TimestampStyles.LongDateTime
-                        )}\n**Expiration:** <t:${Math.round(
-                            punishment.expiration / 1000
-                        )}:F>`
+                        )}\n**Expiration:** ${
+                            punishment.expiration
+                                ? time(
+                                      punishment.expiration,
+                                      TimestampStyles.LongDateTime
+                                  )
+                                : 'Never'
+                        }`
                     ),
                 });
             }
@@ -101,9 +112,14 @@ class ModlogsCommand extends Command {
                         }\n**Date:** ${time(
                             punishment.timestamp,
                             TimestampStyles.LongDateTime
-                        )}\n**Expiration:** <t:${Math.round(
-                            punishment.expiration / 1000
-                        )}:F>`
+                        )}\n**Expiration:** ${
+                            punishment.expiration
+                                ? time(
+                                      punishment.expiration,
+                                      TimestampStyles.LongDateTime
+                                  )
+                                : 'Never'
+                        }`
                     ),
                 });
             }
