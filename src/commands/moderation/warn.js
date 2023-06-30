@@ -1,6 +1,6 @@
 const { time, TimestampStyles } = require('@discordjs/builders');
 const { Command, Args } = require('@sapphire/framework');
-const { Message, EmbedBuilder } = require('discord.js');
+const { Message, EmbedBuilder, GuildMember } = require('discord.js');
 const { logChannel } = require('../../../config.json');
 const Punishment =
     require('../../library/db/entities/PunishmentEntity').Punishment;
@@ -69,6 +69,13 @@ class WarnCommand extends Command {
         await this.logWarn(message, member, reason, punishment);
     }
 
+    /**
+     *
+     * @param { Message } message
+     * @param { GuildMember} member
+     * @param { String} reason
+     * @param { String } punishment
+     */
     async sendMemberDM(message, member, reason, punishment) {
         const dmEmbed = new EmbedBuilder()
             .setColor('#73af96')
@@ -90,6 +97,14 @@ class WarnCommand extends Command {
         await member.send({ embeds: [dmEmbed] }).catch();
     }
 
+    /**
+     *
+     * @param { Message } message
+     * @param { GuildMember } member
+     * @param { String } reason
+     * @param { String } punishment
+     * @returns
+     */
     async logWarn(message, member, reason, punishment) {
         const logEmbed = new EmbedBuilder()
             .setColor('#73af96')
@@ -120,7 +135,7 @@ class WarnCommand extends Command {
             .setThumbnail(this.container.client.user.avatarURL());
 
         const logCh = message.guild.channels.cache.get(logChannel);
-        return logCh.send({ embeds: [logEmbed] });
+        return logCh.send({ embeds: [logEmbed] }).catch();
     }
 }
 
