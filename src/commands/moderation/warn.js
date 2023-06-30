@@ -1,6 +1,6 @@
 const { time, TimestampStyles } = require('@discordjs/builders');
 const { Command, Args } = require('@sapphire/framework');
-const { Message, MessageEmbed } = require('discord.js');
+const { Message, EmbedBuilder } = require('discord.js');
 const { logChannel } = require('../../../config.json');
 const Punishment =
     require('../../library/db/entities/PunishmentEntity').Punishment;
@@ -54,7 +54,7 @@ class WarnCommand extends Command {
         );
 
         if (!args.getFlags('noshow', 'noembed', 'hide')) {
-            const confirmEmbed = new MessageEmbed()
+            const confirmEmbed = new EmbedBuilder()
                 .setColor('#73af96')
                 .setDescription(
                     `${member.user} has been warned with ID \`${punishment.punishment_id}\`.`
@@ -65,7 +65,7 @@ class WarnCommand extends Command {
             });
         }
 
-        const dmEmbed = new MessageEmbed()
+        const dmEmbed = new EmbedBuilder()
             .setColor('#73af96')
             .setTitle(`You were warned in ${message.guild.name}`)
             .setAuthor({
@@ -86,7 +86,7 @@ class WarnCommand extends Command {
     }
 
     async logWarn(message, member, reason, punishment) {
-        const logEmbed = new MessageEmbed()
+        const logEmbed = new EmbedBuilder()
             .setColor('#73af96')
             .setTitle('Warn')
             .setAuthor({
