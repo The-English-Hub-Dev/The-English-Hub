@@ -75,7 +75,7 @@ class WarnCommand extends Command {
      * @param { Message } message
      * @param { GuildMember} member
      * @param { String} reason
-     * @param { String } punishment
+     * @param { Punishment } punishment
      */
     async sendMemberDM(message, member, reason, punishment) {
         const dmEmbed = new EmbedBuilder()
@@ -103,7 +103,7 @@ class WarnCommand extends Command {
      * @param { Message } message
      * @param { GuildMember } member
      * @param { String } reason
-     * @param { String } punishment
+     * @param { Punishment } punishment
      * @returns
      */
     async logWarn(message, member, reason, punishment) {
