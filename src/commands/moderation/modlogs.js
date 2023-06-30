@@ -25,7 +25,7 @@ class ModlogsCommand extends Command {
                     .get('preconditions')
                     .get('Staff')
                     .messageRun(message)
-            ).success
+            ).isOk()
         ) {
             const user = (await args.pickResult('user')).unwrapOr(
                 message.author
