@@ -56,7 +56,7 @@ class WarnCommand extends Command {
             const confirmEmbed = new EmbedBuilder()
                 .setColor('#73af96')
                 .setDescription(
-                    `${member.user} has been warned with ID \`${punishment.punishment_id}\`.`
+                    `${member.user} was warned with ID \`${punishment.punishment_id}\`.`
                 );
 
             await message.channel.send({
@@ -64,6 +64,12 @@ class WarnCommand extends Command {
             });
         }
 
+        await this.sendMemberDM(message, member, reason, punishment);
+
+        await this.logWarn(message, member, reason, punishment);
+    }
+
+    async sendMemberDM(message, member, reason, punishment) {
         const dmEmbed = new EmbedBuilder()
             .setColor('#73af96')
             .setTitle(`You were warned in ${message.guild.name}`)
@@ -71,8 +77,10 @@ class WarnCommand extends Command {
                 name: message.guild.name,
                 iconURL: message.guild.iconURL(),
             })
-            .addField('Reason', reason)
-            .addField('Punishment ID', punishment.punishment_id)
+            .addFields(
+                { name: 'Reason', value: reason },
+                { name: 'Punishment ID', value: punishment.punishment_id }
+            )
             .setFooter({
                 text: 'You may appeal this warn by opening a ticket in the Report Help channel',
                 iconURL: member.user.avatarURL(),
@@ -80,8 +88,6 @@ class WarnCommand extends Command {
             .setTimestamp(Date.now());
 
         await member.send({ embeds: [dmEmbed] }).catch();
-
-        await this.logWarn(message, member, reason, punishment);
     }
 
     async logWarn(message, member, reason, punishment) {
