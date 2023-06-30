@@ -74,10 +74,9 @@ class ModlogsCommand extends Command {
             return message.reply({ embeds: [warnsEmbed] });
         } else {
             const user = message.author;
-            const punishments =
-                await this.container.database.punishments.findBy({
-                    user_id: user.id,
-                });
+            const punishments = await this.container.db.punishments.findBy({
+                user_id: user.id,
+            });
 
             if (!punishments.length) {
                 return message.reply('You have no punishments.');

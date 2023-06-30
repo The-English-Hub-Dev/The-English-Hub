@@ -10,8 +10,7 @@ class WarnCommand extends Command {
         super(context, {
             ...options,
             name: 'warn',
-            aliases: ['w', 'strike'],
-            description: 'Warns a user for breaking the rules.',
+            description: 'Warns/Strikes a user for breaking the rules.',
             preconditions: ['StaffMember'],
             flags: ['noshow', 'noembed', 'hide'],
         });
