@@ -28,6 +28,7 @@ const punishmentEntity = new EntitySchema({
         },
         expiration: {
             type: 'int',
+            nullable: true,
         },
     },
 });
