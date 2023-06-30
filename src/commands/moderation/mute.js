@@ -1,7 +1,7 @@
 const { Command, Args } = require('@sapphire/framework');
 const {
     Message,
-    MessageEmbed,
+    EmbedBuilder,
     GuildMember,
     time,
     TimestampStyles,
@@ -105,7 +105,7 @@ class MuteCommand extends Command {
         );
 
         if (!args.getFlags('noshow', 'noembed', 'hide')) {
-            const confirmEmbed = new MessageEmbed()
+            const confirmEmbed = new EmbedBuilder()
                 .setColor('#f8ff91')
                 .setDescription(
                     `${member.user} was muted with ID \`${punishment.punishment_id}\`.`
@@ -132,7 +132,7 @@ class MuteCommand extends Command {
      * @param { Punishment } punishment
      */
     async sendMemberDM(message, member, reason, punishment, expiry) {
-        const dmEmbed = new MessageEmbed()
+        const dmEmbed = new EmbedBuilder()
             .setColor('#f8ff91')
             .setTitle(`You were muted in ${message.guild.name}`)
             .setAuthor({
@@ -152,7 +152,7 @@ class MuteCommand extends Command {
     }
 
     async logMute(message, member, reason, punishment, expiry) {
-        const logEmbed = new MessageEmbed()
+        const logEmbed = new EmbedBuilder()
             .setColor('#f8ff91')
             .setTitle('Mute')
             .setAuthor({
