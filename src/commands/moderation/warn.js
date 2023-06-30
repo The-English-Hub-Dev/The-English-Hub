@@ -22,8 +22,9 @@ class WarnCommand extends Command {
      */
     async messageRun(message, args) {
         const rawMember = await args.pickResult('member');
-        const reason =
-            (await args.restResult('string')).value ?? 'No reason given.';
+        const reason = (await args.restResult('string')).unwrapOr(
+            'No reason given.'
+        );
 
         if (rawMember.isErr()) {
             return this.container.utility.errReply(
