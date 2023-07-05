@@ -46,6 +46,12 @@ class DmCommand extends Command {
 
         const member = rawMember.unwrap();
 
+        if (msg.unwrap().length > 4000)
+            return this.container.utility.errReply(
+                message,
+                'The message length may not be greater than 4000 characters.'
+            );
+
         const dmEmbed = new EmbedBuilder()
             .setTitle("You've recieved a new message!")
             .setDescription(`**Message:** ${msg.unwrap()}\n\n`)
