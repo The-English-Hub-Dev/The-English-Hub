@@ -139,9 +139,14 @@ class MuteCommand extends Command {
                 name: message.guild.name,
                 iconURL: message.guild.iconURL(),
             })
-            .addField('Expires', time(expiry, TimestampStyles.LongDateTime))
-            .addField('Reason', reason)
-            .addField('Punishment ID', punishment.punishment_id)
+            .addFields(
+                {
+                    name: 'Expires',
+                    value: time(expiry, TimestampStyles.LongDateTime),
+                },
+                { name: 'Reason', value: reason },
+                { name: 'Punishment ID', value: punishment.punishment_id }
+            )
             .setFooter({
                 text: 'You may appeal this mute by opening a ticket',
                 iconURL: member.user.avatarURL(),

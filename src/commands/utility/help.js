@@ -1,6 +1,12 @@
 const { Command, Args } = require('@sapphire/framework');
 const { isNullOrUndefinedOrEmpty } = require('@sapphire/utilities');
-const { Message, EmbedBuilder, APIEmbedField, Colors } = require('discord.js');
+const {
+    Message,
+    EmbedBuilder,
+    APIEmbedField,
+    Colors,
+    blockQuote,
+} = require('discord.js');
 const { prefix } = require('../../../config.json');
 class HelpCommand extends Command {
     constructor(context, options) {
@@ -125,8 +131,8 @@ class HelpCommand extends Command {
         const commandsDataString = commandsData.join(' ');
         const commandHelpEmbed = new EmbedBuilder()
             .setColor(Colors.Blue)
-            .setTitle(`Information for ${cmd.name}`)
-            .setDescription(`${commandsDataString}`);
+            .setTitle(`Help: ${cmd.name}`)
+            .setDescription(blockQuote(commandsDataString));
         return message.reply({ embeds: [commandHelpEmbed] });
     }
 }
