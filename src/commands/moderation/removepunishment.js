@@ -7,6 +7,7 @@ const {
     ButtonBuilder,
     time,
     TimestampStyles,
+    ButtonStyle,
 } = require('discord.js');
 
 class RemovepunishmentCommand extends Command {
@@ -61,12 +62,12 @@ class RemovepunishmentCommand extends Command {
             new ButtonBuilder()
                 .setCustomId('rmpunish_confirm')
                 .setLabel('Confirm')
-                .setStyle('SUCCESS'),
+                .setStyle(ButtonStyle.Success),
 
             new ButtonBuilder()
                 .setCustomId('rmpunish_cancel')
                 .setLabel('Cancel')
-                .setStyle('DANGER')
+                .setStyle(ButtonStyle.Danger)
         );
 
         await message.reply({ embeds: [confirmationEmbed], components: [row] });
