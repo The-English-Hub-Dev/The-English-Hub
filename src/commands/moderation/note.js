@@ -5,12 +5,12 @@ const { logChannel } = require('../../../config.json');
 const Punishment =
     require('../../library/db/entities/PunishmentEntity').Punishment;
 
-class WarnCommand extends Command {
+class NoteCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: 'warn',
-            description: 'Warns/Strikes a user for breaking the rules.',
+            name: 'note',
+            description: "Adds a note to a user's profile.",
             preconditions: ['Staff'],
             flags: ['noshow', 'noembed', 'hide'],
         });
@@ -95,7 +95,7 @@ class WarnCommand extends Command {
             })
             .setTimestamp(Date.now());
 
-        await member.send({ embeds: [dmEmbed] }).catch(() => {});
+        await member.send({ embeds: [dmEmbed] }).catch();
     }
 
     /**
@@ -151,4 +151,4 @@ class WarnCommand extends Command {
     }
 }
 
-module.exports = { WarnCommand };
+module.exports = { NoteCommand };

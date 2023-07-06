@@ -92,7 +92,7 @@ class BanCommand extends Command {
             })
             .setTimestamp();
 
-        await member.send({ embeds: [dmEmbed] }).catch();
+        await member.send({ embeds: [dmEmbed] }).catch(() => {});
 
         await member.ban({ days: deleteDays, reason: reason });
 

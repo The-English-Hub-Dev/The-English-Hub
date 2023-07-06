@@ -153,7 +153,7 @@ class MuteCommand extends Command {
             })
             .setTimestamp(Date.now());
 
-        await member.send({ embeds: [dmEmbed] }).catch();
+        await member.send({ embeds: [dmEmbed] }).catch(() => {});
     }
 
     /**
