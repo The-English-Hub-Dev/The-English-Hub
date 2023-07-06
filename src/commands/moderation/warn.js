@@ -147,6 +147,8 @@ class WarnCommand extends Command {
             .setThumbnail(this.container.client.user.avatarURL());
 
         const logCh = message.guild.channels.cache.get(logChannel);
+        if (!logCh) return;
+
         return logCh.send({ embeds: [logEmbed] }).catch();
     }
 }
