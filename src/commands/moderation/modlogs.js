@@ -104,7 +104,7 @@ class ModlogsCommand extends Command {
             const warnsEmbedFields = [];
             for (var x = 0; x < punishments.length; ++x) {
                 const punishment = punishments[x];
-                warnsEmbedFields.addField({
+                warnsEmbedFields.push({
                     name: punishment.punishment_id,
                     value: blockQuote(
                         `**Type:** ${punishment.type}\n**Reason:** ${

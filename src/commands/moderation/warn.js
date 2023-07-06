@@ -114,20 +114,31 @@ class WarnCommand extends Command {
                 name: member.user.tag,
                 iconURL: member.user.avatarURL(),
             })
-            .addField('Punishment ID', `\`${punishment.punishment_id}\``)
-            .addField('User', `${member.user.tag} [${member.user.id}]`)
-            .addField(
-                'Moderator',
-                `${message.author.tag} [${message.author.id}]`
-            )
-            .addField('Reason', reason)
-            .addField('Date', time(new Date(), TimestampStyles.LongDateTime))
-            .addField(
-                'Expiration',
-                time(
-                    Math.round(punishment.expiration / 1000),
-                    TimestampStyles.LongDateTime
-                )
+            .addFields(
+                {
+                    name: 'Punishment ID',
+                    value: `\`${punishment.punishment_id}\``,
+                },
+                {
+                    name: 'User',
+                    value: `${member.user.tag} (${member.user.id})`,
+                },
+                {
+                    name: 'Moderator',
+                    value: `${message.author.tag} (${message.author.id})`,
+                },
+                { name: 'Reason', value: reason },
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                },
+                {
+                    name: 'Expiration',
+                    value: time(
+                        Math.round(punishment.expiration / 1000),
+                        TimestampStyles.LongDateTime
+                    ),
+                }
             )
             .setFooter({
                 text: 'Moderation Logs',

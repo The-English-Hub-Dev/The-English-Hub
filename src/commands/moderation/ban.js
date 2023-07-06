@@ -78,11 +78,13 @@ class BanCommand extends Command {
                 name: message.guild.name,
                 iconURL: message.guild.iconURL(),
             })
-            .addField('Reason', reason)
-            .addField('Punishment ID', punishment.punishment_id)
-            .addField(
-                'Appeal',
-                'To appeal this ban, click [here](link not done yet).'
+            .addFields(
+                { name: 'Reason', value: reason },
+                { name: 'Punishment ID', value: punishment.punishment_id },
+                {
+                    name: 'Appeal',
+                    value: 'To appeal this ban, click [here](link not done yet).',
+                }
             )
             .setFooter({
                 text: 'If you believe this ban was unjustified, you may submit an appeal',
@@ -120,11 +122,11 @@ class BanCommand extends Command {
                 },
                 {
                     name: 'User',
-                    value: `${member.user.tag} [${member.user.id}]`,
+                    value: `${member.user.tag} (${member.user.id})`,
                 },
                 {
                     name: 'Moderator',
-                    value: `${message.author.tag} [${message.author.id}]`,
+                    value: `${message.author.tag} (${message.author.id})`,
                 },
                 { name: 'Reason', value: reason },
                 {

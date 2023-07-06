@@ -114,31 +114,39 @@ class RemovepunishmentCommand extends Command {
                         name: punishedUser.tag,
                         iconURL: punishedUser.avatarURL(),
                     })
-                    .addField(
-                        'Punishment ID',
-                        `\`${punishment.punishment_id}\``
-                    )
-                    .addField(
-                        'User',
-                        `${punishedUser.tag} [${punishedUser.id}]`
-                    )
-                    .addField(
-                        'Punishment moderator',
-                        `${moderator} [${moderator.id}]`
-                    )
-                    .addField(
-                        'Removal moderator',
-                        `${message.author.tag} [${message.author.id}]`
-                    )
-                    .addField('Punishment reason', punishment.reason)
-                    .addField('Removal reason', reason)
-                    .addField(
-                        'Punishment Date',
-                        time(punishment.timestamp, TimestampStyles.LongDateTime)
-                    )
-                    .addField(
-                        'Removal Date',
-                        time(new Date(), TimestampStyles.LongDateTime)
+                    .addFields(
+                        {
+                            name: 'Punishment ID',
+                            value: `\`${punishment.punishment_id}\``,
+                        },
+                        {
+                            name: 'User',
+                            value: `${punishedUser.tag} (${punishedUser.id})`,
+                        },
+                        {
+                            name: 'Punishment Moderator',
+                            value: `${moderator} (${moderator.id})`,
+                        },
+                        {
+                            name: 'Action Moderator',
+                            value: `${message.author.tag} (${message.author.id})`,
+                        },
+                        { name: 'Punishment Reason', value: punishment.reason },
+                        { name: 'Removal Reason', value: reason },
+                        {
+                            name: 'Punishment Date',
+                            value: time(
+                                punishment.timestamp,
+                                TimestampStyles.LongDateTime
+                            ),
+                        },
+                        {
+                            name: 'Removal Date',
+                            value: time(
+                                new Date(),
+                                TimestampStyles.LongDateTime
+                            ),
+                        }
                     )
                     .setFooter({
                         text: 'Moderation Logs',

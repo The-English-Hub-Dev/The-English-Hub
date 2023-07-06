@@ -156,6 +156,15 @@ class MuteCommand extends Command {
         await member.send({ embeds: [dmEmbed] }).catch();
     }
 
+    /**
+     *
+     * @param { Message } message
+     * @param { GuildMember } member
+     * @param { String } reason
+     * @param { Punishment } punishment
+     * @param { number } expiry
+     * @returns
+     */
     async logMute(message, member, reason, punishment, expiry) {
         const logEmbed = new EmbedBuilder()
             .setColor('#f8ff91')
@@ -164,15 +173,29 @@ class MuteCommand extends Command {
                 name: member.user.tag,
                 iconURL: member.user.avatarURL(),
             })
-            .addField('Punishment ID', `\`${punishment.punishment_id}\``)
-            .addField('User', `${member.user.tag} [${member.user.id}]`)
-            .addField(
-                'Moderator',
-                `${message.author.tag} [${message.author.id}]`
+            .addFields(
+                {
+                    name: 'Punishment ID',
+                    value: `\`${punishment.punishment_id}\``,
+                },
+                {
+                    name: 'User',
+                    value: `${member.user.tag} (${member.user.id})`,
+                },
+                {
+                    name: 'Moderator',
+                    value: `${message.author.tag} (${message.author.id})`,
+                },
+                { name: 'Reason', value: reason },
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                },
+                {
+                    name: 'Expires',
+                    value: time(expiry, TimestampStyles.LongDateTime),
+                }
             )
-            .addField('Reason', reason)
-            .addField('Date', time(new Date(), TimestampStyles.LongDateTime))
-            .addField('Expires', time(expiry, TimestampStyles.LongDateTime))
             .setFooter({
                 text: 'Moderation Logs',
                 iconURL: message.guild.iconURL(),
