@@ -60,6 +60,12 @@ class MuteCommand extends Command {
             );
         }
 
+        if (!member.manageable)
+            return this.container.utility.errReply(
+                message,
+                'I cannot manage this member and therefore cannot mute them.'
+            );
+
         const rawType = args.getFlags('timeout', 'rolemute', 'role');
         if (!rawType)
             return this.container.utility.errReply(
