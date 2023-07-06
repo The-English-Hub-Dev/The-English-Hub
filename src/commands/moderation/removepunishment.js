@@ -36,14 +36,18 @@ class RemovepunishmentCommand extends Command {
             'No reason provided.'
         );
 
+        if (punishmentID.isErr())
+            return this.container.utility.errReply(
+                message,
+                'You must provide a punishment ID to remove.'
+            );
+
         const punishment = await this.container.db.punishments.findOneBy({
-            punishment_id: punishmentID,
+            punishment_id: punishmentID.unwrap(),
         });
 
         if (!punishment) {
-            return message.reply(
-                '<:xmark:981278932672335883> A punishment with that ID does not exist.'
-            );
+            return message.reply('A punishment with that ID does not exist.');
         }
 
         const confirmationEmbed = new EmbedBuilder()
@@ -55,12 +59,12 @@ class RemovepunishmentCommand extends Command {
 
         const row = new ActionRowBuilder().addComponents(
             new ButtonBuilder()
-                .setCustomId('confirm')
+                .setCustomId('rmpunish_confirm')
                 .setLabel('Confirm')
                 .setStyle('SUCCESS'),
 
             new ButtonBuilder()
-                .setCustomId('cancel')
+                .setCustomId('rmpunish_cancel')
                 .setLabel('Cancel')
                 .setStyle('DANGER')
         );
@@ -81,10 +85,9 @@ class RemovepunishmentCommand extends Command {
         });
 
         collector.on('collect', async (ButtonInteraction) => {
-            this.container.logger.debug('button clicked');
             const id = ButtonInteraction.customId;
 
-            if (id === 'confirm') {
+            if (id === 'rmpunish_confirm') {
                 await this.container.database.punishments.delete({
                     punishment_id: punishmentID,
                 });
@@ -108,7 +111,7 @@ class RemovepunishmentCommand extends Command {
                     punishment.moderator_id
                 );
                 const logEmbed = new EmbedBuilder()
-                    .setColor('#4284ff')
+                    .setColor(Colors.DarkVividPink)
                     .setTitle('Punishment Removed')
                     .setAuthor({
                         name: punishedUser.tag,
@@ -158,11 +161,11 @@ class RemovepunishmentCommand extends Command {
                     message.guild.channels.cache.get('980979428614103060');
                 await logChannel.send({ embeds: [logEmbed] });
                 return collector.stop();
-            } else if (id === 'cancel') {
+            } else if (id === 'rmpunish_cancel') {
                 const cancelledEmbed = new EmbedBuilder()
                     .setTitle('Cancelled')
                     .setDescription(`No punishments were affected.`)
-                    .setColor('#000000');
+                    .setColor(Colors.Green);
 
                 await ButtonInteraction.update({
                     embeds: [cancelledEmbed],
