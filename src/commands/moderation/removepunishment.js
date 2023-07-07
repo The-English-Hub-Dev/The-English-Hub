@@ -101,13 +101,13 @@ class RemovepunishmentCommand extends Command {
 
             if (id === 'rmpunish_confirm') {
                 await this.container.db.punishments.delete({
-                    punishment_id: punishmentID,
+                    punishment_id: punishmentID.unwrap(),
                 });
 
                 const confirmedEmbed = new EmbedBuilder()
-                    .setTitle('Confirmed')
+                    .setTitle('Action Confirmed')
                     .setDescription(
-                        `Punishment \`${punishmentID}\` was removed.`
+                        `Punishment \`${punishmentID.unwrap()}\` was removed.`
                     )
                     .setColor(Colors.DarkRed);
 
@@ -176,7 +176,9 @@ class RemovepunishmentCommand extends Command {
             } else if (id === 'rmpunish_cancel') {
                 const cancelledEmbed = new EmbedBuilder()
                     .setTitle('Cancelled')
-                    .setDescription(`No punishments were affected.`)
+                    .setDescription(
+                        `You cancelled this action. No punishments were affected.`
+                    )
                     .setColor(Colors.Green);
 
                 await ButtonInteraction.update({
