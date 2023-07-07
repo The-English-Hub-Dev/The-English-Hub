@@ -55,7 +55,7 @@ class RemovepunishmentCommand extends Command {
         const confirmationEmbed = new EmbedBuilder()
             .setTitle('Are you sure?')
             .setDescription(
-                `Please confirm you would like to remove punishment \`${punishmentID.unwrap()}\`. Once confirmed, this action is **irreversible**.`
+                `Please confirm you would like to remove punishment \`${punishmentID.unwrap()}\`. Once confirmed, you cannot revert this action.`
             )
             .setColor(Colors.Red);
 
