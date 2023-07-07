@@ -9,6 +9,7 @@ class SetstatusCommand extends Command {
             name: 'setstatus',
             description: "Set's the bots status.",
             aliases: ['setactivity', 'sets', 'seta'],
+            usage: '<type> <status>',
             preconditions: ['Staff'],
         });
     }

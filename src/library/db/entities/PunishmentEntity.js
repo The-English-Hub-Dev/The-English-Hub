@@ -26,8 +26,9 @@ const punishmentEntity = new EntitySchema({
         type: {
             type: 'text',
         },
-        duration: {
+        expiration: {
             type: 'int',
+            nullable: true,
         },
     },
 });
@@ -41,24 +42,35 @@ class Punishment {
      * @param { String } duration
      * @param { String } type
      */
-    constructor(userID, moderatorID, reason, type, duration) {
+    constructor(modID, uID, reason, type, expiration) {
         const currentDate = new Date();
-        const p = {
-            punishment_id: String(
-                DiscordSnowflake.generate({ timestamp: currentDate.getTime() })
-            ),
-            moderator_id: moderatorID,
-            user_id: userID,
+        const pSnowflake = String(
+            DiscordSnowflake.generate({ timestamp: currentDate.getTime() })
+        );
+
+        const punishment = {
+            punishment_id: pSnowflake,
+            moderator_id: modID,
+            user_id: uID,
             reason: reason,
             timestamp: currentDate,
             type: type,
-            duration: duration ?? null,
+            expiration: expiration,
         };
-        this.savePunishment(p);
+
+        this.punishment_id = pSnowflake;
+        this.moderator_id = modID;
+        this.user_id = uID;
+        this.reason = reason;
+        this.timestamp = currentDate;
+        this.type = type;
+        this.expiration = expiration;
+
+        this.savePunishment(punishment);
     }
 
-    async savePunishment(p) {
-        return container.db.punishments.save(p);
+    async savePunishment(punishment) {
+        return container.db.punishments.save(punishment);
     }
 }
 

@@ -3,7 +3,6 @@ const { Stopwatch } = require('@sapphire/stopwatch');
 const { EmbedBuilder, Message } = require('discord.js');
 const { codeBlock } = require('@discordjs/builders');
 const util = require('util');
-const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 class EvalCommand extends Command {
     constructor(context, options) {
         super(context, {
@@ -37,13 +36,18 @@ class EvalCommand extends Command {
      * @returns evaluated code
      */
     async messageRun(message, args) {
-        const hiddenItems = [DISCORD_TOKEN];
+        const hiddenItems = [
+            process.env.DISCORD_TOKEN,
+            process.env.DATABASE_URL,
+            process.env.REDIS_URL,
+        ];
         let code = await args.restResult('string');
         if (code.isErr())
             return this.container.utility.errReply(
                 message,
                 'Provide code to evaluate.'
             );
+
         code = code.unwrap();
         let output, type;
         const evalTime = new Stopwatch();
@@ -62,10 +66,7 @@ class EvalCommand extends Command {
             type = typeof err;
             error = true;
         }
-        // if (hiddenItems.some((item) => output.contains(item)))
-        //     hiddenItems.forEach(
-        //         (item) => (output = output.replace(item, '*HIDDEN*'))
-        //     );
+
         if (typeof output !== 'string')
             output = util.inspect(output, {
                 depth: args.getOption('depth') ?? 0,

@@ -8,6 +8,7 @@ class MvCommand extends Command {
             name: 'mv',
             aliases: ['moveme', 'movevc', 'movemevc'],
             preconditions: ['MoveMe'],
+            usage: ['<channel type:VoiceChannel>'],
             description: 'Moves you into a certain voice channel.',
         });
     }
@@ -28,7 +29,7 @@ class MvCommand extends Command {
         if (!message.member.voice.channel)
             return this.container.utility.errReply(
                 message,
-                'You must be in a voice channel to use this command.'
+                'You must be in a voice channel to use this command otherwise I cannot move you to a new channel.'
             );
 
         if (vc.unwrap().parent.id !== '852806050684076053') {
