@@ -103,11 +103,16 @@ class MuteCommand extends Command {
             );
         }
 
+        const expiry = Math.round(
+            (punishment.timestamp.getTime() + timeInMs) / 1000
+        );
+
         const punishment = new Punishment(
             message.author.id,
             member.id,
             reason,
-            'mute'
+            'mute',
+            expiry
         );
 
         if (!args.getFlags('noshow', 'noembed', 'hide')) {
@@ -121,9 +126,6 @@ class MuteCommand extends Command {
                 embeds: [confirmEmbed],
             });
         }
-        const expiry = Math.round(
-            (punishment.timestamp.getTime() + timeInMs) / 1000
-        );
 
         await this.sendMemberDM(message, member, reason, punishment, expiry);
 
