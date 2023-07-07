@@ -95,8 +95,14 @@ class MuteCommand extends Command {
         }
         const timeInMs = rawTime.offset;
 
-        if (type === 'timeout') member.timeout(timeInMs, reason);
-        else {
+        if (type === 'timeout') {
+            if (member.communicationDisabledUntil)
+                return this.container.utility.errReply(
+                    message,
+                    'This member is already muted (using timeouts).'
+                );
+            await member.timeout(timeInMs, reason);
+        } else {
             // TODO
             return message.reply(
                 'This feature is not yet implemented. You can currently only mute using the timeout feature.'
