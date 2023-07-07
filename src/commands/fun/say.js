@@ -7,6 +7,7 @@ class SayCommand extends Command {
             ...options,
             name: 'say',
             description: 'Says things you tell the bot to say.',
+            usage: '[channel] <text>',
             aliases: ['echo'],
             preconditions: ['Staff'],
         });
