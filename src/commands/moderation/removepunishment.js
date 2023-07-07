@@ -159,8 +159,9 @@ class RemovepunishmentCommand extends Command {
                     })
                     .setThumbnail(this.container.client.user.avatarURL());
 
-                const logChannel = message.guild.channels.cache.get(logChannel);
-                await logChannel.send({ embeds: [logEmbed] });
+                const logChannelFetched =
+                    message.guild.channels.cache.get(logChannel);
+                await logChannelFetched.send({ embeds: [logEmbed] });
                 return collector.stop();
             } else if (id === 'rmpunish_cancel') {
                 const cancelledEmbed = new EmbedBuilder()
