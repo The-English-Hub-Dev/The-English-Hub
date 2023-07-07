@@ -1,6 +1,12 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, EmbedBuilder, Colors, time, TimestampStyles } = require('discord.js');
-const { logChannel } = require('../../../config.json')
+const {
+    Message,
+    EmbedBuilder,
+    Colors,
+    time,
+    TimestampStyles,
+} = require('discord.js');
+const { logChannel } = require('../../../config.json');
 
 class ServerUnmuteCommand extends Command {
     constructor(context, options) {
@@ -93,7 +99,7 @@ class ServerUnmuteCommand extends Command {
                 {
                     name: 'Date',
                     value: time(new Date(), TimestampStyles.LongDateTime),
-                },
+                }
             )
             .setFooter({
                 text: 'Moderation Logs',
