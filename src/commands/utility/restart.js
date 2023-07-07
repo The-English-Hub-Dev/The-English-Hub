@@ -9,6 +9,7 @@ class RestartCommand extends Command {
             aliases: ['reboot'],
             preconditions: ['Admin'],
             description: 'Restarts The English Hub.',
+            enabled: false,
         });
     }
 
