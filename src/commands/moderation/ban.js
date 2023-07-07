@@ -5,6 +5,7 @@ const {
     TimestampStyles,
     Colors,
     EmbedBuilder,
+    GuildMember,
 } = require('discord.js');
 const { logChannel } = require('../../../config.json');
 const Punishment =
@@ -49,17 +50,17 @@ class BanCommand extends Command {
                 message.member.roles.highest.position <=
                 member.roles.highest.position
             ) {
-                return this.container.utility.error(
+                return this.container.utility.errReply(
                     message,
-                    'You cannot ban members with equal or higher roles than you.'
+                    'You may not ban members with equal or higher roles than you.'
                 );
             }
         }
 
         if (!member.bannable)
-            return this.container.utility.error(
+            return this.container.utility.errReply(
                 message,
-                'I do not have the permissions to ban that member.'
+                'That member is unbannable.'
             );
 
         if (message.deletable) await message.delete();
@@ -71,6 +72,33 @@ class BanCommand extends Command {
             'ban'
         );
 
+        await this.sendMemberDM(message, member, reason, punishment);
+
+        await member.ban({ days: deleteDays, reason: reason });
+
+        if (!args.getFlags('noshow', 'noembed', 'hide')) {
+            const confirmEmbed = new EmbedBuilder()
+                .setColor('#ff0000')
+                .setDescription(
+                    `<:checkmark:990395449796087828> ${member.user} has been **banned** with ID \`${punishment.punishment_id}\`.`
+                );
+
+            await message.channel.send({
+                embeds: [confirmEmbed],
+            });
+        }
+
+        await this.logBan(message, member, reason, punishment);
+    }
+
+    /**
+     *
+     * @param { Message } message
+     * @param { GuildMember} member
+     * @param { String} reason
+     * @param { Punishment } punishment
+     */
+    async sendMemberDM(message, member, reason, punishment) {
         const dmEmbed = new EmbedBuilder()
             .setColor(Colors.Red)
             .setTitle(`You were banned from ${message.guild.name}`)
@@ -92,22 +120,18 @@ class BanCommand extends Command {
             })
             .setTimestamp();
 
-        await member.send({ embeds: [dmEmbed] }).catch(() => {});
+        return member.send({ embeds: [dmEmbed] }).catch(() => {});
+    }
 
-        await member.ban({ days: deleteDays, reason: reason });
-
-        if (!args.getFlags('noshow', 'noembed', 'hide')) {
-            const confirmEmbed = new EmbedBuilder()
-                .setColor('#ff0000')
-                .setDescription(
-                    `<:checkmark:990395449796087828> ${member.user} has been **banned** with ID \`${punishment.punishment_id}\`.`
-                );
-
-            await message.channel.send({
-                embeds: [confirmEmbed],
-            });
-        }
-
+    /**
+     *
+     * @param { Message } message
+     * @param { GuildMember } member
+     * @param { String } reason
+     * @param { Punishment } punishment
+     * @returns
+     */
+    async logBan(message, member, reason, punishment) {
         const logEmbed = new EmbedBuilder()
             .setColor('#ff0000')
             .setTitle('Ban')
