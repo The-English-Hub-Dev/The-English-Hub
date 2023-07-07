@@ -23,13 +23,13 @@ class NoteCommand extends Command {
     async messageRun(message, args) {
         const rawMember = await args.pickResult('member');
         const reason = (await args.restResult('string')).unwrapOr(
-            'No reason given.'
+            'No reason given for note.'
         );
 
         if (rawMember.isErr()) {
             return this.container.utility.errReply(
                 message,
-                'You must provide a valid member to warn.'
+                'You must provide a valid member to note on their profile.'
             );
         }
 
@@ -41,7 +41,7 @@ class NoteCommand extends Command {
         ) {
             return this.container.utility.errReply(
                 message,
-                'You cannot warn members with equal or higher roles than you.'
+                'You cannot take a note for members with equal or higher roles than you.'
             );
         }
 
@@ -49,7 +49,7 @@ class NoteCommand extends Command {
             message.author.id,
             member.id,
             reason,
-            'warn',
+            'note',
             null
         );
 
@@ -57,7 +57,7 @@ class NoteCommand extends Command {
             const confirmEmbed = new EmbedBuilder()
                 .setColor('#73af96')
                 .setDescription(
-                    `${member.user} was warned with ID \`${punishment.punishment_id}\`.`
+                    `${member.user} had a note added to their profile. \`${punishment.punishment_id}\`.`
                 );
 
             await message.channel.send({
@@ -67,7 +67,7 @@ class NoteCommand extends Command {
 
         await this.sendMemberDM(message, member, reason, punishment);
 
-        await this.logWarn(message, member, reason, punishment);
+        await this.logNote(message, member, reason, punishment);
     }
 
     /**
@@ -106,7 +106,7 @@ class NoteCommand extends Command {
      * @param { Punishment } punishment
      * @returns
      */
-    async logWarn(message, member, reason, punishment) {
+    async logNote(message, member, reason, punishment) {
         const logEmbed = new EmbedBuilder()
             .setColor('#73af96')
             .setTitle('Warn')
