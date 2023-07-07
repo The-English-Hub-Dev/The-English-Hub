@@ -78,7 +78,7 @@ class BanCommand extends Command {
 
         if (!args.getFlags('noshow', 'noembed', 'hide')) {
             const confirmEmbed = new EmbedBuilder()
-                .setColor('#ff0000')
+                .setColor(Colors.DarkRed)
                 .setDescription(
                     `<:checkmark:990395449796087828> ${member.user} has been **banned** with ID \`${punishment.punishment_id}\`.`
                 );
@@ -133,7 +133,7 @@ class BanCommand extends Command {
      */
     async logBan(message, member, reason, punishment) {
         const logEmbed = new EmbedBuilder()
-            .setColor('#ff0000')
+            .setColor(Colors.DarkRed)
             .setTitle('Ban')
             .setAuthor({
                 name: member.user.tag,

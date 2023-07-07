@@ -1,6 +1,6 @@
 const { time, TimestampStyles } = require('@discordjs/builders');
 const { Command, Args } = require('@sapphire/framework');
-const { Message, EmbedBuilder, GuildMember } = require('discord.js');
+const { Message, EmbedBuilder, GuildMember, Colors } = require('discord.js');
 const { logChannel } = require('../../../config.json');
 const Punishment =
     require('../../library/db/entities/PunishmentEntity').Punishment;
@@ -56,7 +56,7 @@ class NoteCommand extends Command {
 
         if (!args.getFlags('noshow', 'noembed', 'hide')) {
             const confirmEmbed = new EmbedBuilder()
-                .setColor('#73af96')
+                .setColor(Colors.Grey)
                 .setDescription(
                     `${member.user} had a note added to their profile. \`${punishment.punishment_id}\`.`
                 );
@@ -78,7 +78,7 @@ class NoteCommand extends Command {
      */
     async sendMemberDM(message, member, reason, punishment) {
         const dmEmbed = new EmbedBuilder()
-            .setColor('#73af96')
+            .setColor(Colors.Grey)
             .setTitle(`You were given a note in ${message.guild.name}`)
             .setAuthor({
                 name: message.guild.name,
@@ -107,7 +107,7 @@ class NoteCommand extends Command {
      */
     async logNote(message, member, reason, punishment) {
         const logEmbed = new EmbedBuilder()
-            .setColor('#73af96')
+            .setColor(Colors.Grey)
             .setTitle('Warn')
             .setAuthor({
                 name: member.user.tag,

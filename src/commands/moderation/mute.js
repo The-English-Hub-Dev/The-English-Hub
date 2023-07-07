@@ -5,6 +5,7 @@ const {
     GuildMember,
     time,
     TimestampStyles,
+    Colors,
 } = require('discord.js');
 const { logChannel } = require('../../../config.json');
 const { Duration } = require('@sapphire/time-utilities');
@@ -130,7 +131,7 @@ class MuteCommand extends Command {
 
         if (!args.getFlags('noshow', 'noembed', 'hide')) {
             const confirmEmbed = new EmbedBuilder()
-                .setColor('#f8ff91')
+                .setColor(Colors.Orange)
                 .setDescription(
                     `${member.user} was muted with ID \`${punishment.punishment_id}\`.`
                 );
@@ -154,7 +155,7 @@ class MuteCommand extends Command {
      */
     async sendMemberDM(message, member, reason, punishment, expiry) {
         const dmEmbed = new EmbedBuilder()
-            .setColor('#f8ff91')
+            .setColor(Colors.Red)
             .setTitle(`You were muted in ${message.guild.name}`)
             .setAuthor({
                 name: message.guild.name,
@@ -188,7 +189,7 @@ class MuteCommand extends Command {
      */
     async logMute(message, member, reason, punishment, expiry) {
         const logEmbed = new EmbedBuilder()
-            .setColor('#f8ff91')
+            .setColor(Colors.Orange)
             .setTitle('Mute')
             .setAuthor({
                 name: member.user.tag,

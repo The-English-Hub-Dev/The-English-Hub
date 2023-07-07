@@ -1,5 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, EmbedBuilder, Colors } = require('discord.js');
+const { Message, EmbedBuilder, Colors, TimestampStyles, time } = require('discord.js');
+const { logChannel } = require('../../../config.json')
 
 class ServerUnmuteCommand extends Command {
     constructor(context, options) {
@@ -62,6 +63,48 @@ class ServerUnmuteCommand extends Command {
                     .setColor(Colors.Green),
             ],
         });
+    }
+
+    /**
+     *
+     * @param { Message } message
+     * @param { GuildMember } member
+     * @param { String } reason
+     * @returns
+     */
+    async logServermute(message, member, reason) {
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.Aqua)
+            .setTitle('Server Mute')
+            .setAuthor({
+                name: member.user.tag,
+                iconURL: member.user.avatarURL(),
+            })
+            .addFields(
+                {
+                    name: 'User',
+                    value: `${member.user.tag} (${member.user.id})`,
+                },
+                {
+                    name: 'Moderator',
+                    value: `${message.author.tag} (${message.author.id})`,
+                },
+                { name: 'Reason', value: reason },
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                },
+            )
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: message.guild.iconURL(),
+            })
+            .setThumbnail(this.container.client.user.avatarURL());
+
+        const logCh = message.guild.channels.cache.get(logChannel);
+        if (!logCh) return;
+
+        return logCh.send({ embeds: [logEmbed] }).catch();
     }
 }
 
