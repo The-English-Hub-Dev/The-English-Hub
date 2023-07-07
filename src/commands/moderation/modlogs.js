@@ -48,7 +48,7 @@ class ModlogsCommand extends Command {
             }
 
             const warnsEmbed = new EmbedBuilder()
-                .setTitle(`Showing all punishments for ${user.tag}`)
+                .setTitle(`Punishments for ${user.tag}`)
                 .setDescription(
                     `${punishments.length} punishments found for ${user}.`
                 )
@@ -94,12 +94,12 @@ class ModlogsCommand extends Command {
             }
 
             const warnsEmbed = new EmbedBuilder()
-                .setTitle(`Showing all punishments for ${user.tag}`)
+                .setTitle(`Punishments for ${user.tag}`)
                 .setDescription(
                     `${punishments.length} punishments found for ${user}.`
                 )
                 .setAuthor({ name: user.tag, iconURL: user.avatarURL() })
-                .setColor('#73af96');
+                .setColor(Colors.LuminousVividPink);
 
             const warnsEmbedFields = [];
             for (var x = 0; x < punishments.length; ++x) {
