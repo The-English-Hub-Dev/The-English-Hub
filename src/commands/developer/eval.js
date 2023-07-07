@@ -67,10 +67,6 @@ class EvalCommand extends Command {
             error = true;
         }
 
-        for (const item in hiddenItems) {
-            output = output.replace(item);
-        }
-
         if (typeof output !== 'string')
             output = util.inspect(output, {
                 depth: args.getOption('depth') ?? 0,
