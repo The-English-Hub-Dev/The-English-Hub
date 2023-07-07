@@ -65,8 +65,6 @@ class NoteCommand extends Command {
             });
         }
 
-        await this.sendMemberDM(message, member, reason, punishment);
-
         await this.logNote(message, member, reason, punishment);
     }
 
@@ -80,7 +78,7 @@ class NoteCommand extends Command {
     async sendMemberDM(message, member, reason, punishment) {
         const dmEmbed = new EmbedBuilder()
             .setColor('#73af96')
-            .setTitle(`You were warned in ${message.guild.name}`)
+            .setTitle(`You were given a note in ${message.guild.name}`)
             .setAuthor({
                 name: message.guild.name,
                 iconURL: message.guild.iconURL(),
