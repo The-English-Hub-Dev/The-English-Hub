@@ -9,6 +9,7 @@ const {
     TimestampStyles,
     ButtonStyle,
 } = require('discord.js');
+const { logChannel } = require('../../../config.json');
 
 class RemovepunishmentCommand extends Command {
     constructor(context, options) {
@@ -54,7 +55,7 @@ class RemovepunishmentCommand extends Command {
         const confirmationEmbed = new EmbedBuilder()
             .setTitle('Are you sure?')
             .setDescription(
-                `Please confirm you would like to remove punishment \`${punishmentID}\`. Once confirmed, this action is **irreversible**.`
+                `Please confirm you would like to remove punishment \`${punishmentID.unwrap()}\`. Once confirmed, this action is **irreversible**.`
             )
             .setColor(Colors.Red);
 
@@ -89,16 +90,16 @@ class RemovepunishmentCommand extends Command {
             const id = ButtonInteraction.customId;
 
             if (id === 'rmpunish_confirm') {
-                await this.container.database.punishments.delete({
+                await this.container.db.punishments.delete({
                     punishment_id: punishmentID,
                 });
 
                 const confirmedEmbed = new EmbedBuilder()
                     .setTitle('Confirmed')
                     .setDescription(
-                        `<:checkmark:990395449796087828> Punishment \`${punishmentID}\` has been removed.`
+                        `Punishment \`${punishmentID}\` was removed.`
                     )
-                    .setColor('#63ff78');
+                    .setColor(Colors.DarkRed);
 
                 ButtonInteraction.update({
                     embeds: [confirmedEmbed],
@@ -158,8 +159,7 @@ class RemovepunishmentCommand extends Command {
                     })
                     .setThumbnail(this.container.client.user.avatarURL());
 
-                const logChannel =
-                    message.guild.channels.cache.get('980979428614103060');
+                const logChannel = message.guild.channels.cache.get(logChannel);
                 await logChannel.send({ embeds: [logEmbed] });
                 return collector.stop();
             } else if (id === 'rmpunish_cancel') {
