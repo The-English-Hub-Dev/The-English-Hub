@@ -11,6 +11,7 @@ class WarnCommand extends Command {
             ...options,
             name: 'warn',
             description: 'Warns/Strikes a user for breaking the rules.',
+            usage: '<member> [reason]',
             preconditions: ['Staff'],
             flags: ['noshow', 'noembed', 'hide'],
         });

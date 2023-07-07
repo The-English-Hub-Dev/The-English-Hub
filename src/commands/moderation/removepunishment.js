@@ -8,6 +8,7 @@ const {
     time,
     TimestampStyles,
     ButtonStyle,
+    PermissionFlagsBits,
 } = require('discord.js');
 const { logChannel } = require('../../../config.json');
 
@@ -24,6 +25,7 @@ class RemovepunishmentCommand extends Command {
                 'removestrike',
             ],
             description: 'Removes the punishment with the specified ID.',
+            usage: '<punishment ID> [reason]',
             preconditions: ['Staff'],
         });
     }
@@ -35,7 +37,7 @@ class RemovepunishmentCommand extends Command {
     async messageRun(message, args) {
         const punishmentID = await args.pickResult('string');
         const reason = (await args.restResult('string')).unwrapOr(
-            'No reason provided.'
+            'No reason provided for punishment removal.'
         );
 
         if (punishmentID.isErr())
@@ -51,6 +53,14 @@ class RemovepunishmentCommand extends Command {
         if (!punishment) {
             return message.reply('A punishment with that ID does not exist.');
         }
+
+        if (
+            punishment.moderator_id !== message.author.id &&
+            !message.member.permissions.has(PermissionFlagsBits.Administrator)
+        )
+            return message.reply(
+                'You cannot remove a punishment that you did not give. You need to ask an admin to remove it.'
+            );
 
         const confirmationEmbed = new EmbedBuilder()
             .setTitle('Are you sure?')

@@ -12,6 +12,7 @@ class NoteCommand extends Command {
             name: 'note',
             description: "Adds a note to a user's profile.",
             preconditions: ['Staff'],
+            usage: '<member> [note to add]',
             flags: ['noshow', 'noembed', 'hide'],
         });
     }

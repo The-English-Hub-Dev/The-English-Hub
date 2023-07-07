@@ -18,8 +18,17 @@ class MuteCommand extends Command {
             name: 'mute',
             aliases: ['timeout', 'silence'],
             description: 'Mutes a member in the server.',
+            usage: '<member> <duration> [reason] -t',
             preconditions: ['Staff'],
-            flags: ['timeout', 'rolemute', 'role', 'noshow', 'noembed', 'hide'],
+            flags: [
+                't',
+                'timeout',
+                'rolemute',
+                'role',
+                'noshow',
+                'noembed',
+                'hide',
+            ],
         });
     }
 
@@ -70,7 +79,7 @@ class MuteCommand extends Command {
         if (!rawType)
             return this.container.utility.errReply(
                 message,
-                'You must provide whether to mute using roles or timeouts using the `-role`, `-rolemute`, or `-timeout` flags'
+                'You must provide whether to mute using roles or timeouts using the `-role`, `-rolemute`, `-t`, or `-timeout` flags'
             );
 
         if (
