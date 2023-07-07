@@ -109,9 +109,7 @@ class MuteCommand extends Command {
             );
         }
 
-        const expiry = Math.round(
-            (punishment.timestamp.getTime() + timeInMs) / 1000
-        );
+        const expiry = Math.round((Date.now() + timeInMs) / 1000);
 
         const punishment = new Punishment(
             message.author.id,
