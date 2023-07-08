@@ -20,6 +20,7 @@ class Database {
 
     async initializeDB() {
         await this.typeorm.initialize();
+        container.logger.info('Connected to Postgres Database!');
     }
 }
 

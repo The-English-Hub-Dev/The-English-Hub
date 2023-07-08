@@ -24,9 +24,6 @@ class ReadyListener extends Listener {
      */
     async run(client) {
         this.container.logger.info(`Logged in as ${client.user.tag}!`);
-        this.container.logger.info(
-            `Ping acknowledged by the API. Bot is online.\n\n`
-        );
 
         const hasRebooted = await this.container.redis.hget('tasks', 'restart');
         if (hasRebooted) {
