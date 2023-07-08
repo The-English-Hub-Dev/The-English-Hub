@@ -63,7 +63,7 @@ class ReadyListener extends Listener {
                 statusNum--;
             } else {
                 client.user.setActivity(
-                    'DM me to report or to ask a question!',
+                    'DM me to ask a question to the staff!',
                     { type: ActivityType.Playing }
                 );
                 statusNum++;
