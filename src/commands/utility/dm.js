@@ -94,19 +94,24 @@ class DmCommand extends Command {
         const dmLog = message.guild.channels.cache.get(logChannel);
         if (!dmLog || dmLog.type !== ChannelType.GuildText) return;
 
-        const dmSentEmbed = new EmbedBuilder().setTitle('DM Sent').setFields(
-            {
-                name: 'User sent to',
-                value: `${member} (${member.id})`,
-                inline: true,
-            },
-            {
-                name: 'Sending staff',
-                value: `${message.member} (${message.member.id})`,
-                inline: true,
-            },
-            { name: 'Message Content', value: dm }
-        );
+        const dmSentEmbed = new EmbedBuilder()
+            .setTitle('DM Sent')
+            .setColor(Colors.Blurple)
+            .setFields(
+                {
+                    name: 'User sent to',
+                    value: `${member} (${member.id})`,
+                    inline: true,
+                },
+                {
+                    name: 'Sending staff',
+                    value: `${message.member} (${message.member.id})`,
+                    inline: true,
+                },
+                { name: 'Message Content', value: dm }
+            )
+            .setFooter({ text: `Sent at` })
+            .setTimestamp();
 
         return dmLog.send({ embeds: [dmSentEmbed] });
     }
