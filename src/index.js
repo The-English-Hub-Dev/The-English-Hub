@@ -19,7 +19,7 @@ process.on('uncaughtException', async (error) => {
 const redis = new Redis(process.env.REDIS_URL, {});
 redis.on('connect', () => {
     container.logger.info('Connected to Redis Instance!');
-})
+});
 container.redis = redis;
 
 container.db = new Database();
