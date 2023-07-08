@@ -54,7 +54,7 @@ class ReadyListener extends Listener {
                 const guild = client.guilds.cache.get('801609515391778826');
                 if (guild) {
                     client.user.setActivity(
-                        ` ${guild.memberCount.toLocaleString()} members`,
+                        `${guild.memberCount.toLocaleString()} members`,
                         {
                             type: ActivityType.Watching,
                         }
