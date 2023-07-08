@@ -14,13 +14,13 @@ class Database {
         });
         ds.initialize().catch((e) => console.log(e));
 
+        container.logger.info('Connected to Postgres Database!')
         this.typeorm = ds;
         this.punishments = this.typeorm.getRepository('PunishmentEntity');
     }
 
     async initializeDB() {
         await this.typeorm.initialize();
-        container.logger.info('Connected to Postgres Database!');
     }
 }
 
