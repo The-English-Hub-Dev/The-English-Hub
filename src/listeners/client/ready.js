@@ -67,7 +67,10 @@ class ReadyListener extends Listener {
             }
         }, 20000);
 
+        const healthCheckIntervalHyperping = setInterval(async () => { await fetch(process.env.HYPERPING_HEALTHCHECK_URL, {method: 'POST'})}, 120000);
+
         this.container.intervals.status = statusInterval;
+        this.container.intervals.healthCheck = healthCheckIntervalHyperping;
     }
 }
 
