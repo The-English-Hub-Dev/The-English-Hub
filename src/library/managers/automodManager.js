@@ -18,6 +18,8 @@ class AutomodManager {
         }
         msgOk = await this.discordInviteCheck(message);
         container.logger.info('discordInviteCheck returned ' + msgOk)
+        msgOk = await this.walltextCheck(message);
+        container.logger.info('walltextCheck returned ' + msgOk)
 
         return msgOk;
     }
@@ -28,17 +30,27 @@ class AutomodManager {
      * @returns
      */
     async discordInviteCheck(message) {
-        container.logger.info('running discord invite check')
-        container.logger.info('message.content is ' + message.content)
         const inviteLink = DiscordInviteLinkRegex.exec(message.content);
-        container.logger.info('inviteLink is ' + inviteLink)
-        container.logger.info('inviteLink[0] is ' + inviteLink[0])
         if (inviteLink && inviteLink[0] !== 'discord.gg/enghub') {
-            container.logger.warn('discord invite check triggered, should delete and send message')
-            await message.delete();
+            if (message.deletable) await message.delete();
             const reply = await message.channel.send(
                 `${message.author}, you are not allowed to send invite links in this server.`
             );
+            setTimeout(() => reply.delete(), 3500);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 
+     * @param { Message } message 
+     */
+    async walltextCheck(message) {
+        const messageLines = message.content.split('\n');
+        if (messageLines.length > 15 || message.content.length > 2000) {
+            if (message.deletable) await message.delete();
+            const reply = await message.channel.send(`${message.author}, your message is too many lines/too long and spams the chat. Please shorten it.`);
             setTimeout(() => reply.delete(), 3500);
             return false;
         }
