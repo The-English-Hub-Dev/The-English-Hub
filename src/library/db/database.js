@@ -1,4 +1,3 @@
-const { container } = require('@sapphire/framework');
 const { DataSource } = require('typeorm');
 
 class Database {

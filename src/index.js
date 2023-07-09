@@ -12,8 +12,10 @@ const { AutomodManager } = require('./library/managers/automodManager');
 
 process.on('uncaughtException', async (error) => {
     if (!container || !container.utility)
+        container.logger.error(error);
+    else {
         await container.utility.exception(error, 'Uncaught');
-    else container.logger.error(error);
+    }
 });
 
 const redis = new Redis(process.env.REDIS_URL, {});
