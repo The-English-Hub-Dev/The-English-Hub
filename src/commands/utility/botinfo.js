@@ -72,14 +72,14 @@ class BotInfoCommand extends Command {
                 },
                 {
                     name: 'Current Cached Users',
-                    value: `${this.container.client.users.cache.size} (${
-                        ((this.container.client.users.cache.size /
+                    value: `${this.container.client.users.cache.size} (${(
+                        (this.container.client.users.cache.size /
                             this.container.client.guilds.cache.reduce(
                                 (acc, guild) => acc + guild.memberCount,
                                 0
                             )) *
-                        100).toFixed(2)
-                    }% of total users.`,
+                        100
+                    ).toFixed(2)}% of total users.`,
                     inline: true,
                 },
                 {
