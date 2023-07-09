@@ -82,8 +82,8 @@ class MessageCreateListener extends Listener {
 
         await redirCh.send({
             content: attachments
-                ? 'DM recieved with attachments 🔗'
-                : 'DM recieved',
+                ? 'DM received with attachments 🔗'
+                : 'DM received',
             embeds: [embed],
             files: attachments,
         });
