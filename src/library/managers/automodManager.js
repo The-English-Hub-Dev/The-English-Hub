@@ -31,6 +31,7 @@ class AutomodManager {
         container.logger.info('running discord invite check')
         const inviteLink = DiscordInviteLinkRegex.exec(message.content);
         if (inviteLink && inviteLink[0] !== 'discord.gg/enghub') {
+            container.logger.warn('discord invite check triggered, should delete and send message')
             message.delete();
             const reply = await message.channel.send(
                 `${message.author}, you are not allowed to send invite links in this server.`
