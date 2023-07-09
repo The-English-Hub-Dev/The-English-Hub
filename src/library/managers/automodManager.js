@@ -30,6 +30,8 @@ class AutomodManager {
     async discordInviteCheck(message) {
         container.logger.info('running discord invite check')
         const inviteLink = DiscordInviteLinkRegex.exec(message.content);
+        container.logger.info('inviteLink is ' + inviteLink)
+        container.logger.info('inviteLink[0] is ' + inviteLink[0])
         if (inviteLink && inviteLink[0] !== 'discord.gg/enghub') {
             container.logger.warn('discord invite check triggered, should delete and send message')
             message.delete();
