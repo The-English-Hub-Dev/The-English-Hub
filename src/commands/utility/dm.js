@@ -15,7 +15,8 @@ class DmCommand extends Command {
             name: 'dm',
             aliases: ['dmmember'],
             description:
-                'DMs a member in the server with a specified message. You can also include attachments.',
+                'DMs a member in the server with a specified message. You can also include attachments by attaching them to your dm command.',
+            usage: '<member> <message>',
             preconditions: ['Staff'],
         });
     }
@@ -59,7 +60,11 @@ class DmCommand extends Command {
                 : null;
 
         const dmEmbed = new EmbedBuilder()
-            .setTitle("You've recieved a new message!")
+            .setTitle(
+                `You've recieved a new message ${
+                    attachments ? 'with attachments' : ''
+                }!`
+            )
             .setDescription(`**Message:** ${msg.unwrap()}\n\n`)
             .setFooter({ text: `Sent by ${message.guild.name} Staff` })
             .setColor(Colors.Blue);
