@@ -1,6 +1,6 @@
 const { Command } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Message, EmbedBuilder } = require('discord.js');
+const { Message, EmbedBuilder, time, TimestampStyles } = require('discord.js');
 const packageInfo = require(`${process.cwd()}/package.json`);
 const formatter = new DurationFormatter();
 
@@ -76,7 +76,7 @@ class BotInfoCommand extends Command {
                 },
                 {
                     name: 'Bot Uptime',
-                    value: `${formatter.format(this.container.client.uptime)}`,
+                    value: `${formatter.format(this.container.client.uptime)} (since ${time(new Date(Date.now() - this.container.client.uptime), TimestampStyles.RelativeTime)})`,
                     inline: true,
                 }
             );
