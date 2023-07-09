@@ -6,7 +6,6 @@ require('@sapphire/plugin-logger/register');
 require('dotenv').config();
 const { prefix, clientID } = require('../config.json');
 const { Database } = require('./library/db/database');
-const { Tasks } = require('./library/tasks');
 const { Utility } = require('./library/utility');
 const { AutomodManager } = require('./library/managers/automodManager');
 
