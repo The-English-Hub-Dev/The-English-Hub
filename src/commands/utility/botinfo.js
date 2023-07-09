@@ -76,7 +76,12 @@ class BotInfoCommand extends Command {
                 },
                 {
                     name: 'Bot Uptime',
-                    value: `${formatter.format(this.container.client.uptime)} (since ${time(new Date(Date.now() - this.container.client.uptime), TimestampStyles.RelativeTime)})`,
+                    value: `${formatter.format(
+                        this.container.client.uptime
+                    )} (since ${time(
+                        new Date(Date.now() - this.container.client.uptime),
+                        TimestampStyles.RelativeTime
+                    )})`,
                     inline: true,
                 }
             );
