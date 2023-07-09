@@ -40,6 +40,7 @@ class DmCommand extends Command {
                 message,
                 'You must provide a message to send to the member.'
             );
+        
         if (msg.unwrap().length > 1000)
             return this.container.utility.errReply(
                 message,
