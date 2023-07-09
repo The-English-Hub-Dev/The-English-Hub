@@ -14,7 +14,8 @@ class DmCommand extends Command {
             ...options,
             name: 'dm',
             aliases: ['dmmember'],
-            description: 'DMs a member in the server with a specified message',
+            description:
+                'DMs a member in the server with a specified message. You can also include attachments.',
             preconditions: ['Staff'],
         });
     }
@@ -52,6 +53,11 @@ class DmCommand extends Command {
                 'The message length may not be greater than 4000 characters.'
             );
 
+        const attachments =
+            message.attachments.size > 0
+                ? [...message.attachments.values()]
+                : null;
+
         const dmEmbed = new EmbedBuilder()
             .setTitle("You've recieved a new message!")
             .setDescription(`**Message:** ${msg.unwrap()}\n\n`)
@@ -63,23 +69,51 @@ class DmCommand extends Command {
             .catch(() => null);
 
         if (!successful)
-            return message.reply(
-                `Couldn't send the message to that user. They most likely have their DM's closed.`
-            );
-        else {
-            member.send(
-                'To reply to this message, just reply to me. Your message will be sent to the staff team.'
-            );
+            return message.reply({
+                embeds: new EmbedBuilder()
+                    .setColor(Colors.Red)
+                    .setFooter({
+                        text: message.guild.name,
+                        iconURL: message.guild.iconURL(),
+                    })
+                    .setDescription(
+                        `Couldn't send the message to that user. They most likely have their DM's closed.`
+                    ),
+            });
+
+        if (attachments) {
+            member.send({
+                content:
+                    'This message contained attachments. They are attached to this message.',
+                files: attachments,
+            });
         }
+
+        await member.send(
+            'To reply to this message, just reply to me. Your message will be sent to the staff team and they will respond when they are available.'
+        );
 
         await this.logDMSent(message, member, msg.unwrap());
 
         return message.reply({
-            content: `Successfully sent DM to ${member} (${member.user.tag}).`,
+            embeds: new EmbedBuilder()
+                .setColor(Colors.Green)
+                .setFooter({
+                    text: message.guild.name,
+                    iconURL: message.guild.iconURL(),
+                })
+                .setDescription(
+                    `Successfully sent DM to ${member} (${member.user.tag}). ${
+                        attachments
+                            ? `You sent ${attachments.length} attachments with your message.`
+                            : ''
+                    }`
+                ),
             allowedMentions: {
-                users: [message.member.user.id],
+                users: [],
                 roles: [],
                 parse: [],
+                repliedUser: true,
             },
         });
     }
