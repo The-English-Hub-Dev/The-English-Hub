@@ -64,6 +64,8 @@ class BotInfoCommand extends Command {
                     value: `\`${redisMem} MiB\``,
                     inline: true,
                 },
+                {name: 'Postgres Driver Version',
+                value: `\`${this.container.db.typeorm.driver.version}\``, inline: true},
                 {
                     name: 'Current Cached Users',
                     value: `${this.container.client.users.cache.size}`,
