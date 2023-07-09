@@ -42,14 +42,16 @@ class AutomodManager {
     }
 
     /**
-     * 
-     * @param { Message } message 
+     *
+     * @param { Message } message
      */
     async walltextCheck(message) {
         const messageLines = message.content.split('\n');
         if (messageLines.length > 15 || message.content.length > 2000) {
             if (message.deletable) await message.delete();
-            const reply = await message.channel.send(`${message.author}, your message is too many lines/too long and spams the chat. Please shorten it.`);
+            const reply = await message.channel.send(
+                `${message.author}, your message is too many lines/too long and spams the chat. Please shorten it.`
+            );
             setTimeout(() => reply.delete(), 4000);
             return false;
         }
