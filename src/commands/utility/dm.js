@@ -125,8 +125,8 @@ class DmCommand extends Command {
      * @param { String } dm
      */
     async logDMSent(message, member, dm) {
-        const dmLog = message.guild.channels.cache.get(logChannel);
-        if (!dmLog || dmLog.type !== ChannelType.GuildText) return;
+        const logCh = message.guild.channels.cache.get(logChannel);
+        if (!logCh || logCh.type !== ChannelType.GuildText) return;
 
         const dmSentEmbed = new EmbedBuilder()
             .setTitle('DM Sent')
@@ -147,7 +147,7 @@ class DmCommand extends Command {
             .setFooter({ text: `Sent at` })
             .setTimestamp();
 
-        return dmLog.send({ embeds: [dmSentEmbed] });
+        return logCh.send({ embeds: [dmSentEmbed] });
     }
 }
 
