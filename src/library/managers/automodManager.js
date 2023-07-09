@@ -11,8 +11,14 @@ class AutomodManager {
      */
     async runAutomodOnMessage(message) {
         let msgOk = true;
-        if (await container.utility.isStaff(message)) return true;
-        msgOk = await this.discordInviteCheck(message);
+        if (message.author.bot) return true;
+
+        if (await container.utility.isStaff(message)) {
+            return true;
+        }
+
+        if (msgOk) msgOk = await this.discordInviteCheck(message);
+        if (msgOk) msgOk = await this.walltextCheck(message);
 
         return msgOk;
     }
@@ -25,11 +31,26 @@ class AutomodManager {
     async discordInviteCheck(message) {
         const inviteLink = DiscordInviteLinkRegex.exec(message.content);
         if (inviteLink && inviteLink[0] !== 'discord.gg/enghub') {
-            message.delete();
+            if (message.deletable) await message.delete();
             const reply = await message.channel.send(
                 `${message.author}, you are not allowed to send invite links in this server.`
             );
-            setTimeout(() => reply.delete(), 3500);
+            setTimeout(() => reply.delete(), 4000);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 
+     * @param { Message } message 
+     */
+    async walltextCheck(message) {
+        const messageLines = message.content.split('\n');
+        if (messageLines.length > 15 || message.content.length > 2000) {
+            if (message.deletable) await message.delete();
+            const reply = await message.channel.send(`${message.author}, your message is too many lines/too long and spams the chat. Please shorten it.`);
+            setTimeout(() => reply.delete(), 4000);
             return false;
         }
         return true;
