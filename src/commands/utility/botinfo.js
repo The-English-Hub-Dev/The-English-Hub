@@ -44,7 +44,8 @@ class BotInfoCommand extends Command {
                     value: packageInfo.version,
                     inline: true,
                 },
-                { name: 'Developer', value: dev.user.tag },
+                { name: 'Developer', value: dev.user.tag, inline: true },
+                {name: 'Container', value: (await import('os')).hostname()},
                 {
                     name: 'Memory Usage(RSS)',
                     value: `\`${(processMem.rss / 1024 / 1024).toFixed(
@@ -71,7 +72,7 @@ class BotInfoCommand extends Command {
                 },
                 {
                     name: 'Current Cached Users',
-                    value: `${this.container.client.users.cache.size}`,
+                    value: `${this.container.client.users.cache.size} (${this.container.client.users.cache.size / ((this.container.client.guilds.cache.reduce((acc, guild) => acc + guild.memberCount, 0))) * 100}% of total users.`,
                     inline: true,
                 },
                 {
