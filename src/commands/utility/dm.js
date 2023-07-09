@@ -70,15 +70,17 @@ class DmCommand extends Command {
 
         if (!successful)
             return message.reply({
-                embeds: new EmbedBuilder()
-                    .setColor(Colors.Red)
-                    .setFooter({
-                        text: message.guild.name,
-                        iconURL: message.guild.iconURL(),
-                    })
-                    .setDescription(
-                        `Couldn't send the message to that user. They most likely have their DM's closed.`
-                    ),
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor(Colors.Red)
+                        .setFooter({
+                            text: message.guild.name,
+                            iconURL: message.guild.iconURL(),
+                        })
+                        .setDescription(
+                            `Couldn't send the message to that user. They most likely have their DM's closed.`
+                        ),
+                ],
             });
 
         if (attachments) {
@@ -96,19 +98,23 @@ class DmCommand extends Command {
         await this.logDMSent(message, member, msg.unwrap());
 
         return message.reply({
-            embeds: new EmbedBuilder()
-                .setColor(Colors.Green)
-                .setFooter({
-                    text: message.guild.name,
-                    iconURL: message.guild.iconURL(),
-                })
-                .setDescription(
-                    `Successfully sent DM to ${member} (${member.user.tag}). ${
-                        attachments
-                            ? `You sent ${attachments.length} attachments with your message.`
-                            : ''
-                    }`
-                ),
+            embeds: [
+                new EmbedBuilder()
+                    .setColor(Colors.Green)
+                    .setFooter({
+                        text: message.guild.name,
+                        iconURL: message.guild.iconURL(),
+                    })
+                    .setDescription(
+                        `Successfully sent DM to ${member} (${
+                            member.user.tag
+                        }). ${
+                            attachments
+                                ? `You sent ${attachments.length} attachments with your message.`
+                                : ''
+                        }`
+                    ),
+            ],
             allowedMentions: {
                 users: [],
                 roles: [],
