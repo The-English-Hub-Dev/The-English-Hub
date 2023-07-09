@@ -33,7 +33,6 @@
         "dotenv": "^16.3.1",
         "ioredis": "^5.3.2",
         "mathjs": "^11.8.2",
-        "node-cron": "^3.0.2",
         "pg": "^8.10.0",
         "reflect-metadata": "^0.1.13",
         "typeorm": "^0.3.16"

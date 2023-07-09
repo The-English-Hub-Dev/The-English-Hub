@@ -26,7 +26,6 @@ container.db = new Database();
 
 container.utility = new Utility();
 container.automodManager = new AutomodManager();
-// container.tasks = new Tasks();
 
 const client = new SapphireClient({
     intents: [

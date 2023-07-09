@@ -79,7 +79,7 @@ class BotInfoCommand extends Command {
                                 0
                             )) *
                         100
-                    ).toFixed(2)}% of total users.`,
+                    ).toFixed(2)}% of total users)`,
                     inline: true,
                 },
                 {

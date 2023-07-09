@@ -630,7 +630,8 @@ class TopicCommand extends Command {
             name: 'topic',
             description:
                 'Sends a random topic as a conversation starter in the chat.',
-            aliases: ['conversationstarter'],
+            usage: '[query]',
+            aliases: ['conversationstarter', 't'],
         });
     }
 
@@ -654,7 +655,7 @@ class TopicCommand extends Command {
                     .setTitle('Topic')
 
                     .setFooter({
-                        text: `${message.guild.name} - Source: yagpdb bot topic command + other sources`,
+                        text: `${message.guild.name} - Source: yagpdb topic command + other sources`,
                         iconURL: message.guild.iconURL(),
                     })
                     .setColor('Random'),
