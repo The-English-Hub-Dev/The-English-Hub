@@ -1,5 +1,12 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, MessageEmbed } = require('discord.js');
+const {
+    Message,
+    EmbedBuilder,
+    Colors,
+    GuildMember,
+    ChannelType,
+} = require('discord.js');
+const { logChannel } = require('../../../config.json');
 
 class DmCommand extends Command {
     constructor(context, options) {
@@ -7,7 +14,9 @@ class DmCommand extends Command {
             ...options,
             name: 'dm',
             aliases: ['dmmember'],
-            description: 'DMs a member in the server with a specified message',
+            description:
+                'DMs a member in the server with a specified message. You can also include attachments by attaching them to your dm command.',
+            usage: '<member> <message>',
             preconditions: ['Staff'],
         });
     }
@@ -31,6 +40,7 @@ class DmCommand extends Command {
                 message,
                 'You must provide a message to send to the member.'
             );
+
         if (msg.unwrap().length > 1000)
             return this.container.utility.errReply(
                 message,
@@ -39,19 +49,117 @@ class DmCommand extends Command {
 
         const member = rawMember.unwrap();
 
-        const dmEmbed = new MessageEmbed()
-            .setDescription(`**Message:** ${msg.unwrap()}`)
-            .setFooter({ text: `Sent from ${message.guild.name}` })
-            .setColor('BLUE');
+        if (msg.unwrap().length > 4000)
+            return this.container.utility.errReply(
+                message,
+                'The message length may not be greater than 4000 characters.'
+            );
+
+        const attachments =
+            message.attachments.size > 0
+                ? [...message.attachments.values()]
+                : null;
+
+        const dmEmbed = new EmbedBuilder()
+            .setTitle(
+                `You've recieved a new message ${
+                    attachments ? 'with attachments' : ''
+                }!`
+            )
+            .setDescription(`**Message:** ${msg.unwrap()}\n\n`)
+            .setFooter({ text: `Sent by ${message.guild.name} Staff` })
+            .setColor(Colors.Blue);
 
         const successful = await member
             .send({ embeds: [dmEmbed] })
             .catch(() => null);
+
         if (!successful)
-            return message.reply(
-                `Couldn't send the message to that user. They most likely have their DM's closed.`
-            );
-        return message.reply(`Successfully sent DM to ${member.user.tag}.`);
+            return message.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor(Colors.Red)
+                        .setFooter({
+                            text: message.guild.name,
+                            iconURL: message.guild.iconURL(),
+                        })
+                        .setDescription(
+                            `Couldn't send the message to that user. They most likely have their DM's closed.`
+                        ),
+                ],
+            });
+
+        if (attachments) {
+            member.send({
+                content:
+                    'This message contained attachments. They are attached to this message.',
+                files: attachments,
+            });
+        }
+
+        await member.send(
+            'To reply to this message, just reply to me. Your message will be sent to the staff team and they will respond when they are available.'
+        );
+
+        await this.logDMSent(message, member, msg.unwrap());
+
+        return message.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setColor(Colors.Green)
+                    .setFooter({
+                        text: message.guild.name,
+                        iconURL: message.guild.iconURL(),
+                    })
+                    .setDescription(
+                        `Successfully sent DM to ${member} (${
+                            member.user.tag
+                        }). ${
+                            attachments
+                                ? `You sent ${attachments.length} attachments with your message.`
+                                : ''
+                        }`
+                    ),
+            ],
+            allowedMentions: {
+                users: [],
+                roles: [],
+                parse: [],
+                repliedUser: true,
+            },
+        });
+    }
+
+    /**
+     *
+     * @param { Message } message
+     * @param { GuildMember } member
+     * @param { String } dm
+     */
+    async logDMSent(message, member, dm) {
+        const logCh = message.guild.channels.cache.get(logChannel);
+        if (!logCh || logCh.type !== ChannelType.GuildText) return;
+
+        const dmSentEmbed = new EmbedBuilder()
+            .setTitle('DM Sent')
+            .setColor(Colors.Blurple)
+            .setFields(
+                {
+                    name: 'User sent to',
+                    value: `${member} (${member.id})`,
+                    inline: true,
+                },
+                {
+                    name: 'Sending staff',
+                    value: `${message.member} (${message.member.id})`,
+                    inline: true,
+                },
+                { name: 'Message Content', value: dm }
+            )
+            .setFooter({ text: `Sent at` })
+            .setTimestamp();
+
+        return logCh.send({ embeds: [dmSentEmbed] });
     }
 }
 

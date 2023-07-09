@@ -20,11 +20,7 @@ class MessageCommandErrorListener extends Listener {
      * @param { MessageCommandErrorPayload } payload
      */
     async run(error, payload) {
-        const capturedEx = Sentry.captureException(error, payload.context);
-        this.container.logger.error(error);
-        this.container.logger.error(
-            `Error captured by Sentry with ID ${capturedEx}`
-        );
+        await this.container.utility.exception(error, 'Command');
         return payload.message.reply({
             content: `An error occured: ${error.message}`,
             allowedMentions: { users: [], roles: [], parse: [] },

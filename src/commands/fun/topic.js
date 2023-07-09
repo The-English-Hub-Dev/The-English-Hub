@@ -1,5 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, MessageEmbed } = require('discord.js');
+const { Message, EmbedBuilder } = require('discord.js');
 
 const topics = [
     'What was the last funny video you saw?',
@@ -630,7 +630,8 @@ class TopicCommand extends Command {
             name: 'topic',
             description:
                 'Sends a random topic as a conversation starter in the chat.',
-            aliases: ['conversationstarter'],
+            usage: '[query]',
+            aliases: ['conversationstarter', 't'],
         });
     }
 
@@ -649,14 +650,15 @@ class TopicCommand extends Command {
             queryResult ?? topics[Math.floor(Math.random() * topics.length)];
         return message.channel.send({
             embeds: [
-                new MessageEmbed()
+                new EmbedBuilder()
                     .setDescription(topic)
-                    .setTitle('New Topic')
+                    .setTitle('Topic')
+
                     .setFooter({
-                        text: `${message.guild.name} * Source: yagpdb bot topic command + other sources`,
+                        text: `${message.guild.name} - Source: yagpdb topic command + other sources`,
                         iconURL: message.guild.iconURL(),
                     })
-                    .setColor('RANDOM'),
+                    .setColor('Random'),
             ],
             allowedMentions: { users: [], roles: [], parse: [] },
         });

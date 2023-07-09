@@ -1,6 +1,7 @@
 const { container } = require('@sapphire/pieces');
 const Sentry = require('@sentry/node');
-const { Message } = require('discord.js');
+const { Message, EmbedBuilder, Colors } = require('discord.js');
+const { staffRoles } = require('../../config.json');
 
 class Utility {
     constructor() {}
@@ -12,6 +13,7 @@ class Utility {
      */
     async exception(exception, type) {
         const sentryID = Sentry.captureException(exception);
+        container.logger.errorLogs.push(exception);
         container.logger.error(
             `${type} exception with ID ${sentryID} sent to Sentry`
         );
@@ -24,14 +26,32 @@ class Utility {
      * @param { String } error
      */
     async errReply(message, error) {
+        const errEmbed = new EmbedBuilder()
+            .setDescription(error)
+            .setColor(Colors.Red);
+
         const reply = await message.reply({
-            content: error,
+            embeds: [errEmbed],
             allowedMentions: { users: [], roles: [], parse: [] },
         });
+
         return setTimeout(() => {
-            reply.delete();
-            message.delete();
-        }, 3500);
+            message.delete().then(reply.delete());
+        }, 5000);
+    }
+
+    /**
+     *
+     * @param { Message } message
+     */
+    async isStaff(message) {
+        if (!message.member) return false;
+        return (
+            await container.stores
+                .get('preconditions')
+                .get('Staff')
+                .messageRun(message)
+        ).isOk();
     }
 }
 

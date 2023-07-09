@@ -1,6 +1,6 @@
 const { Command } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Message, MessageEmbed } = require('discord.js');
+const { Message, EmbedBuilder, time, TimestampStyles } = require('discord.js');
 const packageInfo = require(`${process.cwd()}/package.json`);
 const formatter = new DurationFormatter();
 
@@ -11,7 +11,7 @@ class BotInfoCommand extends Command {
             name: 'botinfo',
             description: 'Shows you information about the bot.',
             aliases: ['info', 'stats', 'botdetails'],
-            preconditions: ['Staff'],
+            preconditions: ['CmdCh'],
         });
     }
 
@@ -29,37 +29,69 @@ class BotInfoCommand extends Command {
 
         if (!this.container.client.application.owner)
             await this.container.client.application.fetch();
-        const dev = this.container.client.application.owner;
+        const dev = this.container.client.application.owner.members.first();
 
-        const info = new MessageEmbed()
+        const info = new EmbedBuilder()
             .setTitle('Bot Information')
             .setFooter({
                 text: `${this.container.client.user.tag}`,
                 iconURL: this.container.client.user.displayAvatarURL(),
             })
-            .setColor('RANDOM')
-            .addField('Bot Version', packageInfo.version, true)
-            .addField('Developer', dev.tag)
-            .addField(
-                'Memory Usage(RSS)',
-                `\`${(processMem.rss / 1024 / 1024).toFixed(3)} MiB\``,
-                true
-            )
-            .addField(
-                'Memory Usage(Heap)',
-                `\`${(processMem.heapUsed / 1024 / 1024).toFixed(3)} MiB\``,
-                true
-            )
-            .addField('Redis Memory Usage', `\`${redisMem} MiB\``, true)
-            .addField(
-                'Current Cached Users',
-                `${this.container.client.users.cache.size}`,
-                true
-            )
-            .addField(
-                'Bot Uptime',
-                `${formatter.format(this.container.client.uptime)}`,
-                true
+            .setColor('Random')
+            .addFields(
+                {
+                    name: 'Bot Version',
+                    value: packageInfo.version,
+                    inline: true,
+                },
+                { name: 'Developer', value: dev.user.tag, inline: true },
+                { name: 'Container', value: (await import('os')).hostname() },
+                {
+                    name: 'Memory Usage(RSS)',
+                    value: `\`${(processMem.rss / 1024 / 1024).toFixed(
+                        3
+                    )} MiB\``,
+                    inline: true,
+                },
+                {
+                    name: 'Memory Usage(Heap)',
+                    value: `\`${(processMem.heapUsed / 1024 / 1024).toFixed(
+                        3
+                    )} MiB\``,
+                    inline: true,
+                },
+                {
+                    name: 'Redis Memory Usage',
+                    value: `\`${redisMem} MiB\``,
+                    inline: true,
+                },
+                {
+                    name: 'Postgres Driver Version',
+                    value: `\`${this.container.db.typeorm.driver.version}\``,
+                    inline: true,
+                },
+                {
+                    name: 'Current Cached Users',
+                    value: `${this.container.client.users.cache.size} (${(
+                        (this.container.client.users.cache.size /
+                            this.container.client.guilds.cache.reduce(
+                                (acc, guild) => acc + guild.memberCount,
+                                0
+                            )) *
+                        100
+                    ).toFixed(2)}% of total users)`,
+                    inline: true,
+                },
+                {
+                    name: 'Bot Uptime',
+                    value: `${formatter.format(
+                        this.container.client.uptime
+                    )} (since ${time(
+                        new Date(Date.now() - this.container.client.uptime),
+                        TimestampStyles.RelativeTime
+                    )})`,
+                    inline: true,
+                }
             );
         return message.reply({ embeds: [info] });
     }

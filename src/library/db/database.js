@@ -1,4 +1,3 @@
-const { container } = require('@sapphire/framework');
 const { DataSource } = require('typeorm');
 
 class Database {
@@ -11,14 +10,6 @@ class Database {
             logging: ['error'],
             synchronize: true,
             entities: [require('./entities/PunishmentEntity').punishmentEntity],
-            cache: {
-                type: 'ioredis',
-                duration: 20000,
-                options: {
-                    uri: process.env.REDIS_URL,
-                    ssl: { rejectUnauthorized: false },
-                },
-            },
         });
         ds.initialize().catch((e) => console.log(e));
 

@@ -1,6 +1,6 @@
 const { Precondition } = require('@sapphire/framework');
 const { Message, Permissions } = require('discord.js');
-const { cmdChannels } = require('../config.json');
+const { cmdChannels } = require('../../config.json');
 
 class CommandChPrecondition extends Precondition {
     /**
@@ -10,11 +10,12 @@ class CommandChPrecondition extends Precondition {
      */
     async messageRun(message) {
         if (
-            this.container.stores
-                .get('preconditions')
-                .get('Staff')
-                .messageRun(message)
-                .isOk()
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Staff')
+                    .messageRun(message)
+            ).isOk()
         )
             return this.ok();
 

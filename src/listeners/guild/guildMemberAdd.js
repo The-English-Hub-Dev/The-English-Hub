@@ -1,5 +1,12 @@
 const { Listener, Events } = require('@sapphire/framework');
-const { GuildMember } = require('discord.js');
+const {
+    GuildMember,
+    ChannelType,
+    EmbedBuilder,
+    TimestampStyles,
+    time,
+    Colors,
+} = require('discord.js');
 const { welcomeChannel } = require('../../../config.json');
 
 class GuildMemberAddListener extends Listener {
@@ -17,6 +24,7 @@ class GuildMemberAddListener extends Listener {
      */
     async run(member) {
         await this.welcomeMember(member);
+        await this.sendMilestoneMessage(member);
     }
 
     /**
@@ -25,10 +33,38 @@ class GuildMemberAddListener extends Listener {
      */
     async welcomeMember(member) {
         const channel = member.guild.channels.cache.get(welcomeChannel);
-        if (!channel || channel.type !== 'GUILD_TEXT') return;
+        if (!channel || channel.type !== ChannelType.GuildText) return;
         return channel.send({
             content: `Ahoy ${member}, Welcome to ${member.guild.name}!\nSelect <id:customize> to get started. <a:enghub:932293018185244742>`,
             allowedMentions: { users: [member.id], roles: [], parse: [] },
+        });
+    }
+
+    /**
+     *
+     * @param { GuildMember } member
+     */
+    async sendMilestoneMessage(member) {
+        if (member.guild.memberCount % 1000 != 0) return;
+        const channel = member.guild.channels.cache.get(welcomeChannel);
+        if (!channel || channel.type !== ChannelType.GuildText) return;
+
+        const milestoneEmbed = new EmbedBuilder()
+            .setTitle(`We've hit a membercount milestone!`)
+            .setColor(Colors.LuminousVividPink)
+            .setDescription(
+                `We've hit **${member.guild.memberCount.toLocaleString()}** members!\nMilestone achieved at ${time(
+                    new Date(),
+                    TimestampStyles.LongDateTime
+                )}`
+            )
+            .setFooter({
+                text: `Milestone reached!`,
+            });
+
+        return channel.send({
+            embeds: [milestoneEmbed],
+            allowedMentions: { users: [], roles: [], parse: [] },
         });
     }
 }

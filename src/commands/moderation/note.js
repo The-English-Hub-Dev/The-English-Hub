@@ -5,14 +5,14 @@ const { logChannel } = require('../../../config.json');
 const Punishment =
     require('../../library/db/entities/PunishmentEntity').Punishment;
 
-class WarnCommand extends Command {
+class NoteCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: 'warn',
-            description: 'Warns/Strikes a user for breaking the rules.',
-            usage: '<member> [reason]',
+            name: 'note',
+            description: "Adds a note to a user's profile.",
             preconditions: ['Staff'],
+            usage: '<member> [note to add]',
             flags: ['noshow', 'noembed', 'hide'],
         });
     }
@@ -24,13 +24,13 @@ class WarnCommand extends Command {
     async messageRun(message, args) {
         const rawMember = await args.pickResult('member');
         const reason = (await args.restResult('string')).unwrapOr(
-            'No reason given.'
+            'No reason given for note.'
         );
 
         if (rawMember.isErr()) {
             return this.container.utility.errReply(
                 message,
-                'You must provide a valid member to warn.'
+                'You must provide a valid member to note on their profile.'
             );
         }
 
@@ -42,7 +42,7 @@ class WarnCommand extends Command {
         ) {
             return this.container.utility.errReply(
                 message,
-                'You cannot warn members with equal or higher roles than you.'
+                'You cannot take a note for members with equal or higher roles than you.'
             );
         }
 
@@ -50,15 +50,15 @@ class WarnCommand extends Command {
             message.author.id,
             member.id,
             reason,
-            'warn',
+            'note',
             null
         );
 
         if (!args.getFlags('noshow', 'noembed', 'hide')) {
             const confirmEmbed = new EmbedBuilder()
-                .setColor(Colors.Yellow)
+                .setColor(Colors.Grey)
                 .setDescription(
-                    `${member.user} was warned with ID \`${punishment.punishment_id}\`.`
+                    `${member.user} had a note added to their profile. \`${punishment.punishment_id}\`.`
                 );
 
             await message.channel.send({
@@ -66,9 +66,7 @@ class WarnCommand extends Command {
             });
         }
 
-        await this.sendMemberDM(message, member, reason, punishment);
-
-        await this.logWarn(message, member, reason, punishment);
+        await this.logNote(message, member, reason, punishment);
     }
 
     /**
@@ -80,8 +78,8 @@ class WarnCommand extends Command {
      */
     async sendMemberDM(message, member, reason, punishment) {
         const dmEmbed = new EmbedBuilder()
-            .setColor(Colors.Yellow)
-            .setTitle(`You were warned in ${message.guild.name}`)
+            .setColor(Colors.Grey)
+            .setTitle(`You were given a note in ${message.guild.name}`)
             .setAuthor({
                 name: message.guild.name,
                 iconURL: message.guild.iconURL(),
@@ -96,7 +94,7 @@ class WarnCommand extends Command {
             })
             .setTimestamp(Date.now());
 
-        await member.send({ embeds: [dmEmbed] }).catch(() => {});
+        await member.send({ embeds: [dmEmbed] }).catch();
     }
 
     /**
@@ -107,9 +105,9 @@ class WarnCommand extends Command {
      * @param { Punishment } punishment
      * @returns
      */
-    async logWarn(message, member, reason, punishment) {
+    async logNote(message, member, reason, punishment) {
         const logEmbed = new EmbedBuilder()
-            .setColor(Colors.Yellow)
+            .setColor(Colors.Grey)
             .setTitle('Warn')
             .setAuthor({
                 name: member.user.tag,
@@ -154,4 +152,4 @@ class WarnCommand extends Command {
     }
 }
 
-module.exports = { WarnCommand };
+module.exports = { NoteCommand };

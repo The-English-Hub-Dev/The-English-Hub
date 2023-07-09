@@ -1,5 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, Permissions } = require('discord.js');
+const { Message, PermissionFlagsBits } = require('discord.js');
 
 class MvCommand extends Command {
     constructor(context, options) {
@@ -8,6 +8,7 @@ class MvCommand extends Command {
             name: 'mv',
             aliases: ['moveme', 'movevc', 'movemevc'],
             preconditions: ['MoveMe'],
+            usage: ['<channel type:VoiceChannel>'],
             description: 'Moves you into a certain voice channel.',
         });
     }
@@ -28,28 +29,34 @@ class MvCommand extends Command {
         if (!message.member.voice.channel)
             return this.container.utility.errReply(
                 message,
-                'You must be in a voice channel to use this command.'
+                'You must be in a voice channel to use this command otherwise I cannot move you to a new channel.'
             );
 
+        if (vc.unwrap().parent.id !== '852806050684076053') {
+            return this.container.utility.errReply(
+                message,
+                'You can only move yourself to channels in the `Practice English` Category'
+            );
+        }
         if (
             !message.member
                 .permissionsIn(vc.unwrap())
-                .has(Permissions.FLAGS.VIEW_CHANNEL)
+                .has(PermissionFlagsBits.ViewChannel)
         )
             return this.container.utility.errReply(
                 message,
-                'You cannot move yourself to that channel.'
+                "You are not allowed to move yourself to that channel as it isn't visible to you."
             );
-        await message.member.voice
-            .setChannel(
+        try {
+            await message.member.voice.setChannel(
                 vc.unwrap(),
                 `${message.member.user.tag} requested to be moved with the moveme command.`
-            )
-            .catch(async () => {
-                return message.reply(
-                    `You are not allowed to move yourself to that channel.`
-                );
-            });
+            );
+        } catch (error) {
+            return message.reply(
+                `I could not move you to that channel. Error: ${error}`
+            );
+        }
 
         return message.reply(
             `You have been successfully moved to ${vc.unwrap()}`

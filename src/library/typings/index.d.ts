@@ -3,12 +3,14 @@ import {
     ILogger,
     SapphireClient,
 } from '@sapphire/framework';
+import { ILogger } from '@sapphire/plugin-logger';
 import { Duration } from '@sapphire/time-utilities';
 import { GuildMember, Guild, Message, User } from 'discord.js';
 import { Database } from '../db/database';
 import { RedisCommander } from 'ioredis';
 import { Punishments } from '../punishments';
 import { Utility } from '../utility';
+import { AutomodManager } from '../managers/automodManager';
 
 declare module '@sapphire/pieces' {
     interface Container {
@@ -19,13 +21,16 @@ declare module '@sapphire/pieces' {
         punishments: Punishments;
         stores: StoreRegistry;
         logger: ILogger;
+        intervals: {};
+        automodManager: AutomodManager;
         applicationCommandRegistries: ApplicationCommandRegistry;
     }
 }
 
 declare module '@sapphire/framework' {
-    interface Command {
-        usage: String;
+    interface ILogger {
+        commandLogs: String[];
+        errorLogs: String[];
     }
 }
 

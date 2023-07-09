@@ -1,7 +1,9 @@
-name: Syntax Check + Formatting
+name: Deploy The English Hub to production
 
 on:
     push:
+        branches:
+            - master
     pull_request_review:
     workflow_dispatch:
 
@@ -32,7 +34,22 @@ jobs:
               with:
                   ref: ${{ github.head_ref }}
             - name: Run Prettier on code and push
-              uses: creyD/prettier_action@v4.2
+              uses: creyD/prettier_action@v4.3
               with:
                   prettier_options: -w ./src/**/*
                   commit_message: 'chore(formatting[auto]): run prettier on code'
+    deploment:
+        if: "!contains(github.event.head_commit.message, '[skip deploy]')"
+        name: Deploy new version
+        runs-on: ubuntu-latest
+        needs: [eslint]
+        steps:
+            - name: Send restart signal via api to server
+              id: sendapireq
+              uses: fjogeleit/http-request-action@v1
+              with:
+                  url: https://control.sparkedhost.us/api/client/servers/ffcf973d/power?signal=restart
+                  method: 'POST'
+                  bearerToken: ${{ secrets.SPARKEDHOST_API_KEY }}
+                  customheaders: '{"Content-Type": "application/json"}'
+                  data: '{"signal": "restart"}'

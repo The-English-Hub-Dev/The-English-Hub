@@ -1,6 +1,6 @@
 const { SapphireClient, container } = require('@sapphire/framework');
 const Sentry = require('@sentry/node');
-const { Intents, Options } = require('discord.js');
+const { GatewayIntentBits, Options, Partials } = require('discord.js');
 const Redis = require('ioredis');
 require('@sapphire/plugin-logger/register');
 require('dotenv').config();
@@ -8,28 +8,39 @@ const { prefix, clientID } = require('../config.json');
 const { Database } = require('./library/db/database');
 const { Tasks } = require('./library/tasks');
 const { Utility } = require('./library/utility');
+const { AutomodManager } = require('./library/managers/automodManager');
 
-process.on('uncaughtException', (error) => {
-    if (!container || !container.logger) console.log(error);
-    else container.logger.error(error);
+process.on('uncaughtException', async (error) => {
+    if (!container || !container.utility) container.logger.error(error);
+    else {
+        await container.utility.exception(error, 'Uncaught');
+    }
 });
 
 const redis = new Redis(process.env.REDIS_URL, {});
-
+redis.on('connect', () => {
+    container.logger.info('Connected to Redis Instance!');
+});
 container.redis = redis;
+
 container.db = new Database();
+
 container.utility = new Utility();
-// container.tasks = new Tasks();
+container.automodManager = new AutomodManager();
 
 const client = new SapphireClient({
     intents: [
-        Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES,
-        Intents.FLAGS.GUILD_BANS,
-        Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.DIRECT_MESSAGES,
-        Intents.FLAGS.GUILD_VOICE_STATES,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.MessageContent,
+        GatewayIntentBits.GuildModeration,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.DirectMessageTyping,
+        GatewayIntentBits.DirectMessageReactions,
+        GatewayIntentBits.GuildVoiceStates,
     ],
+    partials: [Partials.Channel],
     sweepers: {
         ...Options.defaultSweeperSettings,
         guildMembers: {
