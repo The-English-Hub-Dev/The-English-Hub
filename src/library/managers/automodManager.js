@@ -11,8 +11,13 @@ class AutomodManager {
      */
     async runAutomodOnMessage(message) {
         let msgOk = true;
-        if (await container.utility.isStaff(message)) return true;
+        if (await container.utility.isStaff(message)) {
+            container.logger.info('isStaff returned true')
+            container.logger.warn('skipping because testing')
+            // return true;
+        }
         msgOk = await this.discordInviteCheck(message);
+        container.logger.info('discordInviteCheck returned ' + msgOk)
 
         return msgOk;
     }
@@ -23,6 +28,7 @@ class AutomodManager {
      * @returns
      */
     async discordInviteCheck(message) {
+        container.logger.info('running discord invite check')
         const inviteLink = DiscordInviteLinkRegex.exec(message.content);
         if (inviteLink && inviteLink[0] !== 'discord.gg/enghub') {
             message.delete();

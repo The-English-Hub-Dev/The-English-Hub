@@ -27,7 +27,7 @@ class MessageCreateListener extends Listener {
             return this.logDM(message);
         }
 
-        // await this.container.automodManager.runAutomodOnMessage(message);
+        await this.container.automodManager.runAutomodOnMessage(message);
     }
 
     /**
