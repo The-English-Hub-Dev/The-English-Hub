@@ -53,9 +53,7 @@ class GuildMemberAddListener extends Listener {
             .setTitle(`We've hit a membercount milestone!`)
             .setColor(Colors.LuminousVividPink)
             .setDescription(
-                `We've hit **${
-                    member.guild.memberCount.toLocaleString()
-                }** members!\nMilestone achieved at ${time(
+                `We've hit **${member.guild.memberCount.toLocaleString()}** members!\nMilestone achieved at ${time(
                     new Date(),
                     TimestampStyles.LongDateTime
                 )}`
