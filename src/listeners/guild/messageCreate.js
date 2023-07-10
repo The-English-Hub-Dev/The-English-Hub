@@ -3,7 +3,7 @@ const { Message, EmbedBuilder, ChannelType, Colors } = require('discord.js');
 const {
     redirectDMChannelID,
     mainGuildID,
-    dmLogChannel,
+    logChannel,
 } = require('../../../config.json');
 
 class MessageCreateListener extends Listener {
@@ -48,7 +48,7 @@ class MessageCreateListener extends Listener {
 
         const embed = new EmbedBuilder()
             .setTitle(`${message.author.tag} sent a DM!`)
-            .setColor('Random')
+            .setColor(Colors.DarkGreen)
             .setDescription(
                 `${
                     message.content.length > 0
@@ -99,11 +99,12 @@ class MessageCreateListener extends Listener {
     async logDM(message) {
         const dmLog = this.container.client.guilds.cache
             .get(mainGuildID)
-            .channels.cache.get(dmLogChannel);
+            .channels.cache.get(logChannel);
         if (!dmLog || dmLog.type !== ChannelType.GuildText) return;
 
         const dmRecieveLogEmbed = new EmbedBuilder()
             .setTitle('DM Recieved')
+            .setColor(Colors.DarkAqua)
             .setFields(
                 {
                     name: 'Message Author',

@@ -108,9 +108,9 @@ class DmCommand extends Command {
                 new EmbedBuilder()
                     .setColor(Colors.Green)
                     .setFooter({
-                        text: message.guild.name,
-                        iconURL: message.guild.iconURL(),
+                        text: 'Message sent through DM system',
                     })
+                    .setTimestamp()
                     .setDescription(
                         `Successfully sent DM to ${member} (${
                             member.user.tag
