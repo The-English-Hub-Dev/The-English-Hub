@@ -80,9 +80,9 @@ class DmCommand extends Command {
                     new EmbedBuilder()
                         .setColor(Colors.Red)
                         .setFooter({
-                            text: message.guild.name,
-                            iconURL: message.guild.iconURL(),
+                            text: 'Message could not be sent through DM system',
                         })
+                        .setTimestamp()
                         .setDescription(
                             `Couldn't send the message to that user. They most likely have their DM's closed.`
                         ),
