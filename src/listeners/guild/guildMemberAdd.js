@@ -7,7 +7,7 @@ const {
     time,
     Colors,
 } = require('discord.js');
-const { welcomeChannel } = require('../../../config.json');
+const { welcomeChannel, mainChannel } = require('../../../config.json');
 
 class GuildMemberAddListener extends Listener {
     constructor(context, options) {
@@ -46,7 +46,7 @@ class GuildMemberAddListener extends Listener {
      */
     async sendMilestoneMessage(member) {
         if (member.guild.memberCount % 1000 != 0) return;
-        const channel = member.guild.channels.cache.get(welcomeChannel);
+        const channel = member.guild.channels.cache.get(mainChannel);
         if (!channel || channel.type !== ChannelType.GuildText) return;
 
         const milestoneEmbed = new EmbedBuilder()
