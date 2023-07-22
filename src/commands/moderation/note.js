@@ -1,6 +1,12 @@
 const { time, TimestampStyles } = require('@discordjs/builders');
 const { Command, Args } = require('@sapphire/framework');
-const { Message, EmbedBuilder, GuildMember, Colors } = require('discord.js');
+const {
+    Message,
+    EmbedBuilder,
+    GuildMember,
+    Colors,
+    ChannelType,
+} = require('discord.js');
 const { logChannel } = require('../../../config.json');
 const Punishment =
     require('../../library/db/entities/PunishmentEntity').Punishment;
@@ -22,6 +28,8 @@ class NoteCommand extends Command {
      * @param { Args } args
      */
     async messageRun(message, args) {
+        message.channel.permissionOverwrites;
+
         const rawMember = await args.pickResult('member');
         const reason = (await args.restResult('string')).unwrapOr(
             'No reason given for note.'
@@ -107,8 +115,8 @@ class NoteCommand extends Command {
      */
     async logNote(message, member, reason, punishment) {
         const logEmbed = new EmbedBuilder()
-            .setColor(Colors.Grey)
-            .setTitle('Warn')
+            .setColor(Colors.Aqua)
+            .setTitle('Note added')
             .setAuthor({
                 name: member.user.tag,
                 iconURL: member.user.avatarURL(),
