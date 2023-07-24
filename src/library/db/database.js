@@ -6,7 +6,6 @@ class Database {
             type: 'postgres',
             connectTimeoutMS: 5000,
             url: process.env.DATABASE_URL,
-            ssl: { rejectUnauthorized: false },
             logging: ['error'],
             synchronize: true,
             entities: [require('./entities/PunishmentEntity').punishmentEntity],

@@ -31,9 +31,13 @@ class NoteCommand extends Command {
         message.channel.permissionOverwrites;
 
         const rawMember = await args.pickResult('member');
-        const reason = (await args.restResult('string')).unwrapOr(
-            'No reason given for note.'
-        );
+        const reason = await args.restResult('string');
+
+        if (reason.isErr())
+            return this.container.utility.errReply(
+                message,
+                'You must provide a reason for the note.'
+            );
 
         if (rawMember.isErr()) {
             return this.container.utility.errReply(

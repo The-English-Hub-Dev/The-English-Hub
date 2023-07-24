@@ -46,6 +46,12 @@ class MessageCreateListener extends Listener {
                 ? [...message.attachments.values()]
                 : null;
 
+        if (message.content.length > 4000) {
+            return message.reply(
+                'Your message is too long to be sent! The maximum length is 4000 characters. You can shorten your message and send it in multiple parts if needed.'
+            );
+        }
+
         const embed = new EmbedBuilder()
             .setTitle(`${message.author.tag} sent a DM!`)
             .setColor(Colors.DarkGreen)
