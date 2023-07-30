@@ -41,7 +41,7 @@ class GuildMemberAddListener extends Listener {
         if (!oldState.channel && newState.channel.id === twoRooms.last().id) {
             const newChannel = await oldState.guild.channels.create({
                 name: `Room 2.${
-                    Number(twoRooms.last().name.split(' ')[1].split('.')) + 1
+                    Number(twoRooms.last().name.split(' ')[1].split('.')[1]) + 1
                 }`,
                 type: ChannelType.GuildVoice,
                 parent: twoRooms.last().parent,
