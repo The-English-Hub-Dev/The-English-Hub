@@ -105,8 +105,7 @@ class Tasks {
 
         const deleteInactiveTwo = setInterval(
             deleteAndRenameInactiveTwoRooms,
-            5000
-            // 60_000
+            60_000
         );
 
         this.intervals.deleteInactiveTwo = deleteInactiveTwo;
