@@ -14,6 +14,7 @@ class Tasks {
     async initializeTasks() {
         await this.initializeStatusTask();
         await this.initializeHealthcheck();
+        await this.initializeDeleteInactiveTwoRooms();
     }
 
     async initializeStatusTask() {
@@ -65,9 +66,8 @@ class Tasks {
                 .map((channel) => channel);
 
             if (twoRooms.length == 1) return;
-            twoRooms.splice()
 
-            for (let x = 0; x < twoRooms.length; x++) {
+            for (let x = 0; x < twoRooms.length - 1; x++) {
                 const room = twoRooms[x];
                 if (room.members.size == 0 && room.manageable) {
                     await room.delete(
