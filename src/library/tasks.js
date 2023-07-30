@@ -82,10 +82,19 @@ class Tasks {
                 }
             }
 
+            const twoRoomsUpdated = container.client.guilds.cache
+                .get(mainGuildID)
+                .channels.cache.filter(
+                    (channel) =>
+                        channel.parent &&
+                        channel.type == ChannelType.GuildVoice &&
+                        channel.parent.id === smallRoomParentID
+                )
+                .map((channel) => channel);
             let startNaming = 1;
 
-            for (let y = 0; y < twoRooms.length; y++) {
-                const room = twoRooms[y];
+            for (let y = 0; y < twoRoomsUpdated.length; y++) {
+                const room = twoRoomsUpdated[y];
                 await room.setName(
                     `Room 2.${startNaming}`,
                     'Renaming the two rooms to be in order since one was deleted.'
