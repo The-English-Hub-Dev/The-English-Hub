@@ -26,6 +26,8 @@ class VoiceStateUpdateListener extends Listener {
      * @param { VoiceState } newState
      */
     async handleRoomTwoCreation(oldState, newState) {
+        if (!newState.channelId) return;
+
         const twoRooms = oldState.guild.channels.cache.filter(
             (channel) =>
                 channel.parent &&
