@@ -65,6 +65,7 @@ class Tasks {
                 .map((channel) => channel);
 
             if (twoRooms.length == 1) return;
+            twoRooms.splice()
 
             for (let x = 0; x < twoRooms.length; x++) {
                 const room = twoRooms[x];
