@@ -1,8 +1,5 @@
 const { container } = require('@sapphire/pieces');
 const { ActivityType, ChannelType } = require('discord.js');
-const {
-    VoiceStateUpdateListener,
-} = require('../listeners/guild/voiceStateUpdate');
 const { mainGuildID, smallRoomParentID } = require('../../config.json');
 let statusNum = 1;
 
@@ -97,7 +94,7 @@ class Tasks {
                 const room = twoRoomsUpdated[y];
                 await room.setName(
                     `Room 2.${startNaming}`,
-                    'Renaming the two rooms to be in order since one was deleted.'
+                    'Renaming the two rooms to be in order since one or many was/were deleted.'
                 );
                 startNaming++;
             }
