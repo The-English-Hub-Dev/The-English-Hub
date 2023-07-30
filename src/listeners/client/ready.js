@@ -7,6 +7,7 @@ const {
     Colors,
     ActivityType,
 } = require('discord.js');
+const { Tasks } = require('../../library/tasks');
 let statusNum = 1;
 
 class ReadyListener extends Listener {
@@ -44,37 +45,8 @@ class ReadyListener extends Listener {
 
         this.container.logger.commandLogs = [];
         this.container.logger.errorLogs = [];
-        this.container.intervals = {};
-
-        const statusInterval = setInterval(() => {
-            if (statusNum == 2) {
-                const guild = client.guilds.cache.get('801609515391778826');
-                if (guild) {
-                    client.user.setActivity(
-                        `${guild.memberCount.toLocaleString()} members`,
-                        {
-                            type: ActivityType.Watching,
-                        }
-                    );
-                }
-                statusNum--;
-            } else {
-                client.user.setActivity(
-                    'DM me to ask a question to the staff!',
-                    { type: ActivityType.Playing }
-                );
-                statusNum++;
-            }
-        }, 20000);
-
-        const healthCheckInterval = setInterval(async () => {
-            await fetch(process.env.HEALTHCHECK_URL, {
-                method: 'POST',
-            });
-        }, 120000);
-
-        this.container.intervals.status = statusInterval;
-        this.container.intervals.healthCheck = healthCheckInterval;
+        this.container.tasks = new Tasks();
+        await this.container.tasks.initializeTasks();
     }
 }
 

@@ -11,6 +11,7 @@ import { RedisCommander } from 'ioredis';
 import { Punishments } from '../punishments';
 import { Utility } from '../utility';
 import { AutomodManager } from '../managers/automodManager';
+import { Tasks } from '../tasks';
 
 declare module '@sapphire/pieces' {
     interface Container {
@@ -21,7 +22,7 @@ declare module '@sapphire/pieces' {
         punishments: Punishments;
         stores: StoreRegistry;
         logger: ILogger;
-        intervals: {};
+        tasks: Tasks;
         automodManager: AutomodManager;
         applicationCommandRegistries: ApplicationCommandRegistry;
     }
