@@ -2,7 +2,7 @@ const { Listener, Events } = require('@sapphire/framework');
 const { VoiceState, ChannelType } = require('discord.js');
 const { smallRoomParentID } = require('../../../config.json');
 
-class GuildMemberAddListener extends Listener {
+class VoiceStateUpdateListener extends Listener {
     constructor(context, options) {
         super(context, {
             ...options,
@@ -52,4 +52,4 @@ class GuildMemberAddListener extends Listener {
     }
 }
 
-module.exports = { GuildMemberAddListener };
+module.exports = { VoiceStateUpdateListener };

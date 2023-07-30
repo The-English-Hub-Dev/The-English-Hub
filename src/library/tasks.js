@@ -1,5 +1,9 @@
 const { container } = require('@sapphire/pieces');
-const { ActivityType } = require('discord.js');
+const { ActivityType, ChannelType } = require('discord.js');
+const {
+    VoiceStateUpdateListener,
+} = require('../listeners/guild/voiceStateUpdate');
+const { mainGuildID, smallRoomParentID } = require('../../config.json');
 let statusNum = 1;
 
 class Tasks {
@@ -46,6 +50,47 @@ class Tasks {
         }, 120000);
 
         this.intervals.healthCheck = healthCheckInterval;
+    }
+
+    async initializeDeleteInactiveTwoRooms() {
+        async function deleteAndRenameInactiveTwoRooms() {
+            const twoRooms = container.client.guilds.cache
+                .get(mainGuildID)
+                .channels.cache.filter(
+                    (channel) =>
+                        channel.parent &&
+                        channel.type == ChannelType.GuildVoice &&
+                        channel.parent.id === smallRoomParentID
+                )
+                .map((channel) => channel);
+
+            if (twoRooms.length == 1) return;
+
+            for (let x = 0; x < twoRooms.length; x++) {
+                const room = twoRooms[x];
+                if (room.members.size == 0 && room.manageable) {
+                    await room.delete(
+                        'This two room was inactive for one minute and was deleted. The remaining rooms will now be renamed.'
+                    );
+
+                    twoRooms.splice(x, 1);
+                    let startNaming = 1;
+
+                    for (let y = 0; y < twoRooms.length; y++) {
+                        const room = twoRooms[y];
+                        await room.setName(`Room 2.${startNaming}`);
+                        startNaming++;
+                    }
+                }
+            }
+        }
+
+        const deleteInactiveTwo = setInterval(
+            deleteAndRenameInactiveTwoRooms,
+            60_000
+        );
+
+        this.intervals.deleteInactiveTwo = deleteInactiveTwo;
     }
 }
 
