@@ -32,7 +32,10 @@ class GuildMemberAddListener extends Listener {
      */
     async handleRoomTwoCreation(oldState, newState) {
         const twoRooms = oldState.guild.channels.cache.filter(
-            (channel) => channel.parent.id === smallRoomParentID
+            (channel) =>
+                channel.parent &&
+                channel.type == ChannelType.GuildVoice &&
+                channel.parent.id === smallRoomParentID
         );
 
         if (!oldState.channel && newState.channel.id === twoRooms.last().id) {
