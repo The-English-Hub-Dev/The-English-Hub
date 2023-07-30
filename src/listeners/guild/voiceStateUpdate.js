@@ -17,11 +17,6 @@ class VoiceStateUpdateListener extends Listener {
      * @param { VoiceState } newState
      */
     async run(oldState, newState) {
-        this.container.logger.info('VoiceStateUpdate event fired');
-        this.container.logger.info('oldState');
-        this.container.logger.info(oldState);
-        this.container.logger.info('newState');
-        this.container.logger.info(newState);
         await this.handleRoomTwoCreation(oldState, newState);
     }
 
