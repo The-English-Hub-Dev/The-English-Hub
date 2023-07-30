@@ -79,19 +79,18 @@ class Tasks {
                     await room.delete(
                         'This two room was inactive for one minute and was deleted.'
                     );
-
-                    twoRooms.splice(x, 1);
-                    let startNaming = 1;
-
-                    for (let y = 0; y < twoRooms.length; y++) {
-                        const room = twoRooms[y];
-                        await room.setName(
-                            `Room 2.${startNaming}`,
-                            'Renaming the two rooms to be in order since one was deleted.'
-                        );
-                        startNaming++;
-                    }
                 }
+            }
+
+            let startNaming = 1;
+
+            for (let y = 0; y < twoRooms.length; y++) {
+                const room = twoRooms[y];
+                await room.setName(
+                    `Room 2.${startNaming}`,
+                    'Renaming the two rooms to be in order since one was deleted.'
+                );
+                startNaming++;
             }
         }
 
