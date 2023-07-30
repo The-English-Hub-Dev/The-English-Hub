@@ -44,6 +44,12 @@ class Tasks {
     }
 
     async initializeHealthcheck() {
+        if (!process.env.HEALTHCHECK_URL) {
+            container.logger.warn(
+                'No healthcheck url was provided. Healthcheck task will not be initialized.'
+            );
+            return;
+        }
         const healthCheckInterval = setInterval(async () => {
             await fetch(process.env.HEALTHCHECK_URL, {
                 method: 'POST',
