@@ -77,7 +77,7 @@ class Tasks {
                 const room = twoRooms[x];
                 if (room.members.size == 0 && room.manageable) {
                     await room.delete(
-                        'This two room was inactive for one minute and was deleted. The remaining rooms will now be renamed.'
+                        'This two room was inactive for one minute and was deleted.'
                     );
 
                     twoRooms.splice(x, 1);
@@ -85,7 +85,10 @@ class Tasks {
 
                     for (let y = 0; y < twoRooms.length; y++) {
                         const room = twoRooms[y];
-                        await room.setName(`Room 2.${startNaming}`);
+                        await room.setName(
+                            `Room 2.${startNaming}`,
+                            'Renaming the two rooms to be in order since one was deleted.'
+                        );
                         startNaming++;
                     }
                 }
