@@ -39,6 +39,7 @@ class VoiceStateUpdateListener extends Listener {
         );
 
         if (newState.channel.id === twoRooms.last().id) {
+            this.container.logger.info('Creating new room 2');
             const newChannel = await oldState.guild.channels.create({
                 name: `Room 2.${
                     Number(twoRooms.last().name.split(' ')[1].split('.')[1]) + 1
@@ -67,6 +68,7 @@ class VoiceStateUpdateListener extends Listener {
         );
 
         if (newState.channel.id === threeRooms.last().id) {
+            this.container.logger.info('Creating new room 3');
             const newChannel = await oldState.guild.channels.create({
                 name: `Room 2.${
                     Number(threeRooms.last().name.split(' ')[1].split('.')[1]) +

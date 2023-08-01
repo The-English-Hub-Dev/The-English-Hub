@@ -77,6 +77,9 @@ class Tasks {
             for (let x = 0; x < twoRooms.length - 1; x++) {
                 const room = twoRooms[x];
                 if (room.members.size == 0 && room.manageable) {
+                    container.logger.info(
+                        `Deleting inactive two room ${room.name}`
+                    );
                     await room.delete(
                         'This two room was inactive for one minute and was deleted.'
                     );
@@ -97,6 +100,7 @@ class Tasks {
 
             for (let y = 0; y < twoRoomsUpdated.length; y++) {
                 const room = twoRoomsUpdated[y];
+                container.logger.info(`Renaming two room ${room.name}`);
                 await room.setName(
                     `Room 2.${startNaming}`,
                     'Renaming the two rooms to be in order since one or many was/were deleted.'
@@ -130,6 +134,9 @@ class Tasks {
             for (let x = 0; x < threeRooms.length - 1; x++) {
                 const room = threeRooms[x];
                 if (room.members.size == 0 && room.manageable) {
+                    container.logger.info(
+                        `Deleting inactive three room ${room.name}`
+                    );
                     await room.delete(
                         'This three room was inactive for one minute and was deleted.'
                     );
@@ -150,6 +157,7 @@ class Tasks {
 
             for (let y = 0; y < threeRoomsUpdated.length; y++) {
                 const room = threeRooms[y];
+                container.logger.info(`Renaming three room ${room.name}`);
                 await room.setName(
                     `Room 3.${startNaming}`,
                     'Renaming the three rooms to be in order since one or many was/were deleted.'
