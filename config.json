@@ -15,5 +15,7 @@
     "premiumMemberRoleID": "984522935123447860",
     "moveMeRoles": ["852980655776595978", "1133090582454095913"],
     "cmdChannels": ["976912258963755038"],
-    "logChannel": "1111784883463913512"
+    "logChannel": "1111784883463913512",
+    "twoRoomsParentID": "1020520757371080736",
+    "threeRoomsParentID": "1134139807505862676"
 }
