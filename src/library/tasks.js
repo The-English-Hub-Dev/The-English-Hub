@@ -70,7 +70,8 @@ class Tasks {
                         channel.type == ChannelType.GuildVoice &&
                         channel.parent.id === twoRoomsParentID
                 )
-                .map((channel) => channel);
+                .map((channel) => channel)
+                .sort((a, b) => a.position - b.position);
 
             if (twoRooms.length == 1) return;
 
