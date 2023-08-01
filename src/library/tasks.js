@@ -71,7 +71,7 @@ class Tasks {
                         channel.parent.id === twoRoomsParentID
                 )
                 .map((channel) => channel)
-                .sort((a, b) => a.rawPosition - b.rawPosition);
+                .sort((a, b) => a.position - b.position);
 
             if (twoRooms.length == 1) return;
 
@@ -95,7 +95,8 @@ class Tasks {
                         channel.type == ChannelType.GuildVoice &&
                         channel.parent.id === twoRoomsParentID
                 )
-                .map((channel) => channel);
+                .map((channel) => channel)
+                .sort((a, b) => a.position - b.position);
 
             let startNaming = 1;
 
@@ -128,7 +129,8 @@ class Tasks {
                         channel.type == ChannelType.GuildVoice &&
                         channel.parent.id === threeRoomsParentID
                 )
-                .map((channel) => channel);
+                .map((channel) => channel)
+                .sort((a, b) => a.position - b.position);
 
             if (threeRooms.length == 1) return;
 
@@ -152,7 +154,8 @@ class Tasks {
                         channel.type == ChannelType.GuildVoice &&
                         channel.parent.id === twoRoomsParentID
                 )
-                .map((channel) => channel);
+                .map((channel) => channel)
+                .sort((a, b) => a.position - b.position);
 
             let startNaming = 1;
 
