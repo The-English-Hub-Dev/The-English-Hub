@@ -71,7 +71,7 @@ class Tasks {
                         channel.parent.id === twoRoomsParentID
                 )
                 .map((channel) => channel)
-                .sort((a, b) => a.position - b.position);
+                .sort((a, b) => a.rawPosition - b.rawPosition);
 
             if (twoRooms.length == 1) return;
 
