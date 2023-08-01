@@ -32,12 +32,14 @@ class VoiceStateUpdateListener extends Listener {
     async handleRoomTwoCreation(oldState, newState) {
         if (!newState.channelId) return;
 
-        const twoRooms = oldState.guild.channels.cache.filter(
-            (channel) =>
-                channel.parent &&
-                channel.type == ChannelType.GuildVoice &&
-                channel.parent.id === twoRoomsParentID
-        );
+        const twoRooms = oldState.guild.channels.cache
+            .filter(
+                (channel) =>
+                    channel.parent &&
+                    channel.type == ChannelType.GuildVoice &&
+                    channel.parent.id === twoRoomsParentID
+            )
+            .sort((a, b) => a.position - b.position);
 
         if (newState.channel.id === twoRooms.last().id) {
             this.container.logger.info('Creating new room 2');
@@ -61,12 +63,14 @@ class VoiceStateUpdateListener extends Listener {
     async handleRoomThreeCreation(oldState, newState) {
         if (!newState.channelId) return;
 
-        const threeRooms = oldState.guild.channels.cache.filter(
-            (channel) =>
-                channel.parent &&
-                channel.type == ChannelType.GuildVoice &&
-                channel.parent.id === threeRoomsParentID
-        );
+        const threeRooms = oldState.guild.channels.cache
+            .filter(
+                (channel) =>
+                    channel.parent &&
+                    channel.type == ChannelType.GuildVoice &&
+                    channel.parent.id === threeRoomsParentID
+            )
+            .sort((a, b) => a.position - b.position);
 
         if (newState.channel.id === threeRooms.last().id) {
             this.container.logger.info('Creating new room 3');
