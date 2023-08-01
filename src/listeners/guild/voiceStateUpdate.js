@@ -76,7 +76,7 @@ class VoiceStateUpdateListener extends Listener {
                 }`,
                 type: ChannelType.GuildVoice,
                 parent: threeRooms.last().parent,
-                userLimit: 2,
+                userLimit: 3,
                 reason: 'New 3 room vc creation as all current rooms are full.',
             });
         }
