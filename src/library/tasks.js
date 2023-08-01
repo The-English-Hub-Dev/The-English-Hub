@@ -158,12 +158,12 @@ class Tasks {
             }
         }
 
-        const deleteInactiveTwo = setInterval(
+        const deleteInactiveThree = setInterval(
             deleteAndRenameInactiveThreeRooms,
             60_000
         );
 
-        this.intervals.deleteInactiveTwo = deleteInactiveTwo;
+        this.intervals.deleteInactiveThree = deleteInactiveThree;
     }
 }
 
