@@ -1,6 +1,10 @@
 const { container } = require('@sapphire/pieces');
 const { ActivityType, ChannelType } = require('discord.js');
-const { mainGuildID, smallRoomParentID } = require('../../config.json');
+const {
+    mainGuildID,
+    twoRoomsParentID,
+    threeRoomsParentID,
+} = require('../../config.json');
 let statusNum = 1;
 
 class Tasks {
@@ -64,7 +68,7 @@ class Tasks {
                     (channel) =>
                         channel.parent &&
                         channel.type == ChannelType.GuildVoice &&
-                        channel.parent.id === smallRoomParentID
+                        channel.parent.id === twoRoomsParentID
                 )
                 .map((channel) => channel);
 
@@ -85,9 +89,10 @@ class Tasks {
                     (channel) =>
                         channel.parent &&
                         channel.type == ChannelType.GuildVoice &&
-                        channel.parent.id === smallRoomParentID
+                        channel.parent.id === twoRoomsParentID
                 )
                 .map((channel) => channel);
+
             let startNaming = 1;
 
             for (let y = 0; y < twoRoomsUpdated.length; y++) {
@@ -102,6 +107,59 @@ class Tasks {
 
         const deleteInactiveTwo = setInterval(
             deleteAndRenameInactiveTwoRooms,
+            60_000
+        );
+
+        this.intervals.deleteInactiveTwo = deleteInactiveTwo;
+    }
+
+    async initializeDeleteInactiveThreeRooms() {
+        async function deleteAndRenameInactiveThreeRooms() {
+            const threeRooms = container.client.guilds.cache
+                .get(mainGuildID)
+                .channels.cache.filter(
+                    (channel) =>
+                        channel.parent &&
+                        channel.type == ChannelType.GuildVoice &&
+                        channel.parent.id === threeRoomsParentID
+                )
+                .map((channel) => channel);
+
+            if (threeRooms.length == 1) return;
+
+            for (let x = 0; x < threeRooms.length - 1; x++) {
+                const room = threeRooms[x];
+                if (room.members.size == 0 && room.manageable) {
+                    await room.delete(
+                        'This three room was inactive for one minute and was deleted.'
+                    );
+                }
+            }
+
+            const threeRoomsUpdated = container.client.guilds.cache
+                .get(mainGuildID)
+                .channels.cache.filter(
+                    (channel) =>
+                        channel.parent &&
+                        channel.type == ChannelType.GuildVoice &&
+                        channel.parent.id === twoRoomsParentID
+                )
+                .map((channel) => channel);
+
+            let startNaming = 1;
+
+            for (let y = 0; y < threeRoomsUpdated.length; y++) {
+                const room = threeRooms[y];
+                await room.setName(
+                    `Room 3.${startNaming}`,
+                    'Renaming the three rooms to be in order since one or many was/were deleted.'
+                );
+                startNaming++;
+            }
+        }
+
+        const deleteInactiveTwo = setInterval(
+            deleteAndRenameInactiveThreeRooms,
             60_000
         );
 
