@@ -1,5 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const { Message, PermissionFlagsBits } = require('discord.js');
 
 class SayCommand extends Command {
     constructor(context, options) {
@@ -23,6 +23,20 @@ class SayCommand extends Command {
         const channel = rawChannel.isErr()
             ? message.channel
             : rawChannel.unwrap();
+
+        if (
+            !channel
+                .permissionsFor(message.guild.members.me)
+                .has(PermissionFlagsBits.ViewChannel) ||
+            !channel
+                .permissionsFor(message.guild.members.me)
+                .has(PermissionFlagsBits.SendMessages)
+        ) {
+            return this.container.utility.errReply(
+                message,
+                'I do not have permission to view or send messages in that channel.'
+            );
+        }
 
         const text = await args.restResult('string');
         if (text.isErr())
