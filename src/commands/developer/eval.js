@@ -79,7 +79,9 @@ class EvalCommand extends Command {
                 maxStringLength: args.getOption('maxstringlength') ?? 10000,
             });
         if (output.length >= 2000) {
-            let hastebinOutput = await this.createHastebin(output);
+            let hastebinOutput = await this.container.utility.createHastebin(
+                output
+            );
             return evaluation.edit(
                 `Output was too long to be sent on discord: ${hastebinOutput}`
             );
@@ -95,17 +97,6 @@ class EvalCommand extends Command {
                 output
             )} \nType: \`${type}\` Time Taken: \`${evalTime}\``
         );
-    }
-
-    async createHastebin(text) {
-        const res = await fetch('https://hastebin.com/documents', {
-            method: 'POST',
-            body: text,
-        });
-        if (res.status !== 200) {
-            return 'An error occurred while trying to upload the content to hastebin :(';
-        }
-        return `https://hastebin.com/${(await res.json()).key}.js`;
     }
 }
 

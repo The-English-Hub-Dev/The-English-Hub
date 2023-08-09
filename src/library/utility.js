@@ -53,6 +53,25 @@ class Utility {
                 .messageRun(message)
         ).isOk();
     }
+
+    /**
+     *
+     * @param { String } text
+     * @returns
+     */
+    async createHastebin(text) {
+        const res = await fetch('https://hastebin.com/documents', {
+            method: 'POST',
+            body: text,
+            headers: {
+                Authorization: `Bearer ${process.env.HASTEBIN_API_KEY}`,
+            },
+        });
+        if (res.status !== 200) {
+            return 'An error occurred while trying to upload the content to hastebin :(';
+        }
+        return `https://hastebin.com/${(await res.json()).key}.js`;
+    }
 }
 
 module.exports = { Utility };
