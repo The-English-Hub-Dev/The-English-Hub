@@ -15,8 +15,8 @@ class Tasks {
     async initializeTasks() {
         await this.initializeStatusTask();
         await this.initializeHealthcheck();
-        await this.initializeDeleteInactiveTwoRooms();
-        await this.initializeDeleteInactiveThreeRooms();
+        // await this.initializeDeleteInactiveTwoRooms();
+        // await this.initializeDeleteInactiveThreeRooms();
     }
 
     async initializeStatusTask() {

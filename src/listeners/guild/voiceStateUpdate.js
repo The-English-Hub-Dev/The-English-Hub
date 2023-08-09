@@ -11,6 +11,7 @@ class VoiceStateUpdateListener extends Listener {
             ...options,
             name: Events.VoiceStateUpdate,
             event: Events.VoiceStateUpdate,
+            enabled: false,
         });
     }
 
