@@ -126,11 +126,35 @@ class DefineButtonHandler extends InteractionHandler {
                 const pronunciations = Object.entries(pData.pronunciation).map(
                     ([key, value]) => `Type: ${key} - ${value}`
                 );
+
+                const pronounciationAudioRaw = await fetch(
+                    `https://api.dictionaryapi.dev/api/v2/entries/en/${word}`
+                );
+
+                const phonetics = (await pronounciationAudioRaw.json())[0]
+                    .phonetics;
+                let pronunciationAudios = [];
+                if (phonetics.length > 0) {
+                    const phonEntries = Object.entries(phonetics);
+                    for (const [text, audioLink] of phonEntries) {
+                        if (audioLink.length > 0)
+                            pronunciationAudios.push(audioLink);
+                    }
+                }
+
                 const pEmbed = new EmbedBuilder()
                     .setTitle(`Pronunciations: ${word}`)
-                    .setDescription(pronunciations.join('\n'))
+                    .setDescription(
+                        pronunciations.join('\n') + pronunciationAudios.length >
+                            0
+                            ? `\n\n${pronunciationAudios.length} audio pronunciations available, they are attached to this message (max of three).`
+                            : 'No audio pronunciations available for this word.'
+                    )
                     .setColor('Random');
-                await interaction.editReply({ embeds: [pEmbed] });
+                await interaction.editReply({
+                    embeds: [pEmbed],
+                    files: pronunciationAudios.slice(0, 3),
+                });
                 break;
             case 'frequency':
                 const fRes = await fetch(
@@ -150,6 +174,7 @@ class DefineButtonHandler extends InteractionHandler {
                         `How common ${word} is in the english language (1 to 7): ${fData.frequency.zipf}`
                     )
                     .setColor('Random');
+
                 await interaction.editReply({ embeds: [fEmbed] });
                 break;
         }
