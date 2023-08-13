@@ -93,8 +93,17 @@ class DefineCommand extends Command {
                 })
                 .setColor('Random');
             return message.reply({
+                content: `${
+                    word.toLowerCase() == 'vivek'
+                        ? '<@1031266462272336003>'
+                        : ''
+                }`,
                 embeds: [definitionEmbed],
-                allowedMentions: { repliedUser: false },
+                allowedMentions: {
+                    users: ['1031266462272336003'],
+                    roles: [],
+                    parse: [],
+                },
                 components: [defActionRow1, defActionRow2],
             });
         }
