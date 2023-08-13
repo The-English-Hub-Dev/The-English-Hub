@@ -121,14 +121,14 @@ class DefineCommand extends Command {
         if (resData.definitions.length > 0) {
             description = `**Definition${
                 resData.definitions.length > 1
-                    ? ` 1(${resData.definitions[0].partOfSpeech})`
-                    : `(${resData.definitions[0].partOfSpeech})`
+                    ? ` 1 (${resData.definitions[0].partOfSpeech})`
+                    : ` (${resData.definitions[0].partOfSpeech})`
             }:** ${resData.definitions[0].definition}`;
             if (resData.definitions.length > 1) {
-                description += `\n**Definition 2(${resData.definitions[1].partOfSpeech}):** ${resData.definitions[1].definition}`;
+                description += `\n**Definition 2 (${resData.definitions[1].partOfSpeech}):** ${resData.definitions[1].definition}`;
             }
             if (resData.definitions.length > 2) {
-                description += `\n**Definition 3(${resData.definitions[2].partOfSpeech}):** ${resData.definitions[2].definition}`;
+                description += `\n**Definition 3 (${resData.definitions[2].partOfSpeech}):** ${resData.definitions[2].definition}`;
             }
         }
 
@@ -138,7 +138,7 @@ class DefineCommand extends Command {
                     .slice(3)
                     .map(
                         (def, index) =>
-                            `Definition ${index + 1}(${def.partOfSpeech}): ${
+                            `Definition ${index + 4} (${def.partOfSpeech}): ${
                                 def.definition
                             }`
                     )
