@@ -36,7 +36,7 @@ class DefineButtonHandler extends InteractionHandler {
                     new EmbedBuilder()
                         .setColor(Colors.Red)
                         .setDescription(
-                            `Word does not exist in dictionary. Custom definition was added for ${word}.`
+                            `Word does not exist in dictionary. A custom definition was added for ${word}.`
                         )
                         .setTitle('Word does not exist'),
                 ],

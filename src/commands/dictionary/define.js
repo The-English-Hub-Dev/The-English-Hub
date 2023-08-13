@@ -81,9 +81,11 @@ class DefineCommand extends Command {
                 .setTitle(`Word: ${word}`)
                 .setDescription(
                     blockQuote(
-                        overridenDefinitions.find(
-                            (a) => a[0] == word.toLowerCase()
-                        )[1]
+                        `**Definition:** ${
+                            overridenDefinitions.find(
+                                (a) => a[0] == word.toLowerCase()
+                            )[1]
+                        }`
                     )
                 )
                 .setFooter({
