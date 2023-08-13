@@ -44,6 +44,36 @@ class DefineCommand extends Command {
 
         const word = rawWord.unwrap();
 
+        const defActionRow1 = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
+                .setCustomId(`define:examples_${word}`)
+                .setLabel('Examples')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId(`define:synonyms_${word}`)
+                .setLabel('Synonyms')
+                .setStyle(ButtonStyle.Success),
+            new ButtonBuilder()
+                .setCustomId(`define:antonyms_${word}`)
+                .setLabel('Antonyms')
+                .setStyle(ButtonStyle.Danger),
+        ]);
+
+        const defActionRow2 = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
+                .setCustomId(`define:similarwords_${word}`)
+                .setLabel('Similar Words')
+                .setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder()
+                .setCustomId(`define:pronunciation_${word}`)
+                .setLabel('Pronunciation')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId(`define:frequency_${word}`)
+                .setLabel('Frequency')
+                .setStyle(ButtonStyle.Secondary),
+        ]);
+
         if (
             overridenDefinitions.map((a) => a[0]).includes(word.toLowerCase())
         ) {
@@ -63,6 +93,7 @@ class DefineCommand extends Command {
             return message.reply({
                 embeds: [definitionEmbed],
                 allowedMentions: { repliedUser: false },
+                components: [defActionRow1, defActionRow2],
             });
         }
 
@@ -117,36 +148,6 @@ class DefineCommand extends Command {
             .setColor(
                 description == 'No definitions listed' ? 'Red' : 'Random'
             );
-
-        const defActionRow1 = new ActionRowBuilder().addComponents([
-            new ButtonBuilder()
-                .setCustomId(`define:examples_${word}`)
-                .setLabel('Examples')
-                .setStyle(ButtonStyle.Primary),
-            new ButtonBuilder()
-                .setCustomId(`define:synonyms_${word}`)
-                .setLabel('Synonyms')
-                .setStyle(ButtonStyle.Success),
-            new ButtonBuilder()
-                .setCustomId(`define:antonyms_${word}`)
-                .setLabel('Antonyms')
-                .setStyle(ButtonStyle.Danger),
-        ]);
-
-        const defActionRow2 = new ActionRowBuilder().addComponents([
-            new ButtonBuilder()
-                .setCustomId(`define:similarwords_${word}`)
-                .setLabel('Similar Words')
-                .setStyle(ButtonStyle.Secondary),
-            new ButtonBuilder()
-                .setCustomId(`define:pronunciation_${word}`)
-                .setLabel('Pronunciation')
-                .setStyle(ButtonStyle.Primary),
-            new ButtonBuilder()
-                .setCustomId(`define:frequency_${word}`)
-                .setLabel('Frequency')
-                .setStyle(ButtonStyle.Secondary),
-        ]);
 
         return message.reply({
             embeds: [definitionEmbed],
