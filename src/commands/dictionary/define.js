@@ -65,7 +65,7 @@ class DefineCommand extends Command {
                 resData.definitions
                     .map((def) => def.definition)
                     .slice(1)
-                    .map((index, def) => `Definition ${index + 1}: ${def}`)
+                    .map((def, index) => `Definition ${index + 1}: ${def}`)
                     .join('\n'),
             'txt'
         );
