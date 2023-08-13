@@ -135,7 +135,8 @@ class DefineButtonHandler extends InteractionHandler {
                     .phonetics;
                 let pronunciationAudios = [];
                 if (phonetics.length > 0) {
-                    for (const phonetic in phonetics) {
+                    for (let x = 0; x < phonetics.length; x++) {
+                        const phonetic = phonetics[x];
                         if (phonetic.audio && phonetic.audio.length)
                             pronunciationAudios.push(phonetic.audio);
                     }
@@ -144,10 +145,17 @@ class DefineButtonHandler extends InteractionHandler {
                 const pEmbed = new EmbedBuilder()
                     .setTitle(`Pronunciations: ${word}`)
                     .setDescription(
-                        pronunciations.join('\n') + pronunciationAudios.length >
-                            0
-                            ? `\n\n${pronunciationAudios.length} audio pronunciations available, they are attached to this message (max of three).`
-                            : 'No audio pronunciations available for this word.'
+                        `${pronunciations.join('\n')}\n\n${
+                            pronunciationAudios.length > 0
+                                ? `${
+                                      pronunciationAudios.length
+                                  } audio pronunciation${
+                                      pronunciationAudios.length == 1
+                                          ? ' is'
+                                          : 's are'
+                                  } available, they are attached to this message (a maximum of three will be attached).`
+                                : 'No audio pronunciations available for this word.'
+                        }`
                     )
                     .setColor('Random');
                 await interaction.editReply({
