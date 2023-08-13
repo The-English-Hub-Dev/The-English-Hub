@@ -135,10 +135,9 @@ class DefineButtonHandler extends InteractionHandler {
                     .phonetics;
                 let pronunciationAudios = [];
                 if (phonetics.length > 0) {
-                    const phonEntries = Object.entries(phonetics);
-                    for (const [text, audioLink] of phonEntries) {
-                        if (audioLink.length > 0)
-                            pronunciationAudios.push(audioLink);
+                    for (const phonetic in phonetics) {
+                        if (phonetic.audio && phonetic.audio.length)
+                            pronunciationAudios.push(phonetic.audio);
                     }
                 }
 
