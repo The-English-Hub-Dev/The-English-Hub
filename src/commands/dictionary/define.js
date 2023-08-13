@@ -1,5 +1,12 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, EmbedBuilder } = require('discord.js');
+const {
+    Message,
+    EmbedBuilder,
+    ActionRowBuilder,
+    ButtonBuilder,
+    ButtonStyle,
+    blockQuote,
+} = require('discord.js');
 
 class DefineCommand extends Command {
     constructor(context, options) {
@@ -27,48 +34,88 @@ class DefineCommand extends Command {
 
         const word = rawWord.unwrap();
 
-        const data = await fetch({
-            method: 'GET',
-            url: `https://wordsapiv1.p.rapidapi.com/words/${word}/definitions`,
-            headers: {
-                'X-RapidAPI-Key': process.env.WORDSAPI_KEY,
-                'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com',
-            },
-        });
+        const res = await fetch(
+            `https://wordsapiv1.p.rapidapi.com/words/${word}/definitions`,
+            {
+                method: 'GET',
+                headers: {
+                    'X-RapidAPI-Key': process.env.WORDSAPI_KEY,
+                    'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com',
+                },
+            }
+        );
 
-        if (data.status == '404') {
+        if (res.status == '404') {
             return message.reply(
                 `:x: That word could not be found in the dictionary.`
             );
         }
 
-        let description = `**Definition:** ${data.body.definitions[0].definition}`;
-        if (data.body.definitions.length > 1) {
-            description += `\n**Alternate Definiton:** ${data.body.definitions[1].definition}`;
+        const resData = await res.json();
+
+        let description = `**Definition${
+            resData.definitions.length > 1 ? ' 1' : ''
+        }:** ${resData.definitions[0].definition}`;
+        if (resData.definitions.length > 1) {
+            description += `\n**Definition 2:** ${resData.definitions[1].definition}`;
         }
 
-        const hasteBinLink = this.container.utility.createHastebin(
-            data.body.definitions
-                .map((def) => def.definition)
-                .slice(1)
-                .join('\n')
+        const hasteBinLink = await this.container.utility.createHastebin(
+            `Definitions of ${word}\n` +
+                resData.definitions
+                    .map((def) => def.definition)
+                    .slice(1)
+                    .map((index, def) => `Definition ${index + 1}: ${def}`)
+                    .join('\n'),
+            'txt'
         );
 
-        if (data.body.definitions.length > 2) {
-            description += `\nOther definitions can be found here: ${hasteBinLink}`;
+        if (resData.definitions.length > 2) {
+            description += `\n\nOther definitions can be found [here](${hasteBinLink})`;
         }
 
         const definitionEmbed = new EmbedBuilder()
-            .setTitle(`Definition for ${word}`)
-            .setDescription(description)
+            .setTitle(`Word: ${word}`)
+            .setDescription(blockQuote(description))
             .setFooter({
                 text: `Definition requested by ${message.author.tag}`,
             })
-            .setColor('RANDOM');
+            .setColor('Random');
+
+        const defActionRow1 = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
+                .setCustomId(`define:examples_${word}`)
+                .setLabel('Examples')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId(`define:synonyms_${word}`)
+                .setLabel('Synonyms')
+                .setStyle(ButtonStyle.Success),
+            new ButtonBuilder()
+                .setCustomId(`define:antonyms_${word}`)
+                .setLabel('Antonyms')
+                .setStyle(ButtonStyle.Danger),
+        ]);
+
+        const defActionRow2 = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
+                .setCustomId(`define:similarwords_${word}`)
+                .setLabel('Similar Words')
+                .setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder()
+                .setCustomId(`define:pronunciation_${word}`)
+                .setLabel('Pronunciation')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId(`define:frequency_${word}`)
+                .setLabel('Frequency')
+                .setStyle(ButtonStyle.Secondary),
+        ]);
 
         return message.reply({
             embeds: [definitionEmbed],
             allowedMentions: { repliedUser: false },
+            components: [defActionRow1, defActionRow2],
         });
     }
 }

@@ -59,7 +59,7 @@ class Utility {
      * @param { String } text
      * @returns
      */
-    async createHastebin(text) {
+    async createHastebin(text, extension = 'txt') {
         const res = await fetch('https://hastebin.com/documents', {
             method: 'POST',
             body: text,
@@ -70,7 +70,9 @@ class Utility {
         if (res.status !== 200) {
             return 'An error occurred while trying to upload the content to hastebin :(';
         }
-        return `https://hastebin.com/${(await res.json()).key}.js`;
+        return `https://hastebin.com/share/${
+            (await res.json()).key
+        }.${extension}`;
     }
 }
 

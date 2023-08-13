@@ -80,7 +80,8 @@ class EvalCommand extends Command {
             });
         if (output.length >= 2000) {
             let hastebinOutput = await this.container.utility.createHastebin(
-                output
+                output,
+                'js'
             );
             return evaluation.edit(
                 `Output was too long to be sent on discord: ${hastebinOutput}`
