@@ -82,7 +82,9 @@ class DefineCommand extends Command {
             .setFooter({
                 text: `Definition requested by ${message.author.tag}`,
             })
-            .setColor('Random');
+            .setColor(
+                description == 'No definitions listed' ? 'Red' : 'Random'
+            );
 
         const defActionRow1 = new ActionRowBuilder().addComponents([
             new ButtonBuilder()

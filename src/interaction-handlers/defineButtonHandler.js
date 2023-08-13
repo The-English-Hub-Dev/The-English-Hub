@@ -32,9 +32,11 @@ class DefineButtonHandler extends InteractionHandler {
                 const eEmbed = new EmbedBuilder()
                     .setTitle(`Examples: ${word}`)
                     .setDescription(
-                        eData.examples
-                            .map((item, index) => `${index + 1}. ${item}`)
-                            .join('\n')
+                        eData.examples.length > 0
+                            ? eData.examples
+                                  .map((item, index) => `${index + 1}. ${item}`)
+                                  .join('\n')
+                            : 'No examples listed.'
                     )
                     .setColor('Random');
                 await interaction.editReply({ embeds: [eEmbed] });
@@ -57,7 +59,7 @@ class DefineButtonHandler extends InteractionHandler {
                         sData.synonyms.length > 0
                             ? sData.synonyms
                                   .map((item, index) => `${index + 1}. ${item}`)
-                                  .join(',\n')
+                                  .join('\n')
                             : 'No synonyms listed.'
                     )
                     .setColor('Random');
@@ -81,7 +83,7 @@ class DefineButtonHandler extends InteractionHandler {
                         aData.antonyms.length > 0
                             ? aData.antonyms
                                   .map((item, index) => `${index + 1}. ${item}`)
-                                  .join(',\n')
+                                  .join('\n')
                             : 'No antonyms listed.'
                     )
                     .setColor('Random');
@@ -178,7 +180,7 @@ class DefineButtonHandler extends InteractionHandler {
                 const fEmbed = new EmbedBuilder()
                     .setTitle(`Frequency: ${word}`)
                     .setDescription(
-                        `How common ${word} is in the english language (1 to 7): ${fData.frequency.zipf}`
+                        `How common \`${word}\` is in the english language (1 to 7): ${fData.frequency.zipf}`
                     )
                     .setColor('Random');
 
