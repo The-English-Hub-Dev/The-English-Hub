@@ -21,7 +21,7 @@ class Tasks {
 
     async initializeStatusTask() {
         const statusInterval = setInterval(() => {
-            if (statusNum == 2) {
+            if (statusNum == 3) {
                 const guild =
                     container.client.guilds.cache.get('801609515391778826');
                 if (guild) {
@@ -32,7 +32,13 @@ class Tasks {
                         }
                     );
                 }
-                statusNum--;
+                statusNum = 1;
+            } else if (statusNum == 2) {
+                container.client.user.setActivity(
+                    'Use ?help to see a list of my commands!',
+                    { type: ActivityType.Playing }
+                );
+                statusNum++;
             } else {
                 container.client.user.setActivity(
                     'DM me to ask a question to the staff!',

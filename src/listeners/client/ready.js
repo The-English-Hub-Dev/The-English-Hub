@@ -8,7 +8,6 @@ const {
     ActivityType,
 } = require('discord.js');
 const { Tasks } = require('../../library/tasks');
-let statusNum = 1;
 
 class ReadyListener extends Listener {
     constructor(context, options) {
