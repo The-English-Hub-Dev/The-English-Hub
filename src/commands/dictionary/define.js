@@ -7,6 +7,16 @@ const {
     ButtonStyle,
     blockQuote,
 } = require('discord.js');
+const overridenDefinitions = [
+    [
+        'bow tie',
+        'That guy in the server with some abnormal fascination of all things related to bow ties. Chatterbox, biscuit lover and drinker of tea.',
+    ],
+    [
+        'vivek',
+        'He is a very charming dude that hangs out here. Always down for a game of chess. Has a desire to post random emojis.',
+    ],
+];
 
 class DefineCommand extends Command {
     constructor(context, options) {
@@ -33,6 +43,28 @@ class DefineCommand extends Command {
             );
 
         const word = rawWord.unwrap();
+
+        if (
+            overridenDefinitions.map((a) => a[0]).includes(word.toLowerCase())
+        ) {
+            const definitionEmbed = new EmbedBuilder()
+                .setTitle(`Word: ${word}`)
+                .setDescription(
+                    blockQuote(
+                        overridenDefinitions.find(
+                            (a) => a[0] == word.toLowerCase()
+                        )[1]
+                    )
+                )
+                .setFooter({
+                    text: `Definition requested by ${message.author.tag}`,
+                })
+                .setColor('Random');
+            return message.reply({
+                embeds: [definitionEmbed],
+                allowedMentions: { repliedUser: false },
+            });
+        }
 
         const res = await fetch(
             `https://wordsapiv1.p.rapidapi.com/words/${word}/definitions`,

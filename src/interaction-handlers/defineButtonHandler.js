@@ -2,7 +2,12 @@ const {
     InteractionHandler,
     InteractionHandlerTypes,
 } = require('@sapphire/framework');
-const { ButtonInteraction, EmbedBuilder, GuildMember } = require('discord.js');
+const {
+    ButtonInteraction,
+    EmbedBuilder,
+    GuildMember,
+    Colors,
+} = require('discord.js');
 
 class DefineButtonHandler extends InteractionHandler {
     constructor(ctx) {
@@ -15,6 +20,28 @@ class DefineButtonHandler extends InteractionHandler {
      */
     async run(interaction) {
         const word = interaction.customId.split(':')[1].split('_')[1];
+        const wordFetch = await fetch(
+            `https://wordsapiv1.p.rapidapi.com/words/${word}`,
+            {
+                method: 'GET',
+                headers: {
+                    'X-RapidAPI-Key': process.env.WORDSAPI_KEY,
+                    'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com',
+                },
+            }
+        );
+        if (wordFetch.status == '404') {
+            return interaction.editReply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor(Colors.Red)
+                        .setDescription(
+                            `Word does not exist in dictionary. Custom definition was added for ${word}.`
+                        )
+                        .setTitle('Word does not exist'),
+                ],
+            });
+        }
 
         switch (interaction.customId.split(':')[1].split('_')[0]) {
             case 'examples':
