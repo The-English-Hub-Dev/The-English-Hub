@@ -52,12 +52,14 @@ class DefineCommand extends Command {
         }
 
         const resData = await res.json();
-
-        let description = `**Definition${
-            resData.definitions.length > 1 ? ' 1' : ''
-        }:** ${resData.definitions[0].definition}`;
-        if (resData.definitions.length > 1) {
-            description += `\n**Definition 2:** ${resData.definitions[1].definition}`;
+        let description = 'No definitions listed.';
+        if (resData.definitions.length > 0) {
+            description = `**Definition${
+                resData.definitions.length > 1 ? ' 1' : ''
+            }:** ${resData.definitions[0].definition}`;
+            if (resData.definitions.length > 1) {
+                description += `\n**Definition 2:** ${resData.definitions[1].definition}`;
+            }
         }
 
         const hasteBinLink = await this.container.utility.createHastebin(
