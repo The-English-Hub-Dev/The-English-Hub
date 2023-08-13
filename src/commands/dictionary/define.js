@@ -25,7 +25,7 @@ class DefineCommand extends Command {
      * @param { Args } args
      */
     async messageRun(message, args) {
-        const rawWord = await args.pickResult('string');
+        const rawWord = await args.restResult('string');
         if (rawWord.isErr())
             return this.container.utility.errReply(
                 message,
