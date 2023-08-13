@@ -125,13 +125,16 @@ class DefineCommand extends Command {
             if (resData.definitions.length > 1) {
                 description += `\n**Definition 2:** ${resData.definitions[1].definition}`;
             }
+            if (resData.definitions.length > 2) {
+                description += `\n**Definition 3:** ${resData.definitions[2].definition}`;
+            }
         }
 
         const hasteBinLink = await this.container.utility.createHastebin(
             `Definitions of ${word}\n` +
                 resData.definitions
                     .map((def) => def.definition)
-                    .slice(1)
+                    .slice(3)
                     .map((def, index) => `Definition ${index + 1}: ${def}`)
                     .join('\n'),
             'txt'
