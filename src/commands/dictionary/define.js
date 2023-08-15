@@ -24,7 +24,7 @@ class DefineCommand extends Command {
             ...options,
             name: 'define',
             description: 'Defines a word in english for you.',
-            usage: '[word]',
+            usage: '<word type: String>',
             aliases: ['dword', 'wordinfo'],
         });
     }

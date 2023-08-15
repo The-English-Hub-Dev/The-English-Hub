@@ -2,12 +2,7 @@ const {
     InteractionHandler,
     InteractionHandlerTypes,
 } = require('@sapphire/framework');
-const {
-    ButtonInteraction,
-    EmbedBuilder,
-    GuildMember,
-    Colors,
-} = require('discord.js');
+const { ButtonInteraction, EmbedBuilder, Colors } = require('discord.js');
 
 class DefineButtonHandler extends InteractionHandler {
     constructor(ctx) {
