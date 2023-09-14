@@ -30,6 +30,8 @@ class JoinMeCommand extends Command {
             guildId: channel.guild.id,
             adapterCreator: channel.guild.voiceAdapterCreator,
         });
+
+        return message.reply('Joined you in VC!');
     }
 }
 module.exports = { JoinMeCommand };
