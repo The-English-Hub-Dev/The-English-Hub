@@ -20,6 +20,7 @@
     },
     "homepage": "https://github.com/The-English-Hub/The-English-Hub#readme",
     "dependencies": {
+        "@discordjs/voice": "^0.16.0",
         "@sapphire/discord-utilities": "^3.0.3",
         "@sapphire/discord.js-utilities": "^7.0.0",
         "@sapphire/framework": "^4.5.0",
