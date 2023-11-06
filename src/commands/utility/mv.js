@@ -1,5 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message, PermissionFlagsBits } = require('discord.js');
+const { mvAllowed } = require('../../../config.json');
 
 class MvCommand extends Command {
     constructor(context, options) {
@@ -32,7 +33,7 @@ class MvCommand extends Command {
                 'You must be in a voice channel to use this command otherwise I cannot move you to a new channel.'
             );
 
-        if (vc.unwrap().parent.id !== '852806050684076053') {
+        if (!mvAllowed.includes(vc.unwrap().parent.id)) {
             return this.container.utility.errReply(
                 message,
                 'You can only move yourself to channels in the `Practice English` Category'
