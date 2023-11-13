@@ -25,7 +25,9 @@ class KidnapCommand extends Command {
                 message,
                 'You must mention a member.'
             );
+
         const member = rawMember.unwrap();
+        if (message.deletable) await message.delete();
 
         return message.channel.send({
             content: `${member} has been kidnapped by ${message.author} for 1 hour`,
