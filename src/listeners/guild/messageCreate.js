@@ -28,6 +28,7 @@ class MessageCreateListener extends Listener {
         }
 
         await this.container.automodManager.runAutomodOnMessage(message);
+        await this.container.triggerManager.runTriggersOnMessage(message);
     }
 
     /**

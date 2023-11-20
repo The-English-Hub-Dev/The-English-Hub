@@ -12,6 +12,7 @@ import { Punishments } from '../punishments';
 import { Utility } from '../utility';
 import { AutomodManager } from '../managers/automodManager';
 import { Tasks } from '../tasks';
+import { TriggerManager } from '../managers/triggerManager';
 
 declare module '@sapphire/pieces' {
     interface Container {
@@ -24,6 +25,7 @@ declare module '@sapphire/pieces' {
         logger: ILogger;
         tasks: Tasks;
         automodManager: AutomodManager;
+        triggerManager: TriggerManager;
         applicationCommandRegistries: ApplicationCommandRegistry;
     }
 }
