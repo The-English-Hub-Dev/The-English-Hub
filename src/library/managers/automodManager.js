@@ -32,13 +32,13 @@ class AutomodManager {
     async discordInviteCheck(message) {
         const inviteLink = DiscordInviteLinkRegex.exec(message.content);
         if (inviteLink && inviteLink[0] !== 'discord.gg/enghub') {
-            message.client.channels.cache
-                .get(logChannel)
-                .send(
+            message.client.channels.cache.get(logChannel).send({
+                content:
                     'Invite link detected in message: ' +
-                        message.content +
-                        '. User was warned by the automod system. (this is a test for automod logging)'
-                );
+                    message.content +
+                    '. User was warned by the automod system. (this is a test for automod logging)',
+                allowedMentions: { users: [], roles: [], parse: [] },
+            });
             if (message.deletable) await message.delete();
             const reply = await message.channel.send(
                 `${message.author}, you are not allowed to send invite links in this server.`
@@ -56,13 +56,13 @@ class AutomodManager {
     async walltextCheck(message) {
         const messageLines = message.content.split('\n');
         if (messageLines.length > 15 || message.content.length > 2000) {
-            message.client.channels.cache
-                .get(logChannel)
-                .send(
+            message.client.channels.cache.get(logChannel).send({
+                content:
                     'Walltext detected in message: ' +
-                        message.content +
-                        '. User was warned by the automod system. (this is a test for automod logging)'
-                );
+                    message.content +
+                    '. User was warned by the automod system. (this is a test for automod logging)',
+                allowedMentions: { users: [], roles: [], parse: [] },
+            });
             if (message.deletable) await message.delete();
             const reply = await message.channel.send(
                 `${message.author}, your message is too many lines/too long and spams the chat. Please shorten it.`
