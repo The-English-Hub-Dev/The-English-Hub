@@ -112,7 +112,8 @@ class QueueButtonHandler extends InteractionHandler {
                 `Queue ID: ${queueId}\n\n**Users:** ${
                     currentQueueUsers.length > 0 ? currentQueueUsers : 'None'
                 }`
-            );
+            )
+            .setFooter(oldEmbed.footer);
         return interaction.message.edit({ embeds: [newEmbed] });
     }
 
