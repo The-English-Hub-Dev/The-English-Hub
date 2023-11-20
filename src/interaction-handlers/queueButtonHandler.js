@@ -3,7 +3,7 @@ const {
     InteractionHandlerTypes,
 } = require('@sapphire/framework');
 const { ButtonInteraction, EmbedBuilder, Colors } = require('discord.js');
-const { staffRoles } = require('../../config.json');
+const { eventManagerRoles, staffRoles } = require('../../config.json');
 
 class QueueButtonHandler extends InteractionHandler {
     constructor(ctx) {
@@ -64,6 +64,9 @@ class QueueButtonHandler extends InteractionHandler {
             case 'clear':
                 if (
                     !staffRoles.some((role) =>
+                        interaction.member.roles.cache.has(role)
+                    ) &&
+                    !eventManagerRoles.some((role) =>
                         interaction.member.roles.cache.has(role)
                     )
                 ) {

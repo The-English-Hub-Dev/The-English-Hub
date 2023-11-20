@@ -13,8 +13,8 @@ class QueueCommand extends Command {
             ...options,
             name: 'queue',
             aliases: ['createqueue', 'create-queue'],
-            description: 'Creates a queue',
-            preconditions: ['Staff'],
+            description: 'Creates a queue of users for use in vcs and events',
+            preconditions: ['EventManager'],
         });
     }
 
