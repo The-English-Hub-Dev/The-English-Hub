@@ -25,7 +25,11 @@ class RemoveVivekTriggerCommand extends Command {
             );
         }
 
-        await this.container.redis.lrem('hltriggers_vivek', trigger.unwrap());
+        await this.container.redis.lrem(
+            'hltriggers_vivek',
+            1,
+            trigger.unwrap()
+        );
 
         return message.reply(
             `Successfully removed \`${trigger.unwrap()}\` from the highlight triggers for Vivek`
