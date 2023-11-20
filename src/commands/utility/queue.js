@@ -29,7 +29,8 @@ class QueueCommand extends Command {
         const queueEmbed = new EmbedBuilder()
             .setColor('Random')
             .setTitle('Queue')
-            .setDescription(`Queue ID: ${queueSnowflake}\n\n**Users:** None`);
+            .setDescription(`Queue ID: ${queueSnowflake}\n\n**Users:** None`)
+            .setFooter({ text: `Queue created by ${message.author.tag}` });
 
         const queueActionRow = new ActionRowBuilder().addComponents([
             new ButtonBuilder()

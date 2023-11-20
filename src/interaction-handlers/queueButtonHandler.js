@@ -100,7 +100,7 @@ class QueueButtonHandler extends InteractionHandler {
         const currentQueueUsers = currentQueueUsersIDs
             .map(
                 (id, index) =>
-                    `${currentQueueUsers.length - index + 1}: <@${id}>`
+                    `${currentQueueUsersIDs.length - index + 1}: <@${id}>`
             )
             .reverse()
             .join('\n');
