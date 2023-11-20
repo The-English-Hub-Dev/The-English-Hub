@@ -1,6 +1,6 @@
 {
     "name": "the-english-hub",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "description": "A custom moderaton bot for the server The English Hub",
     "main": "src/index.js",
     "scripts": {
