@@ -113,8 +113,8 @@ class QueueButtonHandler extends InteractionHandler {
             .setTitle(oldEmbed.title)
             .setDescription(
                 `Queue ID: ${queueId}\n\n**${
-                    currentQueueUsers.length
-                }Users in queue:**\n ${
+                    currentQueueUsersIDs.length
+                } Users in queue:**\n ${
                     currentQueueUsers.length > 0 ? currentQueueUsers : 'None'
                 }`
             )
