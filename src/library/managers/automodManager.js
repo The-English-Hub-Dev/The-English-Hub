@@ -36,7 +36,7 @@ class AutomodManager {
                 content:
                     'Invite link detected in message: ' +
                     message.content +
-                    '. User was warned by the automod system. (this is a test for automod logging)',
+                    '. User was warned by the automod system.',
                 allowedMentions: { users: [], roles: [], parse: [] },
             });
             if (message.deletable) await message.delete();
@@ -60,7 +60,7 @@ class AutomodManager {
                 content:
                     'Walltext detected in message: ' +
                     message.content +
-                    '. User was warned by the automod system. (this is a test for automod logging)',
+                    '. User was warned by the automod system.',
                 allowedMentions: { users: [], roles: [], parse: [] },
             });
             if (message.deletable) await message.delete();
