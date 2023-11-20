@@ -98,7 +98,8 @@ class QueueButtonHandler extends InteractionHandler {
             -1
         );
         const currentQueueUsers = currentQueueUsersIDs
-            .map((id, index) => `${index}: <@${id}>`)
+            .map((id, index) => `${index + 1}: <@${id}>`)
+            .reverse()
             .join('\n');
 
         const newEmbed = new EmbedBuilder()
