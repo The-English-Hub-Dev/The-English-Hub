@@ -8,6 +8,7 @@ const { prefix, clientID } = require('../config.json');
 const { Database } = require('./library/db/database');
 const { Utility } = require('./library/utility');
 const { AutomodManager } = require('./library/managers/automodManager');
+const { TriggerManager } = require('./library/managers/triggerManager');
 
 process.on('uncaughtException', async (error) => {
     if (!container || !container.utility || process.env.node_env == 'testing')
@@ -27,6 +28,7 @@ container.db = new Database();
 
 container.utility = new Utility();
 container.automodManager = new AutomodManager();
+container.triggerManager = new TriggerManager();
 
 const client = new SapphireClient({
     intents: [
