@@ -39,7 +39,7 @@ class TriggerManager {
                 const hltriggerembed = new EmbedBuilder()
                     .setTitle('Highlight Triggered')
                     .setDescription(
-                        `Your word **${trigger}** was mentioned in ${message.channel} by ${message.author.tag} in ${message.guild} *[Jump to message](${message.url})*`
+                        `Your word **${trigger}** was mentioned in ${message.channel} by ${message.author.tag} in ${message.guild}\nMessage: ${message.content} *[Jump to message](${message.url})*`
                     )
                     .setColor('DarkGold')
                     .setFooter({ text: 'Highlight Triggered' })
