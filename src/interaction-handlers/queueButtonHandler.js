@@ -112,9 +112,9 @@ class QueueButtonHandler extends InteractionHandler {
             .setColor('Random')
             .setTitle(oldEmbed.title)
             .setDescription(
-                `Queue ID: ${queueId}\n\n**${
-                    currentQueueUsersIDs.length
-                } Users in queue:**\n ${
+                `Queue ID: ${queueId}\n\n**${currentQueueUsersIDs.length} User${
+                    currentQueueUsersIDs.length > 1 ? 's' : ''
+                } in queue:**\n ${
                     currentQueueUsers.length > 0 ? currentQueueUsers : 'None'
                 }`
             )
