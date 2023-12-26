@@ -95,7 +95,7 @@ class MessageCreateListener extends Listener {
             files: attachments,
         });
         await redirCh.send(
-            `You can reply to this DM by using the ?dm command\nUser Details: ${message.author} (${message.author.id})`
+            `You can reply to this DM by using the ?dm command (?dm ${message.author.id} [your text here])\nUser Details: ${message.author} (${message.author.id})`
         );
     }
 
