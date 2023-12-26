@@ -1,7 +1,14 @@
 const { DiscordInviteLinkRegex } = require('@sapphire/discord-utilities');
 const { container } = require('@sapphire/framework');
-const { Message } = require('discord.js');
-const { logChannel } = require('../../../config.json');
+const {
+    Message,
+    EmbedBuilder,
+    time,
+    TimestampStyles,
+    Colors,
+} = require('discord.js');
+const { logChannelID } = require('../../../config.json');
+const logChannel = container.client.channels.cache.get(logChannelID);
 
 class AutomodManager {
     constructor() {}
@@ -32,17 +39,39 @@ class AutomodManager {
     async discordInviteCheck(message) {
         const inviteLink = DiscordInviteLinkRegex.exec(message.content);
         if (inviteLink && inviteLink[0] !== 'discord.gg/enghub') {
-            message.client.channels.cache.get(logChannel).send({
-                content:
-                    'Invite link detected in message: ' +
-                    message.content +
-                    '. User was warned by the automod system.',
-                allowedMentions: { users: [], roles: [], parse: [] },
-            });
+            const logEmbed = new EmbedBuilder()
+                .setTitle('Invite Link Auto Moderation')
+                .setColor(Colors.Red)
+                .addFields(
+                    {
+                        name: 'Message Content',
+                        value: message.content,
+                        inline: true,
+                    },
+                    {
+                        name: 'User',
+                        value: message.author.username,
+                        inline: true,
+                    },
+                    {
+                        name: 'Date',
+                        value: time(new Date(), TimestampStyles.LongDateTime),
+                        inline: true,
+                    },
+                    {
+                        name: 'Link to message',
+                        value: `[Message URL](${message.url})`,
+                        inline: true,
+                    }
+                );
+
             if (message.deletable) await message.delete();
             const reply = await message.channel.send(
                 `${message.author}, you are not allowed to send invite links in this server.`
             );
+            await logChannel.send({
+                embeds: [logEmbed],
+            });
             setTimeout(() => reply.delete(), 4000);
             return false;
         }
@@ -56,17 +85,38 @@ class AutomodManager {
     async walltextCheck(message) {
         const messageLines = message.content.split('\n');
         if (messageLines.length > 15 || message.content.length > 2000) {
-            message.client.channels.cache.get(logChannel).send({
-                content:
-                    'Walltext detected in message: ' +
-                    message.content +
-                    '. User was warned by the automod system.',
-                allowedMentions: { users: [], roles: [], parse: [] },
-            });
+            const logEmbed = new EmbedBuilder()
+                .setTitle('Walltext Auto Moderation')
+                .setColor(Colors.Red)
+                .addFields(
+                    {
+                        name: 'Message Content',
+                        value: message.content,
+                        inline: true,
+                    },
+                    {
+                        name: 'User',
+                        value: message.author.username,
+                        inline: true,
+                    },
+                    {
+                        name: 'Date',
+                        value: time(new Date(), TimestampStyles.LongDateTime),
+                        inline: true,
+                    },
+                    {
+                        name: 'Link to message',
+                        value: `[Message URL](${message.url})`,
+                        inline: true,
+                    }
+                );
             if (message.deletable) await message.delete();
             const reply = await message.channel.send(
                 `${message.author}, your message is too many lines/too long and spams the chat. Please shorten it.`
             );
+            await logChannel.send({
+                embeds: [logEmbed],
+            });
             setTimeout(() => reply.delete(), 4000);
             return false;
         }
