@@ -8,7 +8,6 @@ const {
     Colors,
 } = require('discord.js');
 const { logChannelID } = require('../../../config.json');
-const logChannel = container.client.channels.cache.get(logChannelID);
 
 class AutomodManager {
     constructor() {}
@@ -69,6 +68,8 @@ class AutomodManager {
             const reply = await message.channel.send(
                 `${message.author}, you are not allowed to send invite links in this server.`
             );
+            const logChannel =
+                container.client.channels.cache.get(logChannelID);
             await logChannel.send({
                 embeds: [logEmbed],
             });
@@ -114,6 +115,9 @@ class AutomodManager {
             const reply = await message.channel.send(
                 `${message.author}, your message is too many lines/too long and spams the chat. Please shorten it.`
             );
+            const logChannel =
+                container.client.channels.cache.get(logChannelID);
+
             await logChannel.send({
                 embeds: [logEmbed],
             });
