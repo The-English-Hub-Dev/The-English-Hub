@@ -106,6 +106,10 @@ class VoiceStateUpdateListener extends Listener {
                 .setTitle('Member switched voice channels')
                 .addFields(
                     {
+                        name: 'Member',
+                        value: `${newState.member.user} (${newState.member.id})`,
+                    },
+                    {
                         name: 'Old Channel',
                         value: `${oldState.channel} (${oldState.channel.id})`,
                         inline: true,
@@ -114,10 +118,6 @@ class VoiceStateUpdateListener extends Listener {
                         name: 'New CHannel',
                         value: `${newState.channel} (${newState.channel.id})`,
                         inline: true,
-                    },
-                    {
-                        name: 'Member',
-                        value: `${newState.member.user.username} (${newState.member.id})`,
                     }
                 )
                 .setTimestamp();
@@ -128,12 +128,22 @@ class VoiceStateUpdateListener extends Listener {
                 .setTitle('Member joined voice channel')
                 .addFields(
                     {
+                        name: 'Member',
+                        value: `${newState.member.user} (${newState.member.id})`,
+                    },
+                    {
                         name: 'Channel',
                         value: `${newState.channel} (${newState.channel.id})`,
                     },
                     {
-                        name: 'Member',
-                        value: `${newState.member.user} (${newState.member.id})`,
+                        name: 'Status',
+                        value: `${
+                            newState.selfDeaf ? 'Deafened' : 'Not Deafened'
+                        }, ${newState.selfMute ? 'Muted' : 'Not Muted'}, ${
+                            newState.selfVideo
+                                ? 'Video Enabled'
+                                : 'Video Disabled'
+                        }}`,
                     }
                 )
                 .setTimestamp();
@@ -144,12 +154,12 @@ class VoiceStateUpdateListener extends Listener {
                 .setTitle('Member left voice channel')
                 .addFields(
                     {
-                        name: 'Channel',
-                        value: `${oldState.channel} (${oldState.channel.id})`,
-                    },
-                    {
                         name: 'Member',
                         value: `${oldState.member.user} (${oldState.member.id})`,
+                    },
+                    {
+                        name: 'Channel',
+                        value: `${oldState.channel} (${oldState.channel.id})`,
                     }
                 )
                 .setTimestamp();
