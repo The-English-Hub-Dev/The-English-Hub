@@ -1,8 +1,9 @@
 const { Listener, Events } = require('@sapphire/framework');
-const { VoiceState, ChannelType } = require('discord.js');
+const { VoiceState, ChannelType, EmbedBuilder, Colors } = require('discord.js');
 const {
     twoRoomsParentID,
     threeRoomsParentID,
+    voiceStateLogChannelID,
 } = require('../../../config.json');
 
 class VoiceStateUpdateListener extends Listener {
@@ -11,7 +12,6 @@ class VoiceStateUpdateListener extends Listener {
             ...options,
             name: Events.VoiceStateUpdate,
             event: Events.VoiceStateUpdate,
-            enabled: false,
         });
     }
 
@@ -21,8 +21,9 @@ class VoiceStateUpdateListener extends Listener {
      * @param { VoiceState } newState
      */
     async run(oldState, newState) {
-        await this.handleRoomTwoCreation(oldState, newState);
-        await this.handleRoomThreeCreation(oldState, newState);
+        await this.logVoicestateChange(oldState, newState);
+        // await this.handleRoomTwoCreation(oldState, newState);
+        // await this.handleRoomThreeCreation(oldState, newState);
     }
 
     /**
@@ -86,6 +87,76 @@ class VoiceStateUpdateListener extends Listener {
                 reason: 'New 3 room vc creation as all current rooms are full.',
             });
         }
+    }
+
+    /**
+     *
+     * @param { VoiceState } oldState
+     * @param { VoiceState } newState
+     */
+    async logVoicestateChange(oldState, newState) {
+        const logEmbed = new EmbedBuilder().setColor(Colors.Blurple);
+        const voiceStateLogChannel = newState.guild.channels.cache.get(
+            voiceStateLogChannelID
+        );
+        if (oldState.channelId && newState.channelId) {
+            // member switched vcs
+            logEmbed
+                .setTitle('Member switched voice channels')
+                .addFields(
+                    {
+                        name: 'Old Channel',
+                        value: `${oldState.channel.name}(${oldState.channel.id})`,
+                        inline: true,
+                    },
+                    {
+                        name: 'New CHannel',
+                        value: `${newState.channel.name}(${newState.channel.id})`,
+                        inline: true,
+                    },
+                    {
+                        name: 'Member',
+                        value: `${newState.member.user.username}(${newState.member.id})`,
+                        inline: true,
+                    }
+                )
+                .setTimestamp();
+        } else if (!oldState.channelId) {
+            // member joined vc
+            logEmbed
+                .setTitle('Member joined voice channel')
+                .addFields(
+                    {
+                        name: 'Channel',
+                        value: `${newState.channel.name}(${newState.channel.id})`,
+                        inline: true,
+                    },
+                    {
+                        name: 'Member',
+                        value: `${newState.member.user.username}(${newState.member.id})`,
+                        inline: true,
+                    }
+                )
+                .setTimestamp();
+        } else if (!newState.channelId) {
+            // member left vc
+            logEmbed
+                .setTitle('Member left voice channel')
+                .addFields(
+                    {
+                        name: 'Channel',
+                        value: `${oldState.channel.name}(${oldState.channel.id})`,
+                        inline: true,
+                    },
+                    {
+                        name: 'Member',
+                        value: `${oldState.member.user.username}(${oldState.member.id})`,
+                        inline: true,
+                    }
+                )
+                .setTimestamp();
+        }
+        return voiceStateLogChannel.send({ embeds: [logEmbed] });
     }
 }
 
