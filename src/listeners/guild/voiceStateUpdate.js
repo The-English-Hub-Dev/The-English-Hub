@@ -95,23 +95,24 @@ class VoiceStateUpdateListener extends Listener {
      * @param { VoiceState } newState
      */
     async logVoicestateChange(oldState, newState) {
-        const logEmbed = new EmbedBuilder().setColor(Colors.Blurple);
+        const logEmbed = new EmbedBuilder();
         const voiceStateLogChannel = newState.guild.channels.cache.get(
             voiceStateLogChannelID
         );
         if (oldState.channelId && newState.channelId) {
             // member switched vcs
             logEmbed
+                .setColor(Colors.Navy)
                 .setTitle('Member switched voice channels')
                 .addFields(
                     {
                         name: 'Old Channel',
-                        value: `${oldState.channel.name}(${oldState.channel.id})`,
+                        value: `${oldState.channel}(${oldState.channel.id})`,
                         inline: true,
                     },
                     {
                         name: 'New CHannel',
-                        value: `${newState.channel.name}(${newState.channel.id})`,
+                        value: `${newState.channel}(${newState.channel.id})`,
                         inline: true,
                     },
                     {
@@ -124,16 +125,17 @@ class VoiceStateUpdateListener extends Listener {
         } else if (!oldState.channelId) {
             // member joined vc
             logEmbed
+                .setColor(Colors.Blurple)
                 .setTitle('Member joined voice channel')
                 .addFields(
                     {
                         name: 'Channel',
-                        value: `${newState.channel.name}(${newState.channel.id})`,
+                        value: `${newState.channel} (${newState.channel.id})`,
                         inline: true,
                     },
                     {
                         name: 'Member',
-                        value: `${newState.member.user.username}(${newState.member.id})`,
+                        value: `${newState.member.user} (${newState.member.id})`,
                         inline: true,
                     }
                 )
@@ -141,16 +143,17 @@ class VoiceStateUpdateListener extends Listener {
         } else if (!newState.channelId) {
             // member left vc
             logEmbed
+                .setColor(Colors.DarkRed)
                 .setTitle('Member left voice channel')
                 .addFields(
                     {
                         name: 'Channel',
-                        value: `${oldState.channel.name}(${oldState.channel.id})`,
+                        value: `${oldState.channel} (${oldState.channel.id})`,
                         inline: true,
                     },
                     {
                         name: 'Member',
-                        value: `${oldState.member.user.username}(${oldState.member.id})`,
+                        value: `${oldState.member.user} (${oldState.member.id})`,
                         inline: true,
                     }
                 )
