@@ -7,9 +7,5 @@
             "matchCurrentVersion": "!/^0/"
         }
     ],
-    "lockFileMaintenance": {
-        "enabled": true,
-        "extends": ["schedule:weekly"]
-    },
     "automerge": true
 }
