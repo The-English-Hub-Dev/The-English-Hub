@@ -102,29 +102,29 @@ class VoiceStateUpdateListener extends Listener {
         if (oldState.channelId && newState.channelId) {
             // member switched vcs
             logEmbed
-                .setColor(Colors.Navy)
+                .setColor(Colors.DarkVividPink)
                 .setTitle('Member switched voice channels')
                 .addFields(
                     {
                         name: 'Old Channel',
-                        value: `${oldState.channel}(${oldState.channel.id})`,
+                        value: `${oldState.channel} (${oldState.channel.id})`,
                         inline: true,
                     },
                     {
                         name: 'New CHannel',
-                        value: `${newState.channel}(${newState.channel.id})`,
+                        value: `${newState.channel} (${newState.channel.id})`,
                         inline: true,
                     },
                     {
                         name: 'Member',
-                        value: `${newState.member.user.username}(${newState.member.id})`,
+                        value: `${newState.member.user.username} (${newState.member.id})`,
                     }
                 )
                 .setTimestamp();
         } else if (!oldState.channelId) {
             // member joined vc
             logEmbed
-                .setColor(Colors.Blurple)
+                .setColor(Colors.DarkGreen)
                 .setTitle('Member joined voice channel')
                 .addFields(
                     {
