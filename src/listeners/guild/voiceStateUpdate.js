@@ -124,9 +124,11 @@ class VoiceStateUpdateListener extends Listener {
                     },
                     {
                         name: `Current Members of ${newState.channel.name}`,
-                        value: newState.channel.members
-                            .map((member) => member.user)
-                            .join(', '),
+                        value: newState.channel.members.size
+                            ? newState.channel.members
+                                  .map((member) => member.user)
+                                  .join(', ')
+                            : 'None',
                     }
                 )
                 .setTimestamp();
@@ -158,9 +160,11 @@ class VoiceStateUpdateListener extends Listener {
                     },
                     {
                         name: `Current Members of ${newState.channel.name}`,
-                        value: newState.channel.members
-                            .map((member) => member.user)
-                            .join(', '),
+                        value: newState.channel.members.size
+                            ? newState.channel.members
+                                  .map((member) => member.user)
+                                  .join(', ')
+                            : 'None',
                     }
                 )
                 .setTimestamp();
@@ -182,9 +186,11 @@ class VoiceStateUpdateListener extends Listener {
                     },
                     {
                         name: `Current Members of ${oldState.channel.name}`,
-                        value: oldState.channel.members
-                            .map((member) => member.user)
-                            .join(', '),
+                        value: oldState.channel.members.size
+                            ? oldState.channel.members
+                                  .map((member) => member.user)
+                                  .join(', ')
+                            : 'None',
                     }
                 )
                 .setTimestamp();
