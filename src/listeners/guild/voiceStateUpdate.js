@@ -111,12 +111,12 @@ class VoiceStateUpdateListener extends Listener {
                     },
                     {
                         name: 'Old Channel',
-                        value: `${oldState.channel} (${oldState.channel.id})`,
+                        value: `${oldState.channel} (${oldState.channel.name} - ${oldState.channel.id})`,
                         inline: true,
                     },
                     {
                         name: 'New Channel',
-                        value: `${newState.channel} (${newState.channel.id})`,
+                        value: `${newState.channel} (${newState.channel.name} - ${newState.channel.id})`,
                         inline: true,
                     },
                     {
@@ -139,17 +139,17 @@ class VoiceStateUpdateListener extends Listener {
                     },
                     {
                         name: 'Channel',
-                        value: `${newState.channel} (${newState.channel.id})`,
+                        value: `${newState.channel} (${newState.channel.name} - ${newState.channel.id})`,
                     },
                     {
                         name: 'Status',
                         value: `${
                             newState.selfDeaf ? 'Deafened' : 'Not Deafened'
-                        }, ${newState.selfMute ? 'Muted' : 'Not Muted'}, ${
+                        }, ${newState.selfMute ? 'Muted' : 'Unmuted'}, ${
                             newState.selfVideo
                                 ? 'Video Enabled'
                                 : 'Video Disabled'
-                        }}`,
+                        }`,
                     },
                     {
                         name: 'VC Members',
@@ -171,7 +171,7 @@ class VoiceStateUpdateListener extends Listener {
                     },
                     {
                         name: 'Channel',
-                        value: `${oldState.channel} (${oldState.channel.id})`,
+                        value: `${oldState.channel} (${oldState.channel.name} - ${oldState.channel.id})`,
                     },
                     {
                         name: 'VC Members',
