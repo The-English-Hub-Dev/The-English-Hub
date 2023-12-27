@@ -4,6 +4,7 @@ const {
     twoRoomsParentID,
     threeRoomsParentID,
     voiceStateLogChannelID,
+    mainGuildID,
 } = require('../../../config.json');
 
 class VoiceStateUpdateListener extends Listener {
@@ -95,6 +96,7 @@ class VoiceStateUpdateListener extends Listener {
      * @param { VoiceState } newState
      */
     async logVoicestateChange(oldState, newState) {
+        if (oldState.guild.id !== mainGuildID) return;
         const logEmbed = new EmbedBuilder();
         const voiceStateLogChannel = newState.guild.channels.cache.get(
             voiceStateLogChannelID
