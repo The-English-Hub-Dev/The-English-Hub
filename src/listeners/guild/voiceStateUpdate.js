@@ -111,12 +111,12 @@ class VoiceStateUpdateListener extends Listener {
                     },
                     {
                         name: 'Old Channel',
-                        value: `${oldState.channel} (${oldState.channel.name} - ${oldState.channel.id})`,
+                        value: `${oldState.channel} (${oldState.channel.name} → ${oldState.channel.id})`,
                         inline: true,
                     },
                     {
                         name: 'New Channel',
-                        value: `${newState.channel} (${newState.channel.name} - ${newState.channel.id})`,
+                        value: `${newState.channel} (${newState.channel.name} → ${newState.channel.id})`,
                         inline: true,
                     },
                     {
@@ -136,10 +136,12 @@ class VoiceStateUpdateListener extends Listener {
                     {
                         name: 'Member',
                         value: `${newState.member.user} (${newState.member.id})`,
+                        inline: true,
                     },
                     {
                         name: 'Channel',
-                        value: `${newState.channel} (${newState.channel.name} - ${newState.channel.id})`,
+                        value: `${newState.channel} (${newState.channel.name} → ${newState.channel.id})`,
+                        inline: true,
                     },
                     {
                         name: 'Status',
@@ -168,10 +170,12 @@ class VoiceStateUpdateListener extends Listener {
                     {
                         name: 'Member',
                         value: `${oldState.member.user} (${oldState.member.id})`,
+                        inline: true,
                     },
                     {
                         name: 'Channel',
-                        value: `${oldState.channel} (${oldState.channel.name} - ${oldState.channel.id})`,
+                        value: `${oldState.channel} (${oldState.channel.name} → ${oldState.channel.id})`,
+                        inline: true,
                     },
                     {
                         name: `Current Members of ${oldState.channel.name}`,
