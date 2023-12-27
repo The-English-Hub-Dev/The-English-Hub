@@ -120,7 +120,7 @@ class VoiceStateUpdateListener extends Listener {
                         inline: true,
                     },
                     {
-                        name: 'New VC Members',
+                        name: `Current Members of ${newState.channel.name}`,
                         value: newState.channel.members
                             .map((member) => member.user)
                             .join(', '),
@@ -152,7 +152,7 @@ class VoiceStateUpdateListener extends Listener {
                         }`,
                     },
                     {
-                        name: 'VC Members',
+                        name: `Current Members of ${newState.channel.name}`,
                         value: newState.channel.members
                             .map((member) => member.user)
                             .join(', '),
@@ -174,7 +174,7 @@ class VoiceStateUpdateListener extends Listener {
                         value: `${oldState.channel} (${oldState.channel.name} - ${oldState.channel.id})`,
                     },
                     {
-                        name: 'VC Members',
+                        name: `Current Members of ${newState.channel.name}`,
                         value: newState.channel.members
                             .map((member) => member.user)
                             .join(', '),
