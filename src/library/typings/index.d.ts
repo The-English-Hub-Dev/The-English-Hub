@@ -38,10 +38,10 @@ declare module '@sapphire/framework' {
 }
 
 export enum PunishmentType {
-    WARN = 'WARN',
-    UNMUTE = 'UNMUTE',
-    MUTE = 'MUTE',
-    KICK = 'KICK',
-    BAN = 'BAN',
-    UNBAN = 'UNBAN',
+    WARN,
+    UNMUTE,
+    MUTE,
+    KICK,
+    BAN,
+    UNBAN,
 }

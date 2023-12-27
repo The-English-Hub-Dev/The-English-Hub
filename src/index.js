@@ -58,6 +58,7 @@ const client = new SapphireClient({
     loadMessageCommandListeners: true,
     caseInsensitiveCommands: true,
     caseInsensitivePrefixes: true,
+    loadDefaultErrorListeners: false,
 });
 
 Sentry.init({
