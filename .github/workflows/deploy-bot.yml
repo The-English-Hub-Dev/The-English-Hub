@@ -38,7 +38,7 @@ jobs:
               with:
                   prettier_options: -w ./src/**/*
                   commit_message: 'chore(formatting[auto]): run prettier on code'
-    deploment:
+    deployment:
         if: "!contains(github.event.head_commit.message, '[skip deploy]')"
         name: Deploy new version
         runs-on: ubuntu-latest
