@@ -118,7 +118,6 @@ class VoiceStateUpdateListener extends Listener {
                     {
                         name: 'Member',
                         value: `${newState.member.user.username}(${newState.member.id})`,
-                        inline: true,
                     }
                 )
                 .setTimestamp();
