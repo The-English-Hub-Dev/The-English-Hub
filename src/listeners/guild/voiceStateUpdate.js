@@ -130,12 +130,10 @@ class VoiceStateUpdateListener extends Listener {
                     {
                         name: 'Channel',
                         value: `${newState.channel} (${newState.channel.id})`,
-                        inline: true,
                     },
                     {
                         name: 'Member',
                         value: `${newState.member.user} (${newState.member.id})`,
-                        inline: true,
                     }
                 )
                 .setTimestamp();
@@ -148,12 +146,10 @@ class VoiceStateUpdateListener extends Listener {
                     {
                         name: 'Channel',
                         value: `${oldState.channel} (${oldState.channel.id})`,
-                        inline: true,
                     },
                     {
                         name: 'Member',
                         value: `${oldState.member.user} (${oldState.member.id})`,
-                        inline: true,
                     }
                 )
                 .setTimestamp();
