@@ -103,7 +103,7 @@ class VoiceStateUpdateListener extends Listener {
         if (oldState.channelId && newState.channelId) {
             // member switched vcs
             logEmbed
-                .setColor(Colors.DarkOrange)
+                .setColor(Colors.DarkerGrey)
                 .setTitle('Member switched voice channels')
                 .addFields(
                     {
