@@ -115,9 +115,15 @@ class VoiceStateUpdateListener extends Listener {
                         inline: true,
                     },
                     {
-                        name: 'New CHannel',
+                        name: 'New Channel',
                         value: `${newState.channel} (${newState.channel.id})`,
                         inline: true,
+                    },
+                    {
+                        name: 'New VC Members',
+                        value: newState.channel.members
+                            .map((member) => member.user)
+                            .join(', '),
                     }
                 )
                 .setTimestamp();
@@ -144,6 +150,12 @@ class VoiceStateUpdateListener extends Listener {
                                 ? 'Video Enabled'
                                 : 'Video Disabled'
                         }}`,
+                    },
+                    {
+                        name: 'VC Members',
+                        value: newState.channel.members
+                            .map((member) => member.user)
+                            .join(', '),
                     }
                 )
                 .setTimestamp();
@@ -160,6 +172,12 @@ class VoiceStateUpdateListener extends Listener {
                     {
                         name: 'Channel',
                         value: `${oldState.channel} (${oldState.channel.id})`,
+                    },
+                    {
+                        name: 'VC Members',
+                        value: newState.channel.members
+                            .map((member) => member.user)
+                            .join(', '),
                     }
                 )
                 .setTimestamp();
