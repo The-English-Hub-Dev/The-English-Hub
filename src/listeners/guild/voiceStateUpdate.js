@@ -99,10 +99,11 @@ class VoiceStateUpdateListener extends Listener {
         const voiceStateLogChannel = newState.guild.channels.cache.get(
             voiceStateLogChannelID
         );
+        if (oldState.channelId === newState.channelId) return;
         if (oldState.channelId && newState.channelId) {
             // member switched vcs
             logEmbed
-                .setColor(Colors.DarkVividPink)
+                .setColor(Colors.DarkOrange)
                 .setTitle('Member switched voice channels')
                 .addFields(
                     {
