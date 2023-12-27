@@ -174,8 +174,8 @@ class VoiceStateUpdateListener extends Listener {
                         value: `${oldState.channel} (${oldState.channel.name} - ${oldState.channel.id})`,
                     },
                     {
-                        name: `Current Members of ${newState.channel.name}`,
-                        value: newState.channel.members
+                        name: `Current Members of ${oldState.channel.name}`,
+                        value: oldState.channel.members
                             .map((member) => member.user)
                             .join(', '),
                     }
