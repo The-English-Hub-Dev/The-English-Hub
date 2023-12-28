@@ -27,6 +27,12 @@ class AddVivekTriggerCommand extends Command {
                 'You must provide something to add to the message trigger list'
             );
         }
+        if (rawMessage.unwrap().indexOf('=') === -1) {
+            return this.container.utility.errReply(
+                message,
+                'You must provide a valid trigger and response to set'
+            );
+        }
 
         const trigger = rawMessage.unwrap().split('=')[0].trim();
         if (trigger.length === 0)
