@@ -8,6 +8,7 @@ class AddVivekTriggerCommand extends Command {
             aliases: ['addvivekhighlight'],
             description:
                 "Adds a word to vivek's highlight triggers that will send vivek a dm when mentioned",
+            usage: '<trigger>',
             preconditions: ['Admin'],
         });
     }

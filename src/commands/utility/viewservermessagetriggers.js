@@ -30,7 +30,9 @@ class ViewServerTriggersCommand extends Command {
         );
 
         if (guildTriggers.length === 0) {
-            return message.reply('There are no trigger set up in this server');
+            return message.reply(
+                'There are no message triggers set up in this server'
+            );
         }
 
         const triggerListEmbed = new EmbedBuilder()

@@ -2,6 +2,8 @@ import {
     ApplicationCommandRegistry,
     ILogger,
     SapphireClient,
+    Command,
+    CommandOptions,
 } from '@sapphire/framework';
 import { ILogger } from '@sapphire/plugin-logger';
 import { Duration } from '@sapphire/time-utilities';
@@ -32,9 +34,16 @@ declare module '@sapphire/pieces' {
 
 declare module '@sapphire/framework' {
     interface ILogger {
-        commandLogs: String[];
-        errorLogs: String[];
+        commandLogs: string[];
+        errorLogs: string[];
     }
+    interface Command {
+        usage?: string | string[];
+    }
+}
+
+export interface CommandOptions {
+    usage?: string | string[];
 }
 
 export enum PunishmentType {

@@ -104,7 +104,11 @@ class HelpCommand extends Command {
             commandsData.push(` **Description:** ${cmd.description}\n`);
         if (cmd.options.usage)
             commandsData.push(
-                ` **Usage:** ${prefix}${cmd.name} ${cmd.options.usage}\n`
+                ` **Usage:** ${prefix}${cmd.name} ${
+                    Array.isArray(cmd.options.usage)
+                        ? cmd.options.usage.join(', ')
+                        : cmd.options.usage
+                }\n`
             );
         if (cmd.options.flags)
             commandsData.push(` **Flags:** ${cmd.options.flags.join(', ')}\n`);
