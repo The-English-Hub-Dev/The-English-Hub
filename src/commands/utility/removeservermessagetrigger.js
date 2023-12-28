@@ -28,16 +28,26 @@ class RemoveVivekTriggerCommand extends Command {
         if (trigger.isErr())
             return this.container.utility.errReply(
                 message,
-                'You must provide a valid trigger to remove'
+                'You must provide a valid trigger to remove.'
+            );
+        if (
+            !(await this.container.redis.hget(
+                `guildtriggers_${message.guild.id}`,
+                trigger.unwrap()
+            ))
+        )
+            return this.container.utility.errReply(
+                message,
+                'That trigger does not exist in this server.'
             );
 
         await this.container.redis.hdel(
             `guildtriggers_${message.guild.id}`,
-            trigger
+            trigger.unwrap()
         );
 
         return message.reply(
-            `Successfully removed \`${trigger}\` from the list of message triggers.`
+            `Successfully removed \`${trigger.unwrap()}\` from the list of message triggers.`
         );
     }
 }
