@@ -38,8 +38,8 @@ class ViewServerTriggersCommand extends Command {
             .setColor(Colors.LuminousVividPink)
             .setFooter({ text: `Message Triggers for ${message.guild.name}` })
             .setDescription(
-                `**Trigger**\t*Response*\n${guildTriggers
-                    .map((trigger, response) => `${trigger}\t*${response}*`)
+                `**Trigger** → *Response*\n${guildTriggers
+                    .map((tr) => `${tr[0]} → *${tr[1]}*`)
                     .join('\n')}`
             );
 
