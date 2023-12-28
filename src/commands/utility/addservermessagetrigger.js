@@ -24,13 +24,13 @@ class AddVivekTriggerCommand extends Command {
         if (rawMessage.isErr()) {
             return this.container.utility.errReply(
                 message,
-                'You must provide something to add to the message trigger list'
+                'You must provide something to add to the message trigger list.'
             );
         }
         if (rawMessage.unwrap().indexOf('=') === -1) {
             return this.container.utility.errReply(
                 message,
-                'You must provide a valid trigger and response to set'
+                'You must provide a valid trigger and response to set in the format <trigger> = <response>.'
             );
         }
 
@@ -38,13 +38,13 @@ class AddVivekTriggerCommand extends Command {
         if (trigger.length === 0)
             return this.container.utility.errReply(
                 message,
-                'You must provide a valid trigger to set'
+                'You must provide a valid trigger to set.'
             );
         const response = rawMessage.unwrap().split('=')[1].trim();
         if (response.length === 0)
             return this.container.utility.errReply(
                 message,
-                'You must provide a valid response to set'
+                'You must provide a valid response to set.'
             );
 
         await this.container.redis.hset(
