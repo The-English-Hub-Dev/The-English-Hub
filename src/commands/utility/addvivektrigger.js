@@ -1,4 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
+
 class AddVivekTriggerCommand extends Command {
     constructor(context, options) {
         super(context, {
