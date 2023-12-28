@@ -13,7 +13,7 @@ class TriggerManager {
         let triggered = false;
         if (message.author.bot) return false;
 
-        triggered = await this.runGuildTriggers(message);
+        triggered = await this.runGuildMessageTriggers(message);
         triggered = await this.runHlTriggers(message);
 
         return triggered;
@@ -78,16 +78,16 @@ class TriggerManager {
      * @param { Message } message
      * @returns { Promise<boolean> } if triggered or not by guild triggers
      */
-    async runGuildTriggers(message) {
+    async runGuildMessageTriggers(message) {
         let triggered = false;
 
-        const guildTriggers = Object.entries(
+        const guildMessageTriggers = Object.entries(
             await container.redis.hgetall(`guildtriggers_${message.guild.id}`)
         );
 
-        for (let i = 0; i < guildTriggers.length; i++) {
-            const trigger = guildTriggers[i][0];
-            const response = guildTriggers[i][1];
+        for (let i = 0; i < guildMessageTriggers.length; i++) {
+            const trigger = guildMessageTriggers[i][0];
+            const response = guildMessageTriggers[i][1];
             if (message.content.toLowerCase().includes(trigger.toLowerCase())) {
                 await message.reply({
                     content: response,
