@@ -54,7 +54,7 @@ class AddVivekTriggerCommand extends Command {
         );
 
         return message.reply(
-            `Successfully added \`${response}\` as a response to the message trigger ${trigger}.`
+            `Successfully added \`${response}\` as a response to the message trigger \`${trigger}\`.`
         );
     }
 }
