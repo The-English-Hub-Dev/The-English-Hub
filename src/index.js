@@ -27,6 +27,7 @@ container.redis = redis;
 container.db = new Database();
 
 container.utility = new Utility();
+
 container.automodManager = new AutomodManager();
 container.triggerManager = new TriggerManager();
 
@@ -58,6 +59,7 @@ const client = new SapphireClient({
     loadMessageCommandListeners: true,
     caseInsensitiveCommands: true,
     caseInsensitivePrefixes: true,
+    loadApplicationCommandRegistriesStatusListeners: false,
     loadDefaultErrorListeners: false,
 });
 
@@ -65,6 +67,8 @@ Sentry.init({
     dsn: process.env.SENTRY_DSN,
     tracesSampleRate: 1.0,
     integrations: [new Sentry.Integrations.Http({ tracing: true })],
+    serverName: require('os').hostname,
+    environment: process.env.NODE_ENV,
 });
 
 client.login();
