@@ -83,14 +83,12 @@ class GuildMemberAddListener extends Listener {
             .setFooter(`Welcome!`)
             .setTimestamp();
 
-        await member
-            .send({
-                content: `${member}`,
-                embeds: [welcomeDMEmbed],
-                allowedMentions: { users: [member.id], roles: [], parse: [] },
-            })
-            .catch(() => {});
-        return member.send('https://discord.gg/enghub').catch(() => {});
+        await member.send({
+            content: `${member}`,
+            embeds: [welcomeDMEmbed],
+            allowedMentions: { users: [member.id], roles: [], parse: [] },
+        });
+        return member.send('https://discord.gg/enghub');
     }
 }
 
