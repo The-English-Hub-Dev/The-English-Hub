@@ -20,7 +20,10 @@ class AutomodManager {
         let msgOk = true;
         if (message.author.bot) return true;
 
-        if (await container.utility.isStaff(message) || automodByRoles.some(role => message.member.roles.cache.has(role))) {
+        if (
+            (await container.utility.isStaff(message)) ||
+            automodByRoles.some((role) => message.member.roles.cache.has(role))
+        ) {
             return true;
         }
 
