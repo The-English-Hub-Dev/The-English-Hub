@@ -20,5 +20,6 @@
     "twoRoomsParentID": "1020520757371080736",
     "threeRoomsParentID": "1134139807505862676",
     "mvAllowed": ["852806050684076053", "1121813115210846329"],
-    "voiceStateLogChannelID": "1189390546708463716"
+    "voiceStateLogChannelID": "1189390546708463716",
+    "automodByRoles": ["852913019259977749"]
 }

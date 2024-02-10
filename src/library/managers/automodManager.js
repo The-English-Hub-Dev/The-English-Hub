@@ -7,7 +7,7 @@ const {
     TimestampStyles,
     Colors,
 } = require('discord.js');
-const { logChannelID } = require('../../../config.json');
+const { logChannelID, automodByRoles } = require('../../../config.json');
 
 class AutomodManager {
     constructor() {}
@@ -20,7 +20,7 @@ class AutomodManager {
         let msgOk = true;
         if (message.author.bot) return true;
 
-        if (await container.utility.isStaff(message)) {
+        if (await container.utility.isStaff(message) || automodByRoles.some(role => message.member.roles.cache.has(role))) {
             return true;
         }
 
