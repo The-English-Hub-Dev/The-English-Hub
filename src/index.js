@@ -3,7 +3,6 @@ const Sentry = require('@sentry/node');
 const { GatewayIntentBits, Options, Partials } = require('discord.js');
 const Redis = require('ioredis');
 require('@sapphire/plugin-logger/register');
-require('dotenv').config();
 const { prefix, clientID } = require('../config.json');
 const { Database } = require('./library/db/database');
 const { Utility } = require('./library/utility');
