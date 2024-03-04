@@ -7,7 +7,13 @@ class MvCommand extends Command {
         super(context, {
             ...options,
             name: 'mv',
-            aliases: ['moveme', 'movevc', 'movemevc', 'bypassrest', 'bypassjoin'],
+            aliases: [
+                'moveme',
+                'movevc',
+                'movemevc',
+                'bypassrest',
+                'bypassjoin',
+            ],
             preconditions: ['MoveMe'],
             usage: ['<channel type:VoiceChannel>'],
             description: 'Moves you into a certain voice channel.',
