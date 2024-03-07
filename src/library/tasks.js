@@ -15,8 +15,6 @@ class Tasks {
     async initializeTasks() {
         await this.initializeStatusTask();
         await this.initializeHealthcheck();
-        // await this.initializeDeleteInactiveTwoRooms();
-        // await this.initializeDeleteInactiveThreeRooms();
     }
 
     async initializeStatusTask() {
@@ -65,123 +63,6 @@ class Tasks {
         }, 120000);
 
         this.intervals.healthCheck = healthCheckInterval;
-    }
-
-    async initializeDeleteInactiveTwoRooms() {
-        async function deleteAndRenameInactiveTwoRooms() {
-            const twoRooms = container.client.guilds.cache
-                .get(mainGuildID)
-                .channels.cache.filter(
-                    (channel) =>
-                        channel.parent &&
-                        channel.type == ChannelType.GuildVoice &&
-                        channel.parent.id === twoRoomsParentID
-                )
-                .map((channel) => channel)
-                .sort((a, b) => a.position - b.position);
-
-            if (twoRooms.length == 1) return;
-
-            for (let x = 0; x < twoRooms.length - 1; x++) {
-                const room = twoRooms[x];
-                if (room.members.size == 0 && room.manageable) {
-                    await room.delete(
-                        'This two room was inactive for one minute and was deleted.'
-                    );
-                }
-            }
-
-            container.logger.info(`Deleted inactive two rooms (if any).`);
-
-            const twoRoomsUpdated = container.client.guilds.cache
-                .get(mainGuildID)
-                .channels.cache.filter(
-                    (channel) =>
-                        channel.parent &&
-                        channel.type == ChannelType.GuildVoice &&
-                        channel.parent.id === twoRoomsParentID
-                )
-                .map((channel) => channel)
-                .sort((a, b) => a.position - b.position);
-
-            let startNaming = 1;
-
-            for (let y = 0; y < twoRoomsUpdated.length; y++) {
-                const room = twoRoomsUpdated[y];
-                await room.setName(
-                    `Room 2.${startNaming}`,
-                    'Renaming the two rooms to be in order since one or many was/were deleted.'
-                );
-                startNaming++;
-            }
-
-            container.logger.info(`Renamed two rooms (if any).`);
-        }
-
-        const deleteInactiveTwo = setInterval(
-            deleteAndRenameInactiveTwoRooms,
-            60_000
-        );
-
-        this.intervals.deleteInactiveTwo = deleteInactiveTwo;
-    }
-
-    async initializeDeleteInactiveThreeRooms() {
-        async function deleteAndRenameInactiveThreeRooms() {
-            const threeRooms = container.client.guilds.cache
-                .get(mainGuildID)
-                .channels.cache.filter(
-                    (channel) =>
-                        channel.parent &&
-                        channel.type == ChannelType.GuildVoice &&
-                        channel.parent.id === threeRoomsParentID
-                )
-                .map((channel) => channel)
-                .sort((a, b) => a.position - b.position);
-
-            if (threeRooms.length == 1) return;
-
-            for (let x = 0; x < threeRooms.length - 1; x++) {
-                const room = threeRooms[x];
-                if (room.members.size == 0 && room.manageable) {
-                    await room.delete(
-                        'This three room was inactive for one minute and was deleted.'
-                    );
-                }
-            }
-
-            container.logger.info(`Deleted inactive three rooms (if any).`);
-
-            const threeRoomsUpdated = container.client.guilds.cache
-                .get(mainGuildID)
-                .channels.cache.filter(
-                    (channel) =>
-                        channel.parent &&
-                        channel.type == ChannelType.GuildVoice &&
-                        channel.parent.id === threeRoomsParentID
-                )
-                .map((channel) => channel)
-                .sort((a, b) => a.position - b.position);
-
-            let startNaming = 1;
-
-            for (let y = 0; y < threeRoomsUpdated.length; y++) {
-                const room = threeRooms[y];
-                await room.setName(
-                    `Room 3.${startNaming}`,
-                    'Renaming the three rooms to be in order since one or many was/were deleted.'
-                );
-                startNaming++;
-            }
-        }
-        container.logger.info(`Renamed three rooms (if any).`);
-
-        const deleteInactiveThree = setInterval(
-            deleteAndRenameInactiveThreeRooms,
-            60_000
-        );
-
-        this.intervals.deleteInactiveThree = deleteInactiveThree;
     }
 }
 

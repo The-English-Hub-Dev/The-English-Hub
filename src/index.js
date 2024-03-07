@@ -22,11 +22,8 @@ redis.on('connect', () => {
     container.logger.info('Connected to Redis Instance!');
 });
 container.redis = redis;
-
 container.db = new Database();
-
 container.utility = new Utility();
-
 container.automodManager = new AutomodManager();
 container.triggerManager = new TriggerManager();
 
