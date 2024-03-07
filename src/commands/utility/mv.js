@@ -42,7 +42,7 @@ class MvCommand extends Command {
         if (!mvAllowed.includes(vc.unwrap().parent.id)) {
             return this.container.utility.errReply(
                 message,
-                'You can only move yourself to channels in the `Practice English` Category'
+                'This cateogyr is not in the allowed list for being moved into. Please ask a server admin for help.'
             );
         }
         if (
