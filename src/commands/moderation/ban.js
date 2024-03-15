@@ -111,7 +111,7 @@ class BanCommand extends Command {
                 { name: 'Punishment ID', value: punishment.punishment_id },
                 {
                     name: 'Appeal',
-                    value: 'To appeal this ban, click [here](https://discord.com/invite/6KAZegpx).',
+                    value: 'To appeal this ban, click [here](https://discord.com/invite/Yp26QSPnRT).',
                 }
             )
             .setFooter({
