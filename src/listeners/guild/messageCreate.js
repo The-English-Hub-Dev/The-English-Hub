@@ -64,7 +64,7 @@ class MessageCreateListener extends Listener {
                 }`
             )
             .setFooter({
-                text: `Message Recieved through DM system`,
+                text: `Message Received through DM system`,
             })
             .setTimestamp(message.createdTimestamp);
 
@@ -110,7 +110,7 @@ class MessageCreateListener extends Listener {
         if (!dmLog || dmLog.type !== ChannelType.GuildText) return;
 
         const dmRecieveLogEmbed = new EmbedBuilder()
-            .setTitle('DM Recieved')
+            .setTitle('DM Received')
             .setColor(Colors.DarkAqua)
             .setFields(
                 {

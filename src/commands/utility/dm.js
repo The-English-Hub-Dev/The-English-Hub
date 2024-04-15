@@ -62,7 +62,7 @@ class DmCommand extends Command {
 
         const dmEmbed = new EmbedBuilder()
             .setTitle(
-                `You've recieved a new message ${
+                `You've received a new message ${
                     attachments ? 'with attachments' : ''
                 }!`
             )
