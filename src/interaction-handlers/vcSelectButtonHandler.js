@@ -28,13 +28,13 @@ class VcSelectButtonHandler extends InteractionHandler {
                     .sort((a, b) => b.members.size - a.members.size)
                     .first();
                 await interaction.editReply(
-                    `Largest VC with ${largestVc.members.size} members: ${largestVc} (click to join)`
+                    `Largest VC with ${largestVc.members.size} members: https://discord.gg/${(await largestVc.createInvite()).code}`
                 );
                 break;
             case 'random':
                 const randomVc = allVcs.random();
                 await interaction.editReply(
-                    `Random VC : ${randomVc} (click to join)`
+                    `Random VC : https://discord.gg/${(await randomVc.createInvite()).code}`
                 );
                 break;
             case 'popular':
@@ -42,7 +42,7 @@ class VcSelectButtonHandler extends InteractionHandler {
                     .filter((vc) => vc.members.size >= 5)
                     .random();
                 await interaction.editReply(
-                    `Popular VC: ${popularVc} (click to join)`
+                    `Popular VC: https://discord.gg/${(await popularVc.createInvite()).code}`
                 );
                 break;
             default:
