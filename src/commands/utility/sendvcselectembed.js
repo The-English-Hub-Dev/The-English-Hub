@@ -62,4 +62,4 @@ class SendVcEmbedCommand extends Command {
     }
 }
 
-module.exports = { AddVivekTriggerCommand };
+module.exports = { SendVcEmbedCommand };
