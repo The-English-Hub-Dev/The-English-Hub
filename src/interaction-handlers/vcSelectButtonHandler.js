@@ -9,7 +9,7 @@ const {
     ChannelType,
 } = require('discord.js');
 
-class DefineButtonHandler extends InteractionHandler {
+class VcSelectButtonHandler extends InteractionHandler {
     constructor(ctx) {
         super(ctx, { interactionHandlerType: InteractionHandlerTypes.Button });
     }
@@ -62,4 +62,4 @@ class DefineButtonHandler extends InteractionHandler {
     }
 }
 
-module.exports = { DefineButtonHandler };
+module.exports = { VcSelectButtonHandler };
