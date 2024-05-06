@@ -18,8 +18,7 @@ class VcUnbanCommand extends Command {
             aliases: ['vcunbanish', 'vcunrestrict'],
             description:
                 'Prevents a member from joining the specified vc and sending a message in its vc chat.',
-            preconditions: ['StaffBanPerms'],
-            flags: ['noshow', 'noembed', 'hide'],
+            preconditions: ['Staff'],
             usage: '<channel: VoiceChannel> <member> [reason]',
         });
     }
