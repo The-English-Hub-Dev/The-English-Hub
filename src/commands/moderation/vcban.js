@@ -35,7 +35,7 @@ class VcBanCommand extends Command {
             'No reason provided.'
         );
 
-        if (vChannel.isErr()) {
+        if (rawvChannel.isErr()) {
             return this.container.utility.errReply(
                 message,
                 'You must provide a valid voice channel to ban from.'
@@ -65,12 +65,23 @@ class VcBanCommand extends Command {
 
         await this.sendMemberDM(message, member, reason, vChannel);
 
-        await vChannel.permissionOverwrites.edit(member, {
-            Connect: false,
-            SendMessages: false,
-        });
+        await vChannel.permissionOverwrites.edit(
+            member,
+            {
+                Connect: false,
+                SendMessages: false,
+            },
+            `Adding vc ban overwrites. Command executed by ${message.author.tag} (${message.author.id})`
+        );
 
         await this.logVcBan(message, member, reason, vChannel);
+
+        const vcBanEmbed = new EmbedBuilder()
+            .setDescription(
+                `${member} has been banned from the vc ${vChannel}.`
+            )
+            .setColor(Colors.Red);
+        return message.reply({ embeds: [vcBanEmbed] });
     }
 
     /**
