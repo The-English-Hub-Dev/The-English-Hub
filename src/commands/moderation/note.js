@@ -28,8 +28,6 @@ class NoteCommand extends Command {
      * @param { Args } args
      */
     async messageRun(message, args) {
-        message.channel.permissionOverwrites;
-
         const rawMember = await args.pickResult('member');
         const reason = await args.restResult('string');
 
