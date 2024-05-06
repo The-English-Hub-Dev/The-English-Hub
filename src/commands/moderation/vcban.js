@@ -65,6 +65,15 @@ class VcBanCommand extends Command {
 
         await this.sendMemberDM(message, member, reason, vChannel);
 
+        if (
+            vChannel.permissionsFor(member).missing('Connect') &&
+            vChannel.permissionsFor(member).missing('SendMessages')
+        )
+            return this.container.utility.errReply(
+                message,
+                `${member} is already banned from the vc ${vChannel}.`
+            );
+
         await vChannel.permissionOverwrites.edit(
             member,
             {
