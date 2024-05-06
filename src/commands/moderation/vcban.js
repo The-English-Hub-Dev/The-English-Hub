@@ -8,7 +8,7 @@ const {
     GuildMember,
     VoiceChannel,
 } = require('discord.js');
-const { logChannel } = require('../../../config.json');
+const { logChannel, allowedVcBanChannels } = require('../../../config.json');
 
 class VcBanCommand extends Command {
     constructor(context, options) {
@@ -40,7 +40,13 @@ class VcBanCommand extends Command {
                 'You must provide a valid voice channel to ban from.'
             );
         }
+
         const vChannel = rawvChannel.unwrap();
+        if (!allowedVcBanChannels.includes(vChannel.id))
+            return this.container.utility.errReply(
+                message,
+                'You may not vc ban members from this channel.'
+            );
 
         if (rawMember.isErr()) {
             return this.container.utility.errReply(
@@ -73,11 +79,17 @@ class VcBanCommand extends Command {
             `Adding vc ban overwrites. Command executed by ${message.author.tag} (${message.author.id})`
         );
 
+        await this.container.redis.hset(
+            'vcban',
+            `${vChannel.id}:${member.id}`,
+            Date.now()
+        );
+
         await this.logVcBan(message, member, reason, vChannel);
 
         const vcBanEmbed = new EmbedBuilder()
             .setDescription(
-                `${member} has been banned from the vc ${vChannel}.`
+                `${member} has been banned from the vc ${vChannel} for 24 hours.`
             )
             .setColor(Colors.Red);
         return message.reply({ embeds: [vcBanEmbed] });
