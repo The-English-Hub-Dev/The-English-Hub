@@ -24,6 +24,7 @@ class VcSelectButtonHandler extends InteractionHandler {
         );
         switch (type) {
             case 'largest':
+                await interaction.editReply('Finding largest VC...');
                 const largestVc = allVcs
                     .sort((a, b) => b.members.size - a.members.size)
                     .first();
