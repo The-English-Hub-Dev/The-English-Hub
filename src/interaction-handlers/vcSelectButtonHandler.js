@@ -39,6 +39,7 @@ class VcSelectButtonHandler extends InteractionHandler {
                 );
                 break;
             case 'popular':
+                await interaction.editReply('Finding popular VC...');
                 const popularVc = allVcs
                     .filter((vc) => vc.members.size >= 5)
                     .random();
