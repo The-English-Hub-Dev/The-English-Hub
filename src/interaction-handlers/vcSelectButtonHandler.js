@@ -7,6 +7,7 @@ const {
     EmbedBuilder,
     Colors,
     ChannelType,
+    PermissionFlagsBits,
 } = require('discord.js');
 
 class VcSelectButtonHandler extends InteractionHandler {
@@ -20,7 +21,11 @@ class VcSelectButtonHandler extends InteractionHandler {
      */
     async run(interaction, type) {
         const allVcs = interaction.guild.channels.cache.filter(
-            (ch) => ch.type === ChannelType.GuildVoice
+            (ch) =>
+                ch.type === ChannelType.GuildVoice &&
+                ch
+                    .permissionsFor(interaction.member)
+                    .has(PermissionFlagsBits.Connect)
         );
         switch (type) {
             case 'largest':
