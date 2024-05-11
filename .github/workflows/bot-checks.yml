@@ -20,7 +20,7 @@ jobs:
               with:
                   node-version: '18'
             - run: npm install -g eslint
-            - run: npm install -g @eslint/js
+            - run: npm install @eslint/js
             - run: npx eslint -v
             - run: npx eslint
 
