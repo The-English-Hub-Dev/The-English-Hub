@@ -23,13 +23,14 @@ class WarnCommand extends Command {
      */
     async messageRun(message, args) {
         const rawMember = await args.pickResult('member');
-        const reason = await args.restResult('string');
+        const rawReason = await args.restResult('string');
 
-        if (reason.isErr())
+        if (rawReason.isErr())
             return this.container.utility.errReply(
                 message,
                 'You must provide a reason for the warn.'
             );
+        const reason = rawReason.unwrap();
 
         if (rawMember.isErr()) {
             return this.container.utility.errReply(
