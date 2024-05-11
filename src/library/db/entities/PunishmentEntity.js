@@ -42,7 +42,7 @@ class Punishment {
      * @param { String } duration
      * @param { String } type
      */
-    constructor(modID, uID, reason, type, expiration) {
+    constructor(modID, uID, reason, type, expiration = null) {
         const currentDate = new Date();
         const pSnowflake = String(
             DiscordSnowflake.generate({ timestamp: currentDate.getTime() })
