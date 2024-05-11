@@ -1,17 +1,16 @@
+const js = require('@eslint/js');
+
 module.exports = [
+    js.configs.recommended,
     {
-        env: {
-            commonjs: true,
-            es2021: true,
-            node: true,
-        },
-        extends: 'eslint:recommended',
-        parserOptions: {
+        languageOptions: {
+            sourceType: 'commonjs',
             ecmaVersion: 'latest',
         },
         rules: {
-            'no-unused-vars': 'off',
+            'no-unused-vars': 'warn',
             'no-case-declarations': 'off',
+            'no-undef': 'off',
         },
     },
 ];

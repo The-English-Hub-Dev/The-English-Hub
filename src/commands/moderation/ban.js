@@ -34,8 +34,9 @@ class BanCommand extends Command {
         const reason = (await args.restResult('string')).unwrapOr(
             'No reason provided.'
         );
-        const deleteDays =
-            Number(args.getOption('deletedays', 'del', 'days')) ?? 1;
+        const deleteDays = Number(
+            args.getOption('deletedays', 'del', 'days') ?? 1
+        );
 
         if (rawMember.isErr()) {
             return this.container.utility.errReply(
