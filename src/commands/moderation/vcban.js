@@ -79,6 +79,10 @@ class VcBanCommand extends Command {
             `Adding vc ban overwrites. Command executed by ${message.author.tag} (${message.author.id})`
         );
 
+        if (member.voice.channel) {
+            await member.voice.disconnect(`Disconnecting as a result of a vc ban. Command executed by ${message.author.tag} (${message.author.id})`);
+        }
+
         await this.container.redis.hset(
             'vcban',
             `${vChannel.id}:${member.id}`,
