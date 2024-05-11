@@ -85,6 +85,7 @@ class Tasks {
                         member,
                         `Auto removing vc ban after 24 hours.`
                     );
+                    await this.container.redis.hdel('vcban', vcBans[i][0]);
                 }
             }
         }, Time.Minute);
