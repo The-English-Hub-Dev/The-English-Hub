@@ -1,5 +1,6 @@
 const { container } = require('@sapphire/pieces');
 const { ActivityType, ChannelType } = require('discord.js');
+const { Time } = require('@sapphire/time-utilities');
 const {
     mainGuildID,
     twoRoomsParentID,
@@ -15,6 +16,7 @@ class Tasks {
     async initializeTasks() {
         await this.initializeStatusTask();
         await this.initializeHealthcheck();
+        await this.initializeVcUnbanTask();
     }
 
     async initializeStatusTask() {
@@ -63,6 +65,31 @@ class Tasks {
         }, 120000);
 
         this.intervals.healthCheck = healthCheckInterval;
+    }
+
+    async initializeVcUnbanTask() {
+        const vcUnbanInterval = setInterval(async () => {
+            const vcBans = Object.entries(
+                await container.redis.hgetall('vcban')
+            );
+            for (var i = 0; i < vcBans.length; i++) {
+                const [vChannelID, memberID] = vcBans[i][0].split(':');
+                const banTime = vcBans[i][1];
+                if (Date.now() - banTime > Time.Day) {
+                    const vChannel =
+                        container.client.channels.cache.get(vChannelID);
+                    if (!vChannel || vChannel.type !== ChannelType.GuildVoice)
+                        return;
+                    const member = await vChannel.guild.members.fetch(memberID);
+                    await vChannel.permissionOverwrites.delete(
+                        member,
+                        `Auto removing vc ban after 24 hours.`
+                    );
+                }
+            }
+        }, Time.Minute);
+
+        this.intervals.vcUnban = vcUnbanInterval;
     }
 }
 
