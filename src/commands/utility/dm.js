@@ -6,7 +6,7 @@ const {
     GuildMember,
     ChannelType,
 } = require('discord.js');
-const { logChannel } = require('../../../config.json');
+const { logChannelID } = require('../../../config.json');
 
 class DmCommand extends Command {
     constructor(context, options) {
@@ -137,7 +137,7 @@ class DmCommand extends Command {
      * @param { String } dm
      */
     async logDMSent(message, member, dm) {
-        const logCh = message.guild.channels.cache.get(logChannel);
+        const logCh = message.guild.channels.cache.get(logChannelID);
         if (!logCh || logCh.type !== ChannelType.GuildText) return;
 
         const dmSentEmbed = new EmbedBuilder()

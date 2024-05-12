@@ -10,7 +10,7 @@ const {
     ButtonStyle,
     PermissionFlagsBits,
 } = require('discord.js');
-const { logChannel } = require('../../../config.json');
+const { logChannelID } = require('../../../config.json');
 
 class RemovepunishmentCommand extends Command {
     constructor(context, options) {
@@ -170,7 +170,7 @@ class RemovepunishmentCommand extends Command {
                     .setThumbnail(this.container.client.user.avatarURL());
 
                 const logChannelFetched =
-                    message.guild.channels.cache.get(logChannel);
+                    message.guild.channels.cache.get(logChannelID);
                 await logChannelFetched.send({ embeds: [logEmbed] });
                 return collector.stop();
             } else if (id === 'rmpunish_cancel') {

@@ -3,7 +3,7 @@ const { Message, EmbedBuilder, ChannelType, Colors } = require('discord.js');
 const {
     redirectDMChannelID,
     mainGuildID,
-    logChannel,
+    logChannelID,
 } = require('../../../config.json');
 
 class MessageCreateListener extends Listener {
@@ -106,7 +106,7 @@ class MessageCreateListener extends Listener {
     async logDM(message) {
         const dmLog = this.container.client.guilds.cache
             .get(mainGuildID)
-            .channels.cache.get(logChannel);
+            .channels.cache.get(logChannelID);
         if (!dmLog || dmLog.type !== ChannelType.GuildText) return;
 
         const dmRecieveLogEmbed = new EmbedBuilder()

@@ -6,7 +6,7 @@ const {
     time,
     TimestampStyles,
 } = require('discord.js');
-const { logChannel } = require('../../../config.json');
+const { logChannelID } = require('../../../config.json');
 
 class ServerUnmuteCommand extends Command {
     constructor(context, options) {
@@ -107,7 +107,7 @@ class ServerUnmuteCommand extends Command {
             })
             .setThumbnail(this.container.client.user.avatarURL());
 
-        const logCh = message.guild.channels.cache.get(logChannel);
+        const logCh = message.guild.channels.cache.get(logChannelID);
         if (!logCh) return;
 
         return logCh.send({ embeds: [logEmbed] }).catch();

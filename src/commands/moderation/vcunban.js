@@ -8,7 +8,7 @@ const {
     GuildMember,
     VoiceChannel,
 } = require('discord.js');
-const { logChannel } = require('../../../config.json');
+const { logChannelID } = require('../../../config.json');
 
 class VcUnbanCommand extends Command {
     constructor(context, options) {
@@ -150,7 +150,7 @@ class VcUnbanCommand extends Command {
             })
             .setThumbnail(this.container.client.user.avatarURL());
 
-        const logCh = message.guild.channels.cache.get(logChannel);
+        const logCh = message.guild.channels.cache.get(logChannelID);
         if (!logCh) return;
 
         return logCh.send({ embeds: [logEmbed] });

@@ -7,7 +7,7 @@ const {
     Colors,
     ChannelType,
 } = require('discord.js');
-const { logChannel } = require('../../../config.json');
+const { logChannelID } = require('../../../config.json');
 const Punishment =
     require('../../library/db/entities/PunishmentEntity').Punishment;
 
@@ -155,7 +155,7 @@ class NoteCommand extends Command {
             })
             .setThumbnail(this.container.client.user.avatarURL());
 
-        const logCh = message.guild.channels.cache.get(logChannel);
+        const logCh = message.guild.channels.cache.get(logChannelID);
         if (!logCh) return;
 
         return logCh.send({ embeds: [logEmbed] }).catch();
