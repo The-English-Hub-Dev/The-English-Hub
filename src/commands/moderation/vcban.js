@@ -8,7 +8,7 @@ const {
     GuildMember,
     VoiceChannel,
 } = require('discord.js');
-const { logChannel, allowedVcBanChannels } = require('../../../config.json');
+const { logChannel } = require('../../../config.json');
 
 class VcBanCommand extends Command {
     constructor(context, options) {
@@ -42,10 +42,10 @@ class VcBanCommand extends Command {
         }
 
         const vChannel = rawvChannel.unwrap();
-        if (!allowedVcBanChannels.includes(vChannel.id))
+        if (vChannel.parent.id !== '1218635207926743182')
             return this.container.utility.errReply(
                 message,
-                'You may not vc ban members from this channel.'
+                'You may only vc ban members from channels in the `Guest Rooms` category.'
             );
 
         if (rawMember.isErr()) {
