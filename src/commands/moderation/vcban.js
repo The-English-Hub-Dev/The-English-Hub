@@ -76,7 +76,9 @@ class VcBanCommand extends Command {
                 Connect: false,
                 SendMessages: false,
             },
-            `Adding vc ban overwrites. Command executed by ${message.author.tag} (${message.author.id})`
+            {
+                reason: `Adding vc ban overwrites. Command executed by ${message.author.tag} (${message.author.id})`,
+            }
         );
 
         if (member.voice.channel) {
