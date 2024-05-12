@@ -21,6 +21,10 @@ class MessageCommandErrorListener extends Listener {
      */
     async run(error, payload) {
         await this.container.utility.exception(error, 'Command');
+        if (error.message == 'Received one or more errors') {
+            this.container.logger.error('Logging in console because of multiple errors')
+            this.container.logger.error(error)
+        }
         return payload.message.reply({
             content: `An error occured: ${error.message}`,
             allowedMentions: { users: [], roles: [], parse: [] },
