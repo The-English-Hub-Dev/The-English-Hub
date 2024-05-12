@@ -117,6 +117,8 @@ class VcBanCommand extends Command {
                 iconURL: message.guild.iconURL(),
             })
             .addFields({ name: 'Reason', value: reason })
+            .setDescription('This ban will automatically expire in 24 hours.')
+            .setFooter({ iconURL: message.guild.iconURL() })
             .setTimestamp();
 
         return member.send({ embeds: [dmEmbed] }).catch(() => {});
