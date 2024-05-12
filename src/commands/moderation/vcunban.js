@@ -8,7 +8,10 @@ const {
     GuildMember,
     VoiceChannel,
 } = require('discord.js');
-const { logChannelID } = require('../../../config.json');
+const {
+    logChannelID,
+    vcBanUnbanManagedCategory,
+} = require('../../../config.json');
 
 class VcUnbanCommand extends Command {
     constructor(context, options) {
@@ -41,7 +44,7 @@ class VcUnbanCommand extends Command {
             );
         }
         const vChannel = rawvChannel.unwrap();
-        if (vChannel.parent.id !== '1218635207926743182')
+        if (vChannel.parent.id !== vcBanUnbanManagedCategory)
             return this.container.utility.errReply(
                 message,
                 'You may only vc unban members from channels in the `Guest Rooms` category.'

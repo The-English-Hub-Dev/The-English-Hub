@@ -10,7 +10,7 @@ class Database {
             synchronize: true,
             entities: [require('./entities/PunishmentEntity').punishmentEntity],
         });
-        ds.initialize().catch((e) => console.log(e));
+        ds.initialize().catch((e) => console.error(e));
 
         this.typeorm = ds;
         this.punishments = this.typeorm.getRepository('PunishmentEntity');
