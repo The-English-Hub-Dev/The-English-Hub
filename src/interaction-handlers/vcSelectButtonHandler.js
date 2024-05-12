@@ -25,7 +25,10 @@ class VcSelectButtonHandler extends InteractionHandler {
                 ch.type === ChannelType.GuildVoice &&
                 ch
                     .permissionsFor(interaction.member)
-                    .has(PermissionFlagsBits.Connect)
+                    .has(PermissionFlagsBits.Connect) &&
+                ch
+                    .permissionsFor(interaction.member)
+                    .has(PermissionFlagsBits.ViewChannel)
         );
         switch (type) {
             case 'largest':
