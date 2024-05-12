@@ -15,6 +15,7 @@
     "keywords": [],
     "author": "Grav <grav4029@gmail.com>",
     "license": "ISC",
+    "private": true,
     "bugs": {
         "url": "https://github.com/The-English-Hub/The-English-Hub/issues"
     },

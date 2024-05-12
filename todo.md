@@ -1,1 +1,1 @@
--   Remove vcban channel list and just make it the guest rooms cateory
+-   Currently nothing!
