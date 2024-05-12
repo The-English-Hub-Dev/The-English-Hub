@@ -1,5 +1,5 @@
 const { container } = require('@sapphire/pieces');
-const { ActivityType, ChannelType } = require('discord.js');
+const { ActivityType, ChannelType, Colors } = require('discord.js');
 const { Time } = require('@sapphire/time-utilities');
 const {
     mainGuildID,
@@ -85,6 +85,21 @@ class Tasks {
                         member,
                         `Auto removing vc ban after 24 hours.`
                     );
+                    const dmEmbed = new EmbedBuilder()
+                        .setColor(Colors.DarkGreen)
+                        .setTitle(`You were unbanned from the vc ${vChannel}`)
+                        .setAuthor({
+                            name: message.guild.name,
+                            iconURL: message.guild.iconURL(),
+                        })
+                        .setDescription(
+                            `You can now join and chat in ${vChannel} again since 24 hours have passed. Make sure not to break any rules to prevent further action.`
+                        )
+                        .setFooter({ iconURL: message.guild.iconURL() })
+                        .setTimestamp();
+
+                    await member.send({ embeds: [dmEmbed] }).catch(() => {});
+
                     await this.container.redis.hdel('vcban', vcBans[i][0]);
                 }
             }
