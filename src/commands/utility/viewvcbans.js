@@ -14,7 +14,7 @@ class ViewVcbanCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: 'viewbcbans',
+            name: 'viewvcbans',
             aliases: ['viewvcb', 'viewvcrestricts'],
             description: 'Shows you the current active VC bans.',
             preconditions: ['Staff'],
