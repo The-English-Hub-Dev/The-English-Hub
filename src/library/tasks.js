@@ -1,5 +1,5 @@
 const { container } = require('@sapphire/pieces');
-const { ActivityType, ChannelType, Colors } = require('discord.js');
+const { ActivityType, ChannelType, Colors, EmbedBuilder } = require('discord.js');
 const { Time } = require('@sapphire/time-utilities');
 const {
     mainGuildID,
