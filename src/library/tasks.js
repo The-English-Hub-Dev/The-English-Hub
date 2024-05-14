@@ -134,7 +134,7 @@ class Tasks {
                             },
                             {
                                 name: 'Moderator',
-                                value: `${message.author.tag} (${message.author.id})`,
+                                value: `${container.client.user.tag} (${container.client.user.id})`,
                             },
                             {
                                 name: 'Reason',
@@ -150,9 +150,9 @@ class Tasks {
                         )
                         .setFooter({
                             text: 'Moderation Logs',
-                            iconURL: message.guild.iconURL(),
+                            iconURL: member.guild.iconURL(),
                         })
-                        .setThumbnail(this.container.client.user.avatarURL());
+                        .setThumbnail(container.client.user.avatarURL());
 
                     const logCh =
                         message.guild.channels.cache.get(vcbanlogChannelID);
