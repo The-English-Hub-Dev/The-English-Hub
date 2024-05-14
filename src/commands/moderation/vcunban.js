@@ -9,7 +9,7 @@ const {
     VoiceChannel,
 } = require('discord.js');
 const {
-    logChannelID,
+    vcbanlogChannelID,
     vcBanUnbanManagedCategory,
 } = require('../../../config.json');
 
@@ -153,7 +153,7 @@ class VcUnbanCommand extends Command {
             })
             .setThumbnail(this.container.client.user.avatarURL());
 
-        const logCh = message.guild.channels.cache.get(logChannelID);
+        const logCh = message.guild.channels.cache.get(vcbanlogChannelID);
         if (!logCh) return;
 
         return logCh.send({ embeds: [logEmbed] });

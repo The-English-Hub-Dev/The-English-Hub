@@ -26,5 +26,6 @@
     ],
     "voiceStateLogChannelID": "1189390546708463716",
     "automodByRoles": ["852913019259977749"],
-    "vcBanUnbanManagedCategory": "1218635207926743182"
+    "vcBanUnbanManagedCategory": "1218635207926743182",
+    "vcbanlogChannelID": "1000460038634229891"
 }
