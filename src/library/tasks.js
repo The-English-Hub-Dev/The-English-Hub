@@ -74,7 +74,7 @@ class Tasks {
             );
             for (var i = 0; i < vcBans.length; i++) {
                 const [vChannelID, memberID] = vcBans[i][0].split(':');
-                const banTime = vcBans[i][1];
+                const banTime = Number(vcBans[i][1]);
                 if (Date.now() - banTime > Time.Day) {
                     const vChannel =
                         container.client.channels.cache.get(vChannelID);
