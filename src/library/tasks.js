@@ -50,6 +50,7 @@ class Tasks {
             }
         }, 20000);
 
+        container.logger.info('Status task initialized.');
         this.intervals.status = statusInterval;
     }
 
@@ -66,6 +67,7 @@ class Tasks {
             });
         }, 120000);
 
+        container.logger.info('Healthcheck task initialized.');
         this.intervals.healthCheck = healthCheckInterval;
     }
 
@@ -163,6 +165,7 @@ class Tasks {
             }
         }, Time.Minute);
 
+        container.logger.info('VC unban task initialized.');
         this.intervals.vcUnban = vcUnbanInterval;
     }
 }
