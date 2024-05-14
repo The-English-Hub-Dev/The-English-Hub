@@ -6,11 +6,6 @@ const {
     EmbedBuilder,
 } = require('discord.js');
 const { Time } = require('@sapphire/time-utilities');
-const {
-    mainGuildID,
-    twoRoomsParentID,
-    threeRoomsParentID,
-} = require('../../config.json');
 let statusNum = 1;
 
 class Tasks {
@@ -85,17 +80,17 @@ class Tasks {
                         container.client.channels.cache.get(vChannelID);
                     if (!vChannel || vChannel.type !== ChannelType.GuildVoice) {
                         return container.logger.warn(
-                            `VC unban channel not found. Voice Channel ID: ${vChannelID}`
+                            `Removing VC ban task: VC unban channel not found. Voice Channel ID: ${vChannelID}`
                         );
                     }
 
                     const member = await vChannel.guild.members
                         .fetch(memberID)
                         .catch(() => null);
-                    if (!member)
-                        return container.logger.warn(
-                            `Member not found. Member ID: ${memberID}`
-                        );
+                    if (!member) {
+                        return container.redis.hdel('vcban', vcBans[i][0]); // just delete the vc ban because this means the user left the server
+                    }
+
                     await vChannel.permissionOverwrites.delete(
                         member,
                         `Auto removing vc ban after 24 hours.`
@@ -122,7 +117,7 @@ class Tasks {
                     await container.redis.hdel('vcban', vcBans[i][0]);
 
                     container.logger.info(
-                        `Unbanned ${member.user.tag} from ${vChannel.name} after 24 hours.`
+                        `Removing VC ban task: Unbanned ${member.user.tag} from ${vChannel.name} after 24 hours.`
                     );
                 }
             }
