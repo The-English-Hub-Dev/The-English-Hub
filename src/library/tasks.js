@@ -89,8 +89,13 @@ class Tasks {
                         );
                     }
 
-                    const member = await vChannel.guild.members.fetch(memberID).catch(() => null);
-                    if (!member) return container.logger.warn(`Member not found. Member ID: ${memberID}`);
+                    const member = await vChannel.guild.members
+                        .fetch(memberID)
+                        .catch(() => null);
+                    if (!member)
+                        return container.logger.warn(
+                            `Member not found. Member ID: ${memberID}`
+                        );
                     await vChannel.permissionOverwrites.delete(
                         member,
                         `Auto removing vc ban after 24 hours.`
@@ -113,7 +118,7 @@ class Tasks {
                         .setTimestamp();
 
                     await member.send({ embeds: [dmEmbed] }).catch(() => {});
-                    
+
                     await container.redis.hdel('vcban', vcBans[i][0]);
 
                     container.logger.info(
