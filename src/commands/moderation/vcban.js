@@ -18,7 +18,7 @@ class VcBanCommand extends Command {
         super(context, {
             ...options,
             name: 'vcban',
-            aliases: ['vcbanish', 'vcrestrict'],
+            aliases: ['vcb', 'vcbanish', 'vcrestrict'],
             description:
                 'Prevents a member from joining the specified vc and sending a message in its vc chat.',
             preconditions: ['Staff'],
