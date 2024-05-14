@@ -7,7 +7,7 @@ const {
     time,
 } = require('discord.js');
 const { Time } = require('@sapphire/time-utilities');
-const { vcbanlogChannelID } = require('../config.json');
+const { vcbanlogChannelID } = require('../../config.json');
 let statusNum = 1;
 
 class Tasks {
