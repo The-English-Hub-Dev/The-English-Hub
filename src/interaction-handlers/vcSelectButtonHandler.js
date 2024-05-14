@@ -31,7 +31,7 @@ class VcSelectButtonHandler extends InteractionHandler {
                     .has(PermissionFlagsBits.ViewChannel)
         );
         switch (type) {
-            case 'largest':
+            case 'largest': {
                 await interaction.editReply('Finding largest VC...');
                 const largestVc = allVcs
                     .sort((a, b) => b.members.size - a.members.size)
@@ -40,13 +40,15 @@ class VcSelectButtonHandler extends InteractionHandler {
                     `Largest VC with ${largestVc.members.size} members: ${largestVc} (click to join)`
                 );
                 break;
-            case 'random':
+            }
+            case 'random': {
                 const randomVc = allVcs.random();
                 await interaction.editReply(
                     `Random VC : ${randomVc} (click to join)`
                 );
                 break;
-            case 'popular':
+            }
+            case 'popular': {
                 await interaction.editReply('Finding popular VC...');
                 const popularVc = allVcs
                     .filter((vc) => vc.members.size >= 5)
@@ -55,6 +57,7 @@ class VcSelectButtonHandler extends InteractionHandler {
                     `Popular VC: ${popularVc} (click to join)`
                 );
                 break;
+            }
             default:
                 break;
         }

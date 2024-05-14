@@ -8,8 +8,8 @@ module.exports = [
             ecmaVersion: 'latest',
         },
         rules: {
-            'no-unused-vars': 'warn',
-            'no-case-declarations': 'off',
+            'no-unused-vars': 'off',
+            'no-case-declarations': 'warn',
             'no-undef': 'off',
         },
     },
