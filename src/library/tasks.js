@@ -94,6 +94,7 @@ class Tasks {
                         member,
                         `Auto removing vc ban after 24 hours.`
                     );
+
                     const dmEmbed = new EmbedBuilder()
                         .setColor(Colors.DarkGreen)
                         .setTitle(`You were unbanned from the vc ${vChannel}`)
@@ -104,7 +105,10 @@ class Tasks {
                         .setDescription(
                             `You can now join and chat in ${vChannel} again since 24 hours have passed. Make sure not to break any rules to prevent further action.`
                         )
-                        .setFooter({ iconURL: vChannel.guild.iconURL() })
+                        .setFooter({
+                            text: message.guild.name,
+                            iconURL: vChannel.guild.iconURL(),
+                        })
                         .setTimestamp();
 
                     await member.send({ embeds: [dmEmbed] }).catch(() => {});
