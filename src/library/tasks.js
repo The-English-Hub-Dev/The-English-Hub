@@ -109,7 +109,7 @@ class Tasks {
 
                     await member.send({ embeds: [dmEmbed] }).catch(() => {});
 
-                    await this.container.redis.hdel('vcban', vcBans[i][0]);
+                    await container.redis.hdel('vcban', vcBans[i][0]);
                 }
             }
         }, Time.Minute);
