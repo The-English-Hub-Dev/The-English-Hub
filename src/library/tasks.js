@@ -98,13 +98,13 @@ class Tasks {
                         .setColor(Colors.DarkGreen)
                         .setTitle(`You were unbanned from the vc ${vChannel}`)
                         .setAuthor({
-                            name: message.guild.name,
-                            iconURL: message.guild.iconURL(),
+                            name: vChannel.guild.name,
+                            iconURL: vChannel.guild.iconURL(),
                         })
                         .setDescription(
                             `You can now join and chat in ${vChannel} again since 24 hours have passed. Make sure not to break any rules to prevent further action.`
                         )
-                        .setFooter({ iconURL: message.guild.iconURL() })
+                        .setFooter({ iconURL: vChannel.guild.iconURL() })
                         .setTimestamp();
 
                     await member.send({ embeds: [dmEmbed] }).catch(() => {});
