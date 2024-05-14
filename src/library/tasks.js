@@ -79,9 +79,11 @@ class Tasks {
                     const vChannel =
                         container.client.channels.cache.get(vChannelID);
                     if (!vChannel || vChannel.type !== ChannelType.GuildVoice) {
-                        return container.logger.warn(`VC unban channel not found. Voice Channel ID: ${vChannelID}`)
+                        return container.logger.warn(
+                            `VC unban channel not found. Voice Channel ID: ${vChannelID}`
+                        );
                     }
-                        
+
                     const member = await vChannel.guild.members.fetch(memberID);
                     await vChannel.permissionOverwrites.delete(
                         member,
