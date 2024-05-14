@@ -4,8 +4,10 @@ const {
     ChannelType,
     Colors,
     EmbedBuilder,
+    time,
 } = require('discord.js');
 const { Time } = require('@sapphire/time-utilities');
+const { vcbanlogChannelID } = require('../config.json');
 let statusNum = 1;
 
 class Tasks {
@@ -115,6 +117,44 @@ class Tasks {
                     await member.send({ embeds: [dmEmbed] }).catch(() => {});
 
                     await container.redis.hdel('vcban', vcBans[i][0]);
+
+                    const logEmbed = new EmbedBuilder()
+                        .setColor(Colors.DarkRed)
+                        .setTitle('VC Unban')
+                        .setAuthor({
+                            name: member.user.tag,
+                            iconURL: member.user.avatarURL(),
+                        })
+                        .addFields(
+                            {
+                                name: 'User',
+                                value: `${member.user.tag} (${member.user.id})`,
+                            },
+                            {
+                                name: 'Moderator',
+                                value: `${message.author.tag} (${message.author.id})`,
+                            },
+                            {
+                                name: 'Reason',
+                                value: `Auto VC unban after 24 hours.`,
+                            },
+                            {
+                                name: 'Date',
+                                value: time(
+                                    new Date(),
+                                    TimestampStyles.LongDateTime
+                                ),
+                            }
+                        )
+                        .setFooter({
+                            text: 'Moderation Logs',
+                            iconURL: message.guild.iconURL(),
+                        })
+                        .setThumbnail(this.container.client.user.avatarURL());
+
+                    const logCh =
+                        message.guild.channels.cache.get(vcbanlogChannelID);
+                    if (logCh) await logCh.send({ embeds: [logEmbed] });
 
                     container.logger.info(
                         `Removing VC ban task: Unbanned ${member.user.tag} from ${vChannel.name} after 24 hours.`
