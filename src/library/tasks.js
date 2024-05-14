@@ -106,7 +106,7 @@ class Tasks {
                             `You can now join and chat in ${vChannel} again since 24 hours have passed. Make sure not to break any rules to prevent further action.`
                         )
                         .setFooter({
-                            text: message.guild.name,
+                            text: vChannel.guild.name,
                             iconURL: vChannel.guild.iconURL(),
                         })
                         .setTimestamp();
