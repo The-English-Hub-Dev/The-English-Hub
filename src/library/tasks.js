@@ -156,7 +156,7 @@ class Tasks {
                         .setThumbnail(container.client.user.avatarURL());
 
                     const logCh =
-                        message.guild.channels.cache.get(vcbanlogChannelID);
+                        member.guild.channels.cache.get(vcbanlogChannelID);
                     if (logCh) await logCh.send({ embeds: [logEmbed] });
 
                     container.logger.info(
