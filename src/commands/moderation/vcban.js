@@ -12,6 +12,7 @@ const {
     vcbanlogChannelID,
     vcBanUnbanManagedCategory,
 } = require('../../../config.json');
+const { Time } = require('@sapphire/time-utilities');
 
 class VcBanCommand extends Command {
     constructor(context, options) {
@@ -158,6 +159,13 @@ class VcBanCommand extends Command {
                 {
                     name: 'Date',
                     value: time(new Date(), TimestampStyles.LongDateTime),
+                },
+                {
+                    name: 'Expires',
+                    value: time(
+                        new Date(Date.now() + Time.Day),
+                        TimestampStyles.LongDateTime
+                    ),
                 }
             )
             .setFooter({
