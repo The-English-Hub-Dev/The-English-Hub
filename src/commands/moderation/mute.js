@@ -133,7 +133,7 @@ class MuteCommand extends Command {
             const confirmEmbed = new EmbedBuilder()
                 .setColor(Colors.Orange)
                 .setDescription(
-                    `${member.user} was muted with ID \`${punishment.punishment_id}\`.`
+                    `<:Hellos:1218430823229820968> ${member.user} was muted with ID \`${punishment.punishment_id}\`.`
                 );
 
             await message.channel.send({

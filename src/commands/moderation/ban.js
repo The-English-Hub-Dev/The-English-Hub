@@ -81,7 +81,7 @@ class BanCommand extends Command {
             const confirmEmbed = new EmbedBuilder()
                 .setColor(Colors.DarkRed)
                 .setDescription(
-                    `<:checkmark:990395449796087828> ${member.user} has been **banned** with ID \`${punishment.punishment_id}\`.`
+                    `<:Hellos:1218430823229820968> ${member.user} has been **banned** with ID \`${punishment.punishment_id}\`.`
                 );
 
             await message.channel.send({

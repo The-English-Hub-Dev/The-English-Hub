@@ -63,7 +63,7 @@ class WarnCommand extends Command {
             const confirmEmbed = new EmbedBuilder()
                 .setColor(Colors.Yellow)
                 .setDescription(
-                    `${member.user} was warned with ID \`${punishment.punishment_id}\`.`
+                    `<:Hellos:1218430823229820968> ${member.user} was warned with ID \`${punishment.punishment_id}\`.`
                 );
 
             await message.channel.send({
