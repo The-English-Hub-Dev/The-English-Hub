@@ -12,7 +12,8 @@ class SendGoldenmicrophoneAppCommand extends Command {
         super(context, {
             ...options,
             name: 'sendgoldenmicrophoneapp',
-            description: "Set's the bots status.",
+            description:
+                'Send the golden mic application embed in the current channel along with a button to apply.',
             aliases: [
                 'sendgmapp',
                 'sendgoldenapp',

@@ -50,6 +50,7 @@ class GoldenmicappButtonHandler extends InteractionHandler {
             );
 
             gmModal.addComponents(q1ActionRow, q2ActionRow, q3ActionRow);
+            await interaction.showModal(gmModal);
         } else {
             // modal_submit
         }
