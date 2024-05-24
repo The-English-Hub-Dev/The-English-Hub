@@ -26,7 +26,7 @@ class GiveawayButtonHandler extends InteractionHandler {
         const giveawayId = interaction.customId.split(':')[1];
 
         if (type == 'enter') {
-            const alreadyJoinedGw = this.container.redis.lpos(
+            const alreadyJoinedGw = await this.container.redis.lpos(
                 `giveaway_${giveawayId}`,
                 interaction.user.id
             );
