@@ -50,7 +50,7 @@ class GoldenmicappButtonHandler extends InteractionHandler {
             );
 
             gmModal.addComponents(q1ActionRow, q2ActionRow, q3ActionRow);
-            await interaction.showModal(gmModal);
+            return interaction.showModal(gmModal);
         } else {
             // modal_submit
         }
@@ -63,7 +63,6 @@ class GoldenmicappButtonHandler extends InteractionHandler {
     async parse(interaction) {
         if (!interaction.customId.startsWith('goldenmic:')) return this.none();
 
-        await interaction.deferReply({ ephemeral: true });
         return this.some();
     }
 }
