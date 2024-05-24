@@ -20,6 +20,7 @@ class Tasks {
         await this.initializeStatusTask();
         await this.initializeHealthcheck();
         await this.initializeVcUnbanTask();
+        await this.initializeGiveawayTask();
     }
 
     async initializeStatusTask() {
@@ -168,6 +169,62 @@ class Tasks {
 
         container.logger.info('VC unban task initialized.');
         this.intervals.vcUnban = vcUnbanInterval;
+    }
+
+    async initializeGiveawayTask() {
+        const giveawayTaskInterval = setInterval(async () => {
+            const currentGiveaways = Object.entries(
+                await container.redis.hgetall('giveaways')
+            );
+            for (var i = 0; i < currentGiveaways.length; i++) {
+                const [giveawayIDCh, giveawayData] = currentGiveaways[i];
+                if (Number(giveawayData.split('-')[0]) >= Date.now()) {
+                    // aka a giveaway has ended
+                    const channel = container.client.channels.cache.get(
+                        giveawayIDCh.split('_')[1]
+                    );
+                    if (!channel || channel.type != ChannelType.GuildText)
+                        return;
+
+                    // roll giveaway winner
+                    const giveawayID = giveawayIDCh.split('_')[0];
+                    const giveawayEntrants = await container.redis.lrange(
+                        `giveaway_${giveawayID}`,
+                        0,
+                        -1
+                    );
+                    const winners = [];
+                    const winnersCount = Number(
+                        giveawayData.split('-')[1].split(':')[0]
+                    );
+                    const prize = giveawayData.split('-')[1].split(':')[1];
+                    for (var j = 0; j < winnersCount; j++) {
+                        const winnerIndex = Math.floor(
+                            Math.random() * giveawayEntrants.length
+                        );
+                        winners.push(giveawayEntrants[winnerIndex]);
+                    }
+
+                    // send result message
+                    const giveawayEmbed = new EmbedBuilder()
+                        .setColor(Colors.DarkGreen)
+                        .setTitle('🎉 Giveaway Ended!')
+                        .setDescription(
+                            `**Prize: ${prize}**\nWinners: ${winners.map((winner) => `<@${winner}>`).join(', ')}`
+                        )
+                        .setFooter({
+                            text: `Giveaway ID: ${giveawayID}`,
+                        });
+
+                    await container.redis.hdel('giveaways', giveawayIDCh); // remove active giveaway
+
+                    return channel.send({ embeds: [giveawayEmbed] });
+                }
+            }
+        });
+
+        container.logger.info('Giveaway task initialized.');
+        this.intervals.giveaway = giveawayTaskInterval;
     }
 }
 

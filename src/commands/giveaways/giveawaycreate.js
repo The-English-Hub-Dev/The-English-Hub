@@ -81,7 +81,7 @@ class GiveawaycreateCommand extends Command {
 
         await this.container.redis.hset(
             'giveaways',
-            `${giveawayID}`,
+            `${giveawayID}_${message.channel.id}`,
             `${gwEndDate.getTime()}-${rawWinners.unwrap()}:${gwPrize.unwrap()}`
         );
 
