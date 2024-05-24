@@ -54,7 +54,7 @@ class GiveawayButtonHandler extends InteractionHandler {
 
             return interaction.editReply(`Successfully entered giveaway!`);
         } else {
-            const alreadyJoinedGw = this.container.redis.lpos(
+            const alreadyJoinedGw = await this.container.redis.lpos(
                 `giveaway_${giveawayId}`,
                 interaction.user.id
             );
