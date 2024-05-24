@@ -64,7 +64,7 @@ class GiveawaycreateCommand extends Command {
         const gwEmbed = new EmbedBuilder()
             .setTitle('🎉 Giveaway')
             .setDescription(
-                `**Prize: ${gwPrize.unwrap()}**\nEnds in ${time(gwEndDate, TimestampStyles.RelativeTime)}\n*Giveaway ID: ${giveawayID}*\n\nCurrent Entries: 0`
+                `**Prize: ${gwPrize.unwrap()}** Winners: ${rawWinners.unwrap()}\nEnds ${time(gwEndDate, TimestampStyles.RelativeTime)}\n*Giveaway ID: ${giveawayID}*\n\nCurrent Entries: 0`
             )
             .setColor(Colors.DarkGreen)
             .setFooter({
@@ -78,6 +78,12 @@ class GiveawaycreateCommand extends Command {
                 .setLabel('Join Giveaway')
                 .setStyle(ButtonStyle.Primary),
         ]);
+
+        await this.container.redis.hset(
+            'giveaways',
+            `${giveawayID}`,
+            `${rawWinners.unwrap()}:${gwPrize.unwrap()}`
+        );
 
         return message.channel.send({
             embeds: [gwEmbed],

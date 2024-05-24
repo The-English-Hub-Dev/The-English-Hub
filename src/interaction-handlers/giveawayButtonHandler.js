@@ -30,7 +30,7 @@ class GiveawayButtonHandler extends InteractionHandler {
                 `giveaway_${giveawayId}`,
                 interaction.user.id
             );
-            if (alreadyJoinedGw) {
+            if (alreadyJoinedGw !== null) {
                 const alreadyJoinedAction =
                     new ActionRowBuilder().addComponents([
                         new ButtonBuilder()
@@ -38,7 +38,7 @@ class GiveawayButtonHandler extends InteractionHandler {
                             .setStyle(ButtonStyle.Primary)
                             .setLabel('Leave'),
                     ]);
-                await interaction.editReply({
+                return interaction.editReply({
                     content:
                         'You have already joined this giveaway! Would you like to leave it?',
                     components: [alreadyJoinedAction],
@@ -50,7 +50,7 @@ class GiveawayButtonHandler extends InteractionHandler {
                 interaction.user.id
             );
 
-            this.updateEmbed(interaction, giveawayId);
+            await this.updateEmbed(interaction, giveawayId);
 
             return interaction.editReply(`Successfully entered giveaway!`);
         } else {
@@ -58,10 +58,20 @@ class GiveawayButtonHandler extends InteractionHandler {
                 `giveaway_${giveawayId}`,
                 interaction.user.id
             );
-            if (!alreadyJoinedGw)
+            if (alreadyJoinedGw === null)
                 return interaction.editReply(
                     "You currently cannot use the leave button since you haven't entered the giveaway."
                 );
+
+            await this.container.redis.lrem(
+                `giveaway_${giveawayId}`,
+                1,
+                interaction.user.id
+            );
+
+            await this.updateEmbed(interaction, giveawayId);
+
+            return interaction.editReply('Successfully left giveaway!');
         }
     }
 
