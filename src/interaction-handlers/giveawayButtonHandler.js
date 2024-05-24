@@ -25,7 +25,7 @@ class GiveawayButtonHandler extends InteractionHandler {
         const type = interaction.customId.split(':')[0].split('_')[1];
         const giveawayId = interaction.customId.split(':')[1];
 
-        if (type == 'join') {
+        if (type == 'enter') {
             const alreadyJoinedGw = this.container.redis.lpos(
                 `giveaway_${giveawayId}`,
                 interaction.user.id
@@ -53,6 +53,15 @@ class GiveawayButtonHandler extends InteractionHandler {
             this.updateEmbed(interaction, giveawayId);
 
             return interaction.editReply(`Successfully entered giveaway!`);
+        } else {
+            const alreadyJoinedGw = this.container.redis.lpos(
+                `giveaway_${giveawayId}`,
+                interaction.user.id
+            );
+            if (!alreadyJoinedGw)
+                return interaction.editReply(
+                    "You currently cannot use the leave button since you haven't entered the giveaway."
+                );
         }
     }
 
