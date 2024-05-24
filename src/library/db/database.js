@@ -8,10 +8,7 @@ class Database {
             url: process.env.DATABASE_URL,
             logging: ['error'],
             synchronize: true,
-            entities: [
-                require('./entities/PunishmentEntity').punishmentEntity,
-                require('./entities/GiveawayEntity').giveawayEntity,
-            ],
+            entities: [require('./entities/PunishmentEntity').punishmentEntity],
         });
         ds.initialize().catch((e) => console.error(e));
 
