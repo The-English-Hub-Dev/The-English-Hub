@@ -20,6 +20,8 @@ class MessageCommandErrorListener extends Listener {
      * @param { MessageCommandErrorPayload } payload
      */
     async run(error, payload) {
+        if (process.env.node_env == 'testing')
+            return this.container.logger.error(error);
         await this.container.utility.exception(error, 'Command');
         if (error.message == 'Received one or more errors') {
             this.container.logger.error(

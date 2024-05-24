@@ -9,6 +9,7 @@ const {
     TimestampStyles,
     ActionRowBuilder,
     ButtonBuilder,
+    ButtonStyle,
 } = require('discord.js');
 const { DiscordSnowflake } = require('@sapphire/snowflake');
 const { Duration } = require('@sapphire/time-utilities');
@@ -17,11 +18,10 @@ class GiveawaycreateCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: 'dm',
-            aliases: ['dmmember'],
-            description:
-                'DMs a member in the server with a specified message. You can also include attachments by attaching them to your dm command.',
-            usage: '<member> <message>',
+            name: 'giveawaycreate',
+            aliases: ['gwcreate', 'gcreate'],
+            description: 'Creates a giveaway.',
+            usage: '<duration> <winners> <prize>',
             preconditions: ['Staff'],
         });
     }
@@ -64,16 +64,19 @@ class GiveawaycreateCommand extends Command {
         const gwEmbed = new EmbedBuilder()
             .setTitle('🎉 Giveaway')
             .setDescription(
-                `**Prize: ${gwPrize.unwrap()}**\nEnds in ${time(gwEndDate, TimestampStyles.RelativeTime)}\\*Giveaway ID: ${giveawayID}*`
+                `**Prize: ${gwPrize.unwrap()}**\nEnds in ${time(gwEndDate, TimestampStyles.RelativeTime)}\n*Giveaway ID: ${giveawayID}*\n\nCurrent Entries: 0`
             )
             .setColor(Colors.DarkGreen)
-            .setFooter(
-                `Hosted by ${message.author.tag} - ${message.guild.name}`,
-                message.guild.iconURL()
-            );
+            .setFooter({
+                text: `Hosted by ${message.author.tag} - ${message.guild.name}`,
+                iconURL: message.guild.iconURL(),
+            });
 
         const gwButtonActionRow = new ActionRowBuilder().addComponents([
-            new ButtonBuilder().setCustomId(`gw_enter:${giveawayID}`),
+            new ButtonBuilder()
+                .setCustomId(`gw_enter:${giveawayID}`)
+                .setLabel('Join Giveaway')
+                .setStyle(ButtonStyle.Primary),
         ]);
 
         return message.channel.send({
