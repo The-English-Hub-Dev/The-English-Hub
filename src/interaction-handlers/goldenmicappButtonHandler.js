@@ -2,8 +2,15 @@ const {
     InteractionHandler,
     InteractionHandlerTypes,
 } = require('@sapphire/framework');
-const { ButtonInteraction, EmbedBuilder, Colors } = require('discord.js');
-const { eventManagerRoles, staffRoles } = require('../../config.json');
+const {
+    ButtonInteraction,
+    EmbedBuilder,
+    Colors,
+    TextInputStyle,
+    TextInputBuilder,
+    ModalBuilder,
+    ActionRowBuilder,
+} = require('discord.js');
 
 class GoldenmicappButtonHandler extends InteractionHandler {
     constructor(ctx) {
@@ -15,45 +22,36 @@ class GoldenmicappButtonHandler extends InteractionHandler {
      * @param { ButtonInteraction } interaction
      */
     async run(interaction) {
-        if (interaction.customId.split(':')[1] == 'modal_request') {
-            const gmModal = new ModalBuilder()
-                .setCustomId('goldenmic:modal_submit')
-                .setTitle('Golden Microphone Application');
+        console.log(interaction);
+        const gmModal = new ModalBuilder()
+            .setCustomId('goldenmic:modal_submit')
+            .setTitle('Golden Microphone Application');
 
-            const questionOne = new TextInputBuilder()
-                .setCustomId('questionOne')
-                .setLabel(
-                    "How long you've been a part of this server? How often are you active in the voice channels?"
-                )
-                .setStyle(TextInputStyle.Paragraph);
+        const questionOne = new TextInputBuilder()
+            .setCustomId('questionOne')
+            .setLabel(
+                "How long you've been a part of this server? How often are you active in the voice channels?"
+            )
+            .setStyle(TextInputStyle.Paragraph);
 
-            const questionTwo = new TextInputBuilder()
-                .setCustomId('questionTwo')
-                .setLabel('Do you have any past infractions?')
-                .setStyle(TextInputStyle.Short);
+        const questionTwo = new TextInputBuilder()
+            .setCustomId('questionTwo')
+            .setLabel('Do you have any past infractions?')
+            .setStyle(TextInputStyle.Short);
 
-            const questionThree = new TextInputBuilder()
-                .setCustomId('questionThree')
-                .setLabel(
-                    'With what reason are you making this request? (Make sure your answer is a good one. One word replies wont go in your favour)'
-                )
-                .setStyle(TextInputStyle.Paragraph);
+        const questionThree = new TextInputBuilder()
+            .setCustomId('questionThree')
+            .setLabel(
+                'With what reason are you making this request? (Make sure your answer is a good one. One word replies wont go in your favour)'
+            )
+            .setStyle(TextInputStyle.Paragraph);
 
-            const q1ActionRow = new ActionRowBuilder().addComponent(
-                questionOne
-            );
-            const q2ActionRow = new ActionRowBuilder().addComponent(
-                questionTwo
-            );
-            const q3ActionRow = new ActionRowBuilder().addComponent(
-                questionThree
-            );
+        const q1ActionRow = new ActionRowBuilder().addComponents(questionOne);
+        const q2ActionRow = new ActionRowBuilder().addComponents(questionTwo);
+        const q3ActionRow = new ActionRowBuilder().addComponents(questionThree);
 
-            gmModal.addComponents(q1ActionRow, q2ActionRow, q3ActionRow);
-            return interaction.showModal(gmModal);
-        } else {
-            // modal_submit
-        }
+        gmModal.addComponents(q1ActionRow, q2ActionRow, q3ActionRow);
+        await interaction.showModal(gmModal);
     }
 
     /**
