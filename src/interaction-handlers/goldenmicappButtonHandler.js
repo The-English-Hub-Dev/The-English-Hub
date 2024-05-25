@@ -70,7 +70,7 @@ class GoldenmicappButtonHandler extends InteractionHandler {
      * @param { ButtonInteraction } interaction
      */
     async parse(interaction) {
-        if (!interaction.customId.startsWith('goldenmic:')) return this.none();
+        if (interaction.customId != 'goldenmic:modal_request') return this.none();
 
         return this.some();
     }
