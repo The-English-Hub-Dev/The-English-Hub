@@ -22,36 +22,47 @@ class GoldenmicappButtonHandler extends InteractionHandler {
      * @param { ButtonInteraction } interaction
      */
     async run(interaction) {
-        console.log(interaction);
         const gmModal = new ModalBuilder()
             .setCustomId('goldenmic:modal_submit')
             .setTitle('Golden Microphone Application');
 
         const questionOne = new TextInputBuilder()
             .setCustomId('questionOne')
-            .setLabel(
-                "How long you've been a part of this server? How often are you active in the voice channels?"
-            )
-            .setStyle(TextInputStyle.Paragraph);
+            .setLabel("How long you've been a part of this server?")
+            .setStyle(TextInputStyle.Short);
 
         const questionTwo = new TextInputBuilder()
+            .setCustomId('questionTwo')
+            .setLabel('How often are you active in the vcs?')
+            .setStyle(TextInputStyle.Short);
+
+        const questionThree = new TextInputBuilder()
             .setCustomId('questionTwo')
             .setLabel('Do you have any past infractions?')
             .setStyle(TextInputStyle.Short);
 
-        const questionThree = new TextInputBuilder()
+        const questionFour = new TextInputBuilder()
             .setCustomId('questionThree')
-            .setLabel(
-                'With what reason are you making this request? (Make sure your answer is a good one. One word replies wont go in your favour)'
+            .setLabel('With what reason are you making this request?')
+            .setPlaceholder(
+                '(Make sure your answer is a good one. One word replies wont go in your favour)'
             )
             .setStyle(TextInputStyle.Paragraph);
 
         const q1ActionRow = new ActionRowBuilder().addComponents(questionOne);
         const q2ActionRow = new ActionRowBuilder().addComponents(questionTwo);
         const q3ActionRow = new ActionRowBuilder().addComponents(questionThree);
+        const q4ActionRow = new ActionRowBuilder().addComponents(questionFour);
 
-        gmModal.addComponents(q1ActionRow, q2ActionRow, q3ActionRow);
-        await interaction.showModal(gmModal);
+        gmModal.addComponents(
+            q1ActionRow,
+            q2ActionRow,
+            q3ActionRow,
+            q4ActionRow
+        );
+        console.log(gmModal);
+
+        return interaction.showModal(gmModal);
     }
 
     /**
