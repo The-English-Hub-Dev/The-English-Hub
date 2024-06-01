@@ -46,9 +46,7 @@ class VcBanCommand extends Command {
         }
 
         const vChannel = rawvChannel.unwrap();
-        if (
-            !vcBanUnbanManagedCategories.includes(vChannel.parent.id)
-        )
+        if (!vcBanUnbanManagedCategories.includes(vChannel.parent.id))
             return this.container.utility.errReply(
                 message,
                 'You may only vc ban members from channels in the `Guest Rooms` category.'
