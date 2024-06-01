@@ -1,6 +1,6 @@
 # The English Hub Discord Bot
 
-The English Hub is a versatile Discord bot designed to assist with various tasks on a Discord server, ranging from moderation to managing voice channels. It aims to create a seamless experience for users in an English-learning community of https://discord.gg/enghub.
+This is a versatile Discord bot designed to assist with various tasks on a Discord server, ranging from moderation to managing voice channels. It aims to create a seamless experience for users in an English-learning community of [The English Hub server](https://discord.gg/enghub).
 
 ## Service Status
 
