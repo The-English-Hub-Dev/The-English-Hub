@@ -49,7 +49,7 @@ class Tasks {
                 );
                 statusNum++;
             }
-        }, 20000);
+        }, Time.Minute / 3);
 
         container.logger.info('Status task initialized.');
         this.intervals.status = statusInterval;
@@ -168,6 +168,22 @@ class Tasks {
 
         container.logger.info('VC unban task initialized.');
         this.intervals.vcUnban = vcUnbanInterval;
+    }
+
+    async introductionAutopost() {
+        const introAutopostInterval = setInterval(async () => {
+            const introChannel =
+                container.client.channels.cache.get('852806317163937823');
+            if (!introChannel || introChannel.type !== ChannelType.GuildText)
+                return;
+
+            await introChannel.send(
+                'Welcome to the auspicious learning universe. Join **Voice Channels** and **Classes** to enhance your English communication skills.'
+            );
+        }, Time.Hour * 3);
+
+        container.logger.info('Introduction autopost task initialized.');
+        this.intervals.introAutopost = introAutopostInterval
     }
 }
 
