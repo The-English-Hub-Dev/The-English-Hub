@@ -183,7 +183,7 @@ class Tasks {
         }, Time.Hour * 3);
 
         container.logger.info('Introduction autopost task initialized.');
-        this.intervals.introAutopost = introAutopostInterval
+        this.intervals.introAutopost = introAutopostInterval;
     }
 }
 
