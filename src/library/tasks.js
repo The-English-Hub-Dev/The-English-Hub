@@ -224,10 +224,10 @@ class Tasks {
 
                     const dmEmbed = new EmbedBuilder()
                         .setColor(Colors.Green)
-                        .setTitle(`You were unmuted in ${message.guild.name}`)
+                        .setTitle(`You were unmuted in ${guild.name}`)
                         .setAuthor({
-                            name: message.guild.name,
-                            iconURL: message.guild.iconURL(),
+                            name: guild.name,
+                            iconURL: guild.iconURL(),
                         })
                         .setDescription(
                             "You're now able to chat. Make sure to follow the rules to prevent further action."
