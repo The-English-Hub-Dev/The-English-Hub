@@ -285,8 +285,7 @@ class Tasks {
                         })
                         .setThumbnail(this.container.client.user.avatarURL());
 
-                    const logCh = 
-                    guild.channels.cache.get(logChannelID);
+                    const logCh = guild.channels.cache.get(logChannelID);
                     if (!logCh) return;
 
                     await logCh.send({ embeds: [logEmbed] });
