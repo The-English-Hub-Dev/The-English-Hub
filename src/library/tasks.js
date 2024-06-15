@@ -12,6 +12,7 @@ const {
     vcbanlogChannelID,
     mainGuildID,
     mutedRoleID,
+    welcomeChannel,
 } = require('../../config.json');
 let statusNum = 1;
 
@@ -25,6 +26,7 @@ class Tasks {
         await this.initializeHealthcheck();
         await this.initializeVcUnbanTask();
         await this.initializeAutoUnmuteTask();
+        await this.initializeWelcomeRecurringMessage();
     }
 
     async initializeStatusTask() {
@@ -299,6 +301,20 @@ class Tasks {
 
         container.logger.info('Introduction autopost task initialized.');
         this.intervals.autoUnmute = autoUnmuteInterval;
+    }
+
+    async initializeWelcomeRecurringMessage() {
+        const welcomeRecurringMessageInterval = setInterval(async () => {
+            const wc = container.client.channels.cache.get(welcomeChannel);
+            if (!wc || wc.type !== ChannelType.GuildText) return;
+
+            await wc.send(
+                'Welcome, join voice channels and start practicing your English. :enghub:'
+            );
+        }, Time.Hour * 2);
+
+        container.logger.info('Welcome recurring message task initialized.');
+        this.intervals.welcomeRecurringMessage = welcomeRecurringMessageInterval;
     }
 }
 
