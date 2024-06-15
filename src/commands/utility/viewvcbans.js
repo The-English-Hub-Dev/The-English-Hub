@@ -54,7 +54,7 @@ class ViewVcbanCommand extends Command {
         const vcbanEmbed = new EmbedBuilder()
             .setColor(Colors.Orange)
             .setTitle(`Current active VC Bans`)
-            .setDescription(vcString)
+            .setDescription(vcString.length ? vcString : 'No current vc bans.')
             .setFooter({ text: `Requested by ${message.author.tag}` })
             .setTimestamp();
 
