@@ -12,9 +12,11 @@ const {
     ActionRowBuilder,
 } = require('discord.js');
 
-class GoldenmicappButtonHandler extends InteractionHandler {
+class GoldenmicappModalRequestHandler extends InteractionHandler {
     constructor(ctx) {
-        super(ctx, { interactionHandlerType: InteractionHandlerTypes.Button });
+        super(ctx, {
+            interactionHandlerType: InteractionHandlerTypes.Button,
+        });
     }
 
     /**
@@ -62,7 +64,7 @@ class GoldenmicappButtonHandler extends InteractionHandler {
         );
         console.log(gmModal);
 
-        return interaction.showModal(gmModal);
+        await interaction.showModal(gmModal);
     }
 
     /**
@@ -70,10 +72,11 @@ class GoldenmicappButtonHandler extends InteractionHandler {
      * @param { ButtonInteraction } interaction
      */
     async parse(interaction) {
-        if (interaction.customId != 'goldenmic:modal_request') return this.none();
+        if (interaction.customId != 'goldenmic:modal_request')
+            return this.none();
 
         return this.some();
     }
 }
 
-module.exports = { GoldenmicappButtonHandler };
+module.exports = { GoldenmicappModalRequestHandler };

@@ -217,7 +217,7 @@ class DefineButtonHandler extends InteractionHandler {
      */
     async parse(interaction) {
         if (!interaction.customId.startsWith('define:')) return this.none();
-
+        
         await interaction.deferReply({ ephemeral: true });
         return this.some();
     }
