@@ -314,7 +314,8 @@ class Tasks {
         }, Time.Hour * 2);
 
         container.logger.info('Welcome recurring message task initialized.');
-        this.intervals.welcomeRecurringMessage = welcomeRecurringMessageInterval;
+        this.intervals.welcomeRecurringMessage =
+            welcomeRecurringMessageInterval;
     }
 }
 
