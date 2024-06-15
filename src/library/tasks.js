@@ -8,7 +8,11 @@ const {
     TimestampStyles,
 } = require('discord.js');
 const { Time } = require('@sapphire/time-utilities');
-const { vcbanlogChannelID } = require('../../config.json');
+const {
+    vcbanlogChannelID,
+    mainGuildID,
+    mutedRoleID,
+} = require('../../config.json');
 let statusNum = 1;
 
 class Tasks {
@@ -20,6 +24,7 @@ class Tasks {
         await this.initializeStatusTask();
         await this.initializeHealthcheck();
         await this.initializeVcUnbanTask();
+        await this.initializeAutoUnmuteTask();
     }
 
     async initializeStatusTask() {
@@ -184,6 +189,117 @@ class Tasks {
 
         container.logger.info('Introduction autopost task initialized.');
         this.intervals.introAutopost = introAutopostInterval;
+    }
+
+    async initializeAutoUnmuteTask() {
+        const autoUnmuteInterval = setInterval(async () => {
+            const currentMutedMembers = Object.entries(
+                await container.redis.hgetall('muted')
+            );
+            const guild = container.client.guilds.cache.get(mainGuildID);
+
+            for (var i = 0; i < currentMutedMembers.length; i++) {
+                const muteTime = Number(
+                    currentMutedMembers[i][0].split(':')[1]
+                );
+                const expireTime = Number(currentMutedMembers[i][1]);
+                const memberID = currentMutedMembers[i][0].split(':')[0];
+
+                if (expireTime - muteTime <= 0) {
+                    const member = await guild.members.fetch(memberID);
+                    // .catch(() => null);
+                    if (!member) {
+                        return container.redis.hdel(
+                            'muted',
+                            currentMutedMembers[i][0]
+                        ); // just delete the vc ban because this means the user left the server
+                    }
+
+                    await member.roles.remove(
+                        mutedRoleID,
+                        'Auto unmuting user after the specified duration.'
+                    );
+
+                    const dmEmbed = new EmbedBuilder()
+                        .setColor(Colors.Green)
+                        .setTitle(`You were unmuted in ${message.guild.name}`)
+                        .setAuthor({
+                            name: message.guild.name,
+                            iconURL: message.guild.iconURL(),
+                        })
+                        .setDescription(
+                            "You're now able to chat. Make sure to follow the rules to prevent further action."
+                        )
+                        .setFooter({
+                            text: 'You may appeal this mute by opening a ticket',
+                            iconURL: member.user.avatarURL(),
+                        })
+                        .setTimestamp(Date.now());
+
+                    await member.send({ embeds: [dmEmbed] }).catch(() => {});
+
+                    await container.redis.hdel(
+                        'muted',
+                        currentMutedMembers[i][0]
+                    );
+
+                    const logEmbed = new EmbedBuilder()
+                        .setColor(Colors.Orange)
+                        .setTitle('Mute')
+                        .setAuthor({
+                            name: member.user.tag,
+                            iconURL: member.user.avatarURL(),
+                        })
+                        .addFields(
+                            {
+                                name: 'Punishment ID',
+                                value: `\`${punishment.punishment_id}\``,
+                            },
+                            {
+                                name: 'User',
+                                value: `${member.user.tag} (${member.user.id})`,
+                            },
+                            {
+                                name: 'Moderator',
+                                value: `${message.author.tag} (${message.author.id})`,
+                            },
+                            { name: 'Reason', value: reason },
+                            {
+                                name: 'Date',
+                                value: time(
+                                    new Date(),
+                                    TimestampStyles.LongDateTime
+                                ),
+                            },
+                            {
+                                name: 'Expires',
+                                value: time(
+                                    expiry,
+                                    TimestampStyles.LongDateTime
+                                ),
+                            }
+                        )
+                        .setFooter({
+                            text: 'Moderation Logs',
+                            iconURL: message.guild.iconURL(),
+                        })
+                        .setThumbnail(this.container.client.user.avatarURL());
+
+                    const logCh = 
+                    guild.channels.cache.get(logChannelID);
+                    if (!logCh) return;
+
+                    await logCh.send({ embeds: [logEmbed] });
+
+                    container.logger.info(
+                        `Removing mute task: Unmuted ${member.user.tag} as their mute has expired.`
+                    );
+                }
+            }
+        }, Time.Minute);
+
+        container.logger.info('Introduction autopost task initialized.');
+        this.intervals.autoUnmute = autoUnmuteInterval;
     }
 }
 

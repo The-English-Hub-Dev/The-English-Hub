@@ -7,7 +7,7 @@ const {
     TimestampStyles,
     Colors,
 } = require('discord.js');
-const { logChannelID } = require('../../../config.json');
+const { logChannelID, mutedRoleID } = require('../../../config.json');
 const { Duration } = require('@sapphire/time-utilities');
 const Punishment =
     require('../../library/db/entities/PunishmentEntity').Punishment;
@@ -17,19 +17,11 @@ class MuteCommand extends Command {
         super(context, {
             ...options,
             name: 'mute',
-            aliases: ['timeout', 'silence'],
+            aliases: ['timeout', 'silence', 'mu'],
             description: 'Mutes a member in the server.',
             usage: '<member> <duration> [reason] -t',
             preconditions: ['Staff'],
-            flags: [
-                't',
-                'timeout',
-                'rolemute',
-                'role',
-                'noshow',
-                'noembed',
-                'hide',
-            ],
+            flags: ['noshow', 'noembed', 'hide'],
         });
     }
 
@@ -76,25 +68,6 @@ class MuteCommand extends Command {
                 'I cannot manage this member and therefore cannot mute them.'
             );
 
-        const rawType = args.getFlags('timeout', 'rolemute', 'role');
-        if (!rawType)
-            return this.container.utility.errReply(
-                message,
-                'You must provide whether to mute using roles or timeouts using the `-role`, `-rolemute`, `-t`, or `-timeout` flags'
-            );
-
-        if (
-            args.getFlags('timeout') &&
-            (args.getFlags('rolemute') || args.getFlags('role'))
-        ) {
-            return this.container.utility.errReply(
-                message,
-                'You cannot mute using both timeouts and roles.'
-            );
-        }
-
-        const type = args.getFlags('timeout') ? 'timeout' : 'role';
-
         const rawTime = new Duration(duration);
 
         if (isNaN(rawTime.offset)) {
@@ -105,21 +78,30 @@ class MuteCommand extends Command {
         }
         const timeInMs = rawTime.offset;
 
-        if (type === 'timeout') {
-            if (member.communicationDisabledUntil)
-                return this.container.utility.errReply(
-                    message,
-                    'This member is already muted (using timeouts).'
-                );
-            await member.timeout(timeInMs, reason);
-        } else {
-            // TODO
-            return message.reply(
-                'This feature is not yet implemented. You can currently only mute using the timeout feature.'
+        if (!mutedRoleID)
+            return this.container.utility.errReply(
+                message,
+                'The muted role is not configured.'
+            );
+
+        if (member.roles.cache.has(mutedRoleID)) {
+            return this.container.utility.errReply(
+                message,
+                'This member is already muted.'
             );
         }
 
+        await member.roles.add(
+            mutedRoleID,
+            `Mute command executed by ${message.author.tag}`
+        );
+
         const expiry = Math.round((Date.now() + timeInMs) / 1000);
+        await this.container.redis.hset(
+            'muted',
+            `${member.id}:${Date.now()}`,
+            expiry
+        );
 
         const punishment = new Punishment(
             message.author.id,
@@ -170,7 +152,7 @@ class MuteCommand extends Command {
                 { name: 'Punishment ID', value: punishment.punishment_id }
             )
             .setFooter({
-                text: 'You may appeal this mute by opening a ticket',
+                text: 'You may appeal this mute by opening a ticket or sending a message in the muted channel',
                 iconURL: member.user.avatarURL(),
             })
             .setTimestamp(Date.now());
