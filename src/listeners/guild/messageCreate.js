@@ -148,7 +148,7 @@ class MessageCreateListener extends Listener {
                 const cmd = message.content.slice(oldPrefixes[x].length).trim();
                 if (currentCmds.includes(cmd)) {
                     return message.reply(
-                        `The bot prefix has been changed to \`??\` from \`?\`. Please use \`??\`${cmd} to run your command.`
+                        `The bot prefix has been changed to \`??\` from \`?\`. Please use \`??${cmd}\` to run your command.`
                     );
                 }
             }
