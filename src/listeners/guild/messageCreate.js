@@ -138,6 +138,7 @@ class MessageCreateListener extends Listener {
      * @param { Message } message
      */
     async checkOldPrefix(message) {
+        if (this.container.utility.isStaff(message)) return;
         const currentCmds = this.container.stores
             .get('commands')
             .map((cmd) => cmd.name);
