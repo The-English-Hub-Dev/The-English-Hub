@@ -27,6 +27,8 @@ class MessageCreateListener extends Listener {
             return this.logDM(message);
         }
 
+        await this.checkOldPrefix(message);
+
         await this.container.automodManager.runAutomodOnMessage(message);
         await this.container.triggerManager.runTriggersOnMessage(message);
     }
@@ -129,6 +131,28 @@ class MessageCreateListener extends Listener {
             .setTimestamp(message.createdTimestamp);
 
         return dmLog.send({ embeds: [dmRecieveLogEmbed] });
+    }
+
+    /**
+     *
+     * @param { Message } message
+     */
+    async checkOldPrefix(message) {
+        const currentCmds = this.container.stores
+            .get('commands')
+            .map((cmd) => cmd.name);
+        const oldPrefixes = ['?'];
+
+        for (let x = 0; x < oldPrefixes.length; x++) {
+            if (message.content.startsWith(oldPrefixes[x])) {
+                const cmd = message.content.slice(prefix.length).trim();
+                if (currentCmds.includes(cmd)) {
+                    return message.reply(
+                        `The bot prefix has been changed to \`??\` from \`?\`. Please use \`??\` as the prefix for commands.`
+                    );
+                }
+            }
+        }
     }
 }
 
