@@ -106,7 +106,7 @@ class MuteCommand extends Command {
         const timeInMs = rawTime.offset;
 
         if (type === 'timeout') {
-            if (member.isCommunicationDisabled())
+            if (member.communicationDisabledUntil)
                 return this.container.utility.errReply(
                     message,
                     'This member is already muted (using timeouts).'
