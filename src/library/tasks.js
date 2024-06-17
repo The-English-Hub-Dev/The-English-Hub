@@ -26,7 +26,7 @@ class Tasks {
         await this.initializeHealthcheck();
         await this.initializeVcUnbanTask();
         await this.initializeAutoUnmuteTask();
-        await this.initializeWelcomeRecurringMessage();
+        this.initializeIntroductionAutpost();
     }
 
     async initializeStatusTask() {
@@ -177,12 +177,11 @@ class Tasks {
         this.intervals.vcUnban = vcUnbanInterval;
     }
 
-    async introductionAutopost() {
+    async initializeIntroductionAutpost() {
         const introAutopostInterval = setInterval(async () => {
             const introChannel =
                 container.client.channels.cache.get('852806317163937823');
-            if (!introChannel || introChannel.type !== ChannelType.GuildText)
-                return;
+            if (!introChannel) return;
 
             await introChannel.send(
                 'Welcome to the auspicious learning universe. Join **Voice Channels** and **Classes** to enhance your English communication skills.'
@@ -301,21 +300,6 @@ class Tasks {
 
         container.logger.info('Introduction autopost task initialized.');
         this.intervals.autoUnmute = autoUnmuteInterval;
-    }
-
-    async initializeWelcomeRecurringMessage() {
-        const welcomeRecurringMessageInterval = setInterval(async () => {
-            const wc = container.client.channels.cache.get(welcomeChannel);
-            if (!wc || wc.type !== ChannelType.GuildText) return;
-
-            await wc.send(
-                'Welcome, join voice channels and start practicing your English. :enghub:'
-            );
-        }, Time.Hour * 2);
-
-        container.logger.info('Welcome recurring message task initialized.');
-        this.intervals.welcomeRecurringMessage =
-            welcomeRecurringMessageInterval;
     }
 }
 
