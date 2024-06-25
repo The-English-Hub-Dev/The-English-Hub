@@ -45,7 +45,7 @@ class Tasks {
                 statusNum = 1;
             } else if (statusNum == 2) {
                 container.client.user.setActivity(
-                    'Use ?help to see a list of my commands!',
+                    `Use ??help to see a list of my commands!`,
                     { type: ActivityType.Playing }
                 );
                 statusNum++;
