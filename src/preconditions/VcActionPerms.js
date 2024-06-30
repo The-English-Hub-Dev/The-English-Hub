@@ -19,7 +19,9 @@ class VcActionPermsPrecondition extends Precondition {
         )
             return this.ok();
 
-        return vcActionPerms.some((role) => message.member.roles.cache.has(role))
+        return vcActionPerms.some((role) =>
+            message.member.roles.cache.has(role)
+        )
             ? this.ok()
             : this.error();
     }
