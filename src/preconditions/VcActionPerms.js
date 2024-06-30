@@ -19,6 +19,16 @@ class VcActionPermsPrecondition extends Precondition {
         )
             return this.ok();
 
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Staff')
+                    .messageRun(message)
+            ).isOk()
+        )
+            return this.ok();
+
         return vcActionPerms.some((role) =>
             message.member.roles.cache.has(role)
         )
