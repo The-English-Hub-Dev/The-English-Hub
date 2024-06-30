@@ -1,8 +1,8 @@
 const { Precondition } = require('@sapphire/framework');
 const { Message, Permissions } = require('discord.js');
-const { vcMutePerms, testingServerID } = require('../../config.json');
+const { vcActionPerms, testingServerID } = require('../../config.json');
 
-class VcMutePermsPrecondition extends Precondition {
+class VcActionPermsPrecondition extends Precondition {
     /**
      *
      * @param { Message } message
@@ -19,9 +19,9 @@ class VcMutePermsPrecondition extends Precondition {
         )
             return this.ok();
 
-        return vcMutePerms.some((role) => message.member.roles.cache.has(role))
+        return vcActionPerms.some((role) => message.member.roles.cache.has(role))
             ? this.ok()
             : this.error();
     }
 }
-module.exports = { VcMutePermsPrecondition };
+module.exports = { VcActionPermsPrecondition };
