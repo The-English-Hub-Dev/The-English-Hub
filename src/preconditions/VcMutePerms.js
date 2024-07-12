@@ -32,7 +32,8 @@ class VcMutePermsPrecondition extends Precondition {
         return vcActionPerms.some(
             (role) =>
                 message.member.roles.cache.has(role) &&
-                role.id !== '1234252770035630162'
+                role.id !== '1234252770035630162' &&
+                role.id !== '1230247967626104913'
         )
             ? this.ok()
             : this.error();
