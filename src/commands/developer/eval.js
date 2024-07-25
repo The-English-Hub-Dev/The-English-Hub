@@ -92,6 +92,13 @@ class EvalCommand extends Command {
             await message.delete();
         }
         if (args.getFlags('hide') || args.getFlags('delete', 'del')) return;
+        
+        for (const item of hiddenItems) {
+            if (output.includes(item)) {
+                output = output.replace(new RegExp(item, 'g'), 'HIDDEN');
+            }
+        }
+
         return evaluation.edit(
             `Output: ${codeBlock(
                 'js',
