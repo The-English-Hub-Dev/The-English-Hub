@@ -15,6 +15,7 @@ import { Utility } from '../utility';
 import { AutomodManager } from '../managers/automodManager';
 import { Tasks } from '../tasks';
 import { TriggerManager } from '../managers/triggerManager';
+import { LevelManager } from '../managers/levelManager';
 
 declare module '@sapphire/pieces' {
     interface Container {
@@ -28,6 +29,7 @@ declare module '@sapphire/pieces' {
         tasks: Tasks;
         automodManager: AutomodManager;
         triggerManager: TriggerManager;
+        levelManager: LevelManager;
         applicationCommandRegistries: ApplicationCommandRegistry;
     }
 }

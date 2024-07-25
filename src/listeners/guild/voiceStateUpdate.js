@@ -23,8 +23,22 @@ class VoiceStateUpdateListener extends Listener {
      */
     async run(oldState, newState) {
         await this.logVoicestateChange(oldState, newState);
+        await this.handleLeveling(oldState, newState);
         // await this.handleRoomTwoCreation(oldState, newState);
         // await this.handleRoomThreeCreation(oldState, newState);
+    }
+
+    /**
+     *
+     * @param { VoiceState } oldState
+     * @param { VoiceState } newState
+     */
+    async handleLeveling(oldState, newState) {
+        if (oldState.channelId === newState.channelId) return;
+        if (!oldState.channelId)
+            return this.container.levelManager.onVoiceJoin(oldState, newState);
+        if (!newState.channelId)
+            return this.container.levelManager.onVoiceLeave(oldState, newState);
     }
 
     /**
