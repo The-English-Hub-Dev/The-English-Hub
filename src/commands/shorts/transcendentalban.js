@@ -7,7 +7,8 @@ class transcendentalBanCommand extends Command {
             ...options,
             name: 'tban',
             aliases: ['transcendentalban'],
-            description: 'Calls the vcban command on the transcendental guest room.',
+            description:
+                'Calls the vcban command on the transcendental guest room.',
             preconditions: ['VcActionPerms'],
             usage: '<member> [reason]',
         });
