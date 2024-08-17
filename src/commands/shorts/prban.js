@@ -1,4 +1,9 @@
-const { Command, Args, Events } = require('@sapphire/framework');
+const {
+    Command,
+    Args,
+    Events,
+    MessageCommandContext,
+} = require('@sapphire/framework');
 const { Message } = require('discord.js');
 
 class PrbanCommand extends Command {
@@ -17,8 +22,9 @@ class PrbanCommand extends Command {
     /**
      * @param { Message } message
      * @param { Args } args
+     * @param { MessageCommandContext } ctx
      */
-    async messageRun(message, args) {
+    async messageRun(message, args, ctx) {
         const rawMember = await args.pickResult('member');
         const reason = (await args.restResult('string')).unwrapOr(
             'No reason provided.'
@@ -44,7 +50,7 @@ class PrbanCommand extends Command {
             }
         }
 
-        message.content = `vcban 1222540798201954404 ${member.id} ${reason}`;
+        message.content = `${ctx.prefix}vcban 1222540798201954404 ${member.id} ${reason}`;
 
         this.container.client.emit(Events.PreMessageParsed, message);
     }
