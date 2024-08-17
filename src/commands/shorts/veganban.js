@@ -5,7 +5,7 @@ class VeganBanCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: 'vegan',
+            name: 'veganban',
             aliases: ['veganvcban'],
             description: 'Calls the vcban command on the vegan guest room.',
             preconditions: ['VcActionPerms'],
