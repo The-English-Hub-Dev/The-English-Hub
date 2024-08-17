@@ -6,7 +6,7 @@ const {
 } = require('@sapphire/framework');
 const { Message } = require('discord.js');
 
-class transcendentalBanCommand extends Command {
+class TranscendentalBanCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
@@ -50,10 +50,10 @@ class transcendentalBanCommand extends Command {
             }
         }
 
-        message.content = `${ctx.prefix}vcban 1222056499959042108 ${member.id} ${reason}`;
+        message.content = `${ctx.prefix}vcban 1236713261421035620 ${member.id} ${reason}`;
 
         this.container.client.emit(Events.PreMessageParsed, message);
     }
 }
 
-module.exports = { transcendentalBanCommand };
+module.exports = { TranscendentalBanCommand };
