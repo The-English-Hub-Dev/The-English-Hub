@@ -50,7 +50,7 @@ class TranscendentalUnBanCommand extends Command {
             }
         }
 
-        message.content = `${ctx.prefix}vcban 1236713261421035620 ${member.id} ${reason}`;
+        message.content = `${ctx.prefix}vcunban 1236713261421035620 ${member.id} ${reason}`;
 
         this.container.client.emit(Events.PreMessageParsed, message);
     }
