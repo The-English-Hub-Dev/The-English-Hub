@@ -50,7 +50,7 @@ class QUnBanCommand extends Command {
             }
         }
 
-        message.content = `${ctx.prefix}vcban 1233499573482291251 ${member.id} ${reason}`;
+        message.content = `${ctx.prefix}vcunban 1233499573482291251 ${member.id} ${reason}`;
 
         this.container.client.emit(Events.PreMessageParsed, message);
     }
