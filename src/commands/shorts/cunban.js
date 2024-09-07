@@ -10,7 +10,7 @@ class CUnbanCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: 'cban',
+            name: 'cunban',
             aliases: ['chillunban'],
             description: 'Calls the vcunban command on the chill guest room.',
             preconditions: ['VcActionPerms'],
