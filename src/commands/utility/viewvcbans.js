@@ -17,7 +17,7 @@ class ViewVcbanCommand extends Command {
             name: 'viewvcbans',
             aliases: ['viewvcb', 'viewvcrestricts'],
             description: 'Shows you the current active VC bans.',
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
         });
     }
 

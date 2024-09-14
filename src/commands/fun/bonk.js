@@ -9,7 +9,7 @@ class BonkCommand extends Command {
             description: 'Bonk bonk.',
             usage: '<member>',
             aliases: [],
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
         });
     }
 

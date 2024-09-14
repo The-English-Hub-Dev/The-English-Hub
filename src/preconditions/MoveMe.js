@@ -2,7 +2,7 @@ const { Precondition } = require('@sapphire/framework');
 const { Message, Permissions } = require('discord.js');
 const { moveMeRoles } = require('../../config.json');
 
-class StaffPrecondition extends Precondition {
+class MoveMePrecondition extends Precondition {
     /**
      *
      * @param { Message } message
@@ -33,4 +33,4 @@ class StaffPrecondition extends Precondition {
             : this.error();
     }
 }
-module.exports = { StaffPrecondition };
+module.exports = { MoveMePrecondition };

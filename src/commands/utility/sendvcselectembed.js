@@ -19,7 +19,7 @@ class SendVcEmbedCommand extends Command {
                 'sendvcbuttonembed',
             ],
             description: 'Sends the embed for the vc select feature',
-            preconditions: ['Admin'],
+            preconditions: ['NotOrigCmdChannel', 'Admin'],
         });
     }
 

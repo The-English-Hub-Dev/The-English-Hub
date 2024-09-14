@@ -13,7 +13,7 @@ class ViewServerTriggersCommand extends Command {
                 'triggers',
             ],
             description: 'View the message triggers in this server',
-            preconditions: ['Admin'],
+            preconditions: ['NotOrigCmdChannel', 'Admin'],
         });
     }
 

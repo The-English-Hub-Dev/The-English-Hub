@@ -6,7 +6,7 @@ class RemoveVivekTriggerCommand extends Command {
             name: 'removevivektrigger',
             aliases: ['removevivekhighlight'],
             description: "Removes a word from vivek's highlight triggers",
-            preconditions: ['Admin'],
+            preconditions: ['NotOrigCmdChannel', 'Admin'],
         });
     }
 

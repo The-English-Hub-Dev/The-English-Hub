@@ -18,7 +18,7 @@ class BanCommand extends Command {
             name: 'ban',
             aliases: ['banish'],
             description: 'Bans a member from the server.',
-            preconditions: ['StaffBanPerms'],
+            preconditions: ['NotOrigCmdChannel', 'StaffBanPerms'],
             flags: ['noshow', 'noembed', 'hide'],
             usage: '<member> [reason] --deletedays=1',
             options: ['deletedays', 'del', 'days'],

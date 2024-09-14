@@ -22,7 +22,7 @@ class VcBanCommand extends Command {
             aliases: ['vcb', 'vcbanish', 'vcrestrict'],
             description:
                 'Prevents a member from joining the specified vc and sending a message in its vc chat.',
-            preconditions: ['VcActionPerms'],
+            preconditions: ['NotOrigCmdChannel', 'VcActionPerms'],
             usage: '<channel: VoiceChannel> <member> [reason]',
         });
     }

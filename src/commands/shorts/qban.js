@@ -14,7 +14,7 @@ class QBanCommand extends Command {
             aliases: ['quarksban'],
             description:
                 'Calls the vcban command on the quarks bar guest room.',
-            preconditions: ['VcActionPerms'],
+            preconditions: ['NotOrigCmdChannel', 'VcActionPerms'],
             usage: '<member> [reason]',
         });
     }

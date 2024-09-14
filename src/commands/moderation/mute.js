@@ -20,7 +20,7 @@ class MuteCommand extends Command {
             aliases: ['timeout', 'silence', 'mu'],
             description: 'Mutes a member in the server.',
             usage: '<member> <duration> [reason] -t',
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
             flags: ['noshow', 'noembed', 'hide'],
         });
     }

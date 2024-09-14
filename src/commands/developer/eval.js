@@ -10,7 +10,7 @@ class EvalCommand extends Command {
             name: 'eval',
             aliases: ['e', 'evaluate'],
             description: 'Evaluate code',
-            preconditions: ['Developer'],
+            preconditions: ['NotOrigCmdChannel', 'Developer'],
             flags: [
                 'hide',
                 'delete',

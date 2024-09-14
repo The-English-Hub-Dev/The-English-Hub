@@ -17,7 +17,7 @@ class ModlogsCommand extends Command {
             aliases: ['warnings', 'warns', 'infractions', 'punishments'],
             description: 'View all the modlogs of a user.',
             usage: '<user>',
-            preconditions: ['CmdCh'],
+            preconditions: ['NotOrigCmdChannel', 'CmdCh'],
         });
     }
 

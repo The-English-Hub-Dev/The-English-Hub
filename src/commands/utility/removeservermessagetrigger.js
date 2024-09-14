@@ -12,7 +12,7 @@ class RemoveVivekTriggerCommand extends Command {
             ],
             description:
                 "removes a trigger and the corresponding response from the server's message triggers",
-            preconditions: ['Admin'],
+            preconditions: ['NotOrigCmdChannel', 'Admin'],
             usage: `<trigger>`,
         });
     }

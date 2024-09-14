@@ -7,7 +7,7 @@ class MoveAllCommand extends Command {
             ...options,
             name: 'moveall',
             aliases: ['mvall', 'moveallvc'],
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
             usage: ['<channel type:VoiceChannel> <channel type:VoiceChannel>'],
             description:
                 'Moves all members in a voice channel to another voice channel.',

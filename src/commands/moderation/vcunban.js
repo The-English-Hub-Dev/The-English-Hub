@@ -21,7 +21,7 @@ class VcUnbanCommand extends Command {
             aliases: ['vcub', 'vcunbanish', 'vcunrestrict'],
             description:
                 'Lets a member join the specified vc and send a message in its vc chat.',
-            preconditions: ['VcActionPerms'],
+            preconditions: ['NotOrigCmdChannel', 'VcActionPerms'],
             usage: '<channel: VoiceChannel> <member> [reason]',
         });
     }

@@ -8,7 +8,7 @@ class ViewVivekTriggersCommand extends Command {
             aliases: ['viewvivekhighlights'],
             description:
                 "View vivek's highlight triggers that will send a dm to him when mentioned",
-            preconditions: ['Admin'],
+            preconditions: ['NotOrigCmdChannel', 'Admin'],
         });
     }
 

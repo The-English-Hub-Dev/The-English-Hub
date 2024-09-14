@@ -16,7 +16,7 @@ class ServerUnmuteCommand extends Command {
             aliases: ['sunmute', 'vcunmute'],
             description: 'Server unmutes a user in VC',
             usage: '<member> <reason>',
-            preconditions: ['VcMutePerms'],
+            preconditions: ['NotOrigCmdChannel', 'VcMutePerms'],
         });
     }
 

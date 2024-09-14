@@ -14,7 +14,7 @@ class PrbanCommand extends Command {
             aliases: ['politicsandreligionban'],
             description:
                 'Calls the vcban command on the politics and religion guest room.',
-            preconditions: ['VcActionPerms'],
+            preconditions: ['NotOrigCmdChannel', 'VcActionPerms'],
             usage: '<member> [reason]',
         });
     }

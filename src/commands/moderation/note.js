@@ -17,7 +17,7 @@ class NoteCommand extends Command {
             ...options,
             name: 'note',
             description: "Adds a note to a user's profile.",
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
             usage: '<member> [note to add]',
             flags: ['noshow', 'noembed', 'hide'],
         });

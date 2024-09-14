@@ -10,7 +10,7 @@ class SetstatusCommand extends Command {
             description: "Set's the bots status.",
             aliases: ['setactivity', 'sets', 'seta'],
             usage: '<type> <status>',
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
         });
     }
 

@@ -17,7 +17,7 @@ class DmCommand extends Command {
             description:
                 'DMs a member in the server with a specified message. You can also include attachments by attaching them to your dm command.',
             usage: '<member> <message>',
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
         });
     }
 

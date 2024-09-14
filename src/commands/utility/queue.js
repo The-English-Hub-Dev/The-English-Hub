@@ -14,7 +14,7 @@ class QueueCommand extends Command {
             name: 'queue',
             aliases: ['createqueue', 'create-queue'],
             description: 'Creates a queue of users for use in vcs and events',
-            preconditions: ['EventManager'],
+            preconditions: ['NotOrigCmdChannel', 'EventManager'],
         });
     }
 

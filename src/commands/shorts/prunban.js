@@ -14,7 +14,7 @@ class PrUnbanCommand extends Command {
             aliases: ['politicsandreligionunban'],
             description:
                 'Calls the vcunban command on the politics and religion guest room.',
-            preconditions: ['VcActionPerms'],
+            preconditions: ['NotOrigCmdChannel', 'VcActionPerms'],
             usage: '<member> [reason]',
         });
     }

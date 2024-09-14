@@ -14,7 +14,7 @@ class MvCommand extends Command {
                 'bypassrest',
                 'bypassjoin',
             ],
-            preconditions: ['MoveMe'],
+            preconditions: ['NotOrigCmdChannel', 'MoveMe'],
             usage: ['<channel type:VoiceChannel>'],
             description: 'Moves you into a certain voice channel.',
         });

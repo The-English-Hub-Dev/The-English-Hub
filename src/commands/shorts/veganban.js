@@ -13,7 +13,7 @@ class VeganBanCommand extends Command {
             name: 'veganban',
             aliases: ['veganvcban'],
             description: 'Calls the vcban command on the vegan guest room.',
-            preconditions: ['VcActionPerms'],
+            preconditions: ['NotOrigCmdChannel', 'VcActionPerms'],
             usage: '<member> [reason]',
         });
     }

@@ -26,7 +26,7 @@ class RemovepunishmentCommand extends Command {
             ],
             description: 'Removes the punishment with the specified ID.',
             usage: '<punishment ID> [reason]',
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
         });
     }
 

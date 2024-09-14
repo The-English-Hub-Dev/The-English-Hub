@@ -9,7 +9,7 @@ class JoinMeCommand extends Command {
             name: 'joinme',
             description: 'Does something very cool in vc.',
             aliases: ['jm'],
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
         });
     }
 

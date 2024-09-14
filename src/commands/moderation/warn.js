@@ -12,7 +12,7 @@ class WarnCommand extends Command {
             name: 'warn',
             description: 'Warns/Strikes a user for breaking the rules.',
             usage: '<member> [reason]',
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
             flags: ['noshow', 'noembed', 'hide'],
         });
     }

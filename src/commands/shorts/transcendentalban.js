@@ -14,7 +14,7 @@ class TranscendentalBanCommand extends Command {
             aliases: ['transcendentalban'],
             description:
                 'Calls the vcban command on the transcendental guest room.',
-            preconditions: ['VcActionPerms'],
+            preconditions: ['NotOrigCmdChannel', 'VcActionPerms'],
             usage: '<member> [reason]',
         });
     }

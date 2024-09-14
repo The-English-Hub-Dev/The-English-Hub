@@ -9,7 +9,7 @@ class AddVivekTriggerCommand extends Command {
             description:
                 "Adds a word to vivek's highlight triggers that will send vivek a dm when mentioned",
             usage: '<trigger>',
-            preconditions: ['Admin'],
+            preconditions: ['NotOrigCmdChannel', 'Admin'],
         });
     }
 

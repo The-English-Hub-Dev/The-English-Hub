@@ -8,7 +8,7 @@ class PingCommand extends Command {
             name: 'ping',
             aliases: ['pong'],
             description: 'Gets you the latency of the bot',
-            preconditions: ['Staff'],
+            preconditions: ['NotOrigCmdChannel', 'Staff'],
         });
     }
 

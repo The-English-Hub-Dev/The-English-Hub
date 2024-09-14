@@ -8,7 +8,7 @@ class AddVivekTriggerCommand extends Command {
             aliases: ['addmessagetrigger', 'addtrigger', 'addservertrigger'],
             description:
                 "Adds a trigger and response to the server's message triggers",
-            preconditions: ['Admin'],
+            preconditions: ['NotOrigCmdChannel', 'Admin'],
             usage: `<trigger> = <response>`,
         });
     }

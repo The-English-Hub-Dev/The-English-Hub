@@ -14,7 +14,7 @@ class MembercountCommand extends Command {
             ...options,
             name: 'membercount',
             aliases: ['mc'],
-            preconditions: ['CmdCh'],
+            preconditions: ['NotOrigCmdChannel', 'CmdCh'],
             description: 'Gives you details about the server membercount.',
         });
     }
