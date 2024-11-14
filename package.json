@@ -23,23 +23,23 @@
     "homepage": "https://github.com/The-English-Hub/The-English-Hub#readme",
     "dependencies": {
         "@discordjs/voice": "^0.17.0",
-        "@sapphire/discord-utilities": "^3.3.0",
-        "@sapphire/discord.js-utilities": "^7.2.1",
-        "@sapphire/framework": "^5.2.1",
+        "@sapphire/discord-utilities": "^3.4.3",
+        "@sapphire/discord.js-utilities": "^7.3.1",
+        "@sapphire/framework": "^5.3.1",
         "@sapphire/plugin-logger": "^4.0.2",
-        "@sapphire/snowflake": "^3.5.2",
-        "@sapphire/stopwatch": "^1.5.2",
-        "@sapphire/time-utilities": "^1.7.12",
-        "@sentry/node": "^7.116.0",
+        "@sapphire/snowflake": "^3.5.5",
+        "@sapphire/stopwatch": "^1.5.4",
+        "@sapphire/time-utilities": "^1.7.14",
+        "@sentry/node": "^7.120.0",
         "@sentry/tracing": "^7.114.0",
-        "discord.js": "^14.15.2",
+        "discord.js": "^14.16.3",
         "ioredis": "^5.4.1",
-        "pg": "^8.11.5",
+        "pg": "^8.13.1",
         "reflect-metadata": "^0.2.2",
         "typeorm": "^0.3.20"
     },
     "devDependencies": {
-        "@eslint/js": "^9.2.0",
+        "@eslint/js": "^9.14.0",
         "eslint": "9.9.0",
         "prettier": "3.3.3"
     }
