@@ -180,7 +180,7 @@ class MessageCreateListener extends Listener {
                 if (afkData) {
                     const [timestamp, reason] = afkData.split(':');
                     await message.reply(
-                        `${user.tag} is AFK: ${reason} (${time(new Date(Number(timestamp)), TimestampStyles.RelativeTime)})`
+                       {content: `${user.tag} is AFK: ${reason} (${time(new Date(Number(timestamp)), TimestampStyles.RelativeTime)})`, allowedMentions: {users: [], roles: [], repliedUser: false}}
                     );
                 }
             }
