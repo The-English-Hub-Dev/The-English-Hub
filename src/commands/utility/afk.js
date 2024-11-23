@@ -28,7 +28,10 @@ class AFKCommand extends Command {
             `${Date.now()}:${reason}`
         );
 
-        return message.reply(`You are AFK: ${reason}`);
+        return message.reply({
+            content: `You are AFK: ${reason}`,
+            allowedMentions: { users: [], roles: [], repliedUser: false },
+        });
     }
 }
 
