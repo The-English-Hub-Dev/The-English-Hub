@@ -23,7 +23,7 @@ class AvatarCommand extends Command {
 
         const user = rawUser.unwrapOr(message.author);
 
-        const av = user.unwrap().displayAvatarURL({ size: 4096 });
+        const av = user.displayAvatarURL({ size: 4096 });
 
         const embed = new EmbedBuilder()
             .setTitle(`${user.tag}'s Avatar`)
