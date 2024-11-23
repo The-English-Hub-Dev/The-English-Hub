@@ -7,30 +7,35 @@ class AvatarCommand extends Command {
             ...options,
             name: 'avatar',
             aliases: ['av'],
-            description: 'Shows the avatar of a user',
+            usage: '[user]',
+            description: 'Shows the avatar of a user.',
         });
     }
 
-	/**
-	 * 
-	 * @param { Message } message 
-	 * @param { Args } args 
-	 * @returns 
-	 */
+    /**
+     *
+     * @param { Message } message
+     * @param { Args } args
+     * @returns
+     */
     async messageRun(message, args) {
-		const user = await args.pickResult('user');
-		if (user.isErr()) return this.container.utility.errReply(message, 'You must provide a valid user to get the avatar of.');
+        const rawUser = await args.pickResult('user');
 
-		const av = user.unwrap().displayAvatarURL({size: 4096});
+		const user = rawUser.unwrapOr(message.author);
 
-		const embed = new EmbedBuilder()
-			.setTitle(`${user.unwrap().tag}'s Avatar`)
-			.setImage(av)
-			.setColor(Colors.Blurple)
-			.setTimestamp()
-			.setFooter({text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL()});
+        const av = user.unwrap().displayAvatarURL({ size: 4096 });
 
-		return message.reply({embeds: [embed]});
+        const embed = new EmbedBuilder()
+            .setTitle(`${user.tag}'s Avatar`)
+            .setImage(av)
+            .setColor(Colors.Blurple)
+            .setTimestamp()
+            .setFooter({
+                text: `Requested by ${message.author.tag}`,
+                iconURL: message.author.displayAvatarURL(),
+            });
+
+        return message.reply({ embeds: [embed] });
     }
 }
 
