@@ -1,5 +1,12 @@
 const { Listener, Events } = require('@sapphire/framework');
-const { Message, EmbedBuilder, ChannelType, Colors } = require('discord.js');
+const {
+    Message,
+    EmbedBuilder,
+    ChannelType,
+    Colors,
+    time,
+    TimestampStyles,
+} = require('discord.js');
 const {
     redirectDMChannelID,
     mainGuildID,
@@ -28,6 +35,7 @@ class MessageCreateListener extends Listener {
         }
 
         // await this.checkOldPrefix(message);
+        await this.checkAFK(message);
 
         await this.container.automodManager.runAutomodOnMessage(message);
         await this.container.triggerManager.runTriggersOnMessage(message);
@@ -157,6 +165,33 @@ class MessageCreateListener extends Listener {
                     });
                 }
             }
+        }
+    }
+
+    /**
+     *
+     * @param { Message} message
+     */
+    async checkAFK(message) {
+        const mentionedUsers = [...message.mentions.users.values()];
+        if (mentionedUsers.length > 0) {
+            for (const user of mentionedUsers) {
+                const afkData = await this.container.redis.hget('afk', user.id);
+                if (afkData) {
+                    const [timestamp, reason] = afkData.split(':');
+                    await message.reply(
+                        `${user.tag} is AFK: ${reason} (${time(new Date(Number(timestamp)), TimestampStyles.RelativeTime)})`
+                    );
+                }
+            }
+        }
+
+        const isAFK = await this.container.redis.hget('afk', message.author.id);
+        if (isAFK) {
+            await this.container.redis.hdel('afk', message.author.id);
+            await message
+                .reply('Welcome back! Your AFK status has been removed.')
+                .then((m) => setTimeout(() => m.delete(), 5000));
         }
     }
 }
