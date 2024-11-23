@@ -179,9 +179,14 @@ class MessageCreateListener extends Listener {
                 const afkData = await this.container.redis.hget('afk', user.id);
                 if (afkData) {
                     const [timestamp, reason] = afkData.split(':');
-                    await message.reply(
-                       {content: `${user.tag} is AFK: ${reason} (${time(new Date(Number(timestamp)), TimestampStyles.RelativeTime)})`, allowedMentions: {users: [], roles: [], repliedUser: false}}
-                    );
+                    await message.reply({
+                        content: `${user.tag} is AFK: ${reason} (${time(new Date(Number(timestamp)), TimestampStyles.RelativeTime)})`,
+                        allowedMentions: {
+                            users: [],
+                            roles: [],
+                            repliedUser: false,
+                        },
+                    });
                 }
             }
         }

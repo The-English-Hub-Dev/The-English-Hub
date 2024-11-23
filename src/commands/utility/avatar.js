@@ -21,7 +21,7 @@ class AvatarCommand extends Command {
     async messageRun(message, args) {
         const rawUser = await args.pickResult('user');
 
-		const user = rawUser.unwrapOr(message.author);
+        const user = rawUser.unwrapOr(message.author);
 
         const av = user.unwrap().displayAvatarURL({ size: 4096 });
 
