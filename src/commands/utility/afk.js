@@ -7,6 +7,7 @@ class AFKCommand extends Command {
             ...options,
             name: 'afk',
             description: 'Set your AFK status to be tracked by the bot.',
+            preconditions: ['Staff'],
             aliases: ['away', 'bye', 'busy'],
         });
     }
