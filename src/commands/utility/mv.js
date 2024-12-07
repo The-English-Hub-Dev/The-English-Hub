@@ -1,6 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message, PermissionFlagsBits } = require('discord.js');
-const { mvAllowed } = require('../../../config.json');
+const { mvChannelsAllowed } = require('../../../config.json');
 
 class MvCommand extends Command {
     constructor(context, options) {
@@ -39,7 +39,7 @@ class MvCommand extends Command {
                 'You must be in a voice channel to use this command otherwise I cannot move you to a new channel.'
             );
 
-        if (!mvAllowed.includes(vc.unwrap().parent.id)) {
+        if (!mvChannelsAllowed.includes(vc.unwrap().parent.id)) {
             return this.container.utility.errReply(
                 message,
                 'This cateogyr is not in the allowed list for being moved into. Please ask a server admin for help.'
