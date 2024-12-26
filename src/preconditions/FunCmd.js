@@ -1,8 +1,8 @@
 const { Precondition } = require('@sapphire/framework');
-const { Message, Permissions } = require('discord.js');
+const { Message } = require('discord.js');
 const { funCmdRoles } = require('../../config.json');
 
-class StaffPrecondition extends Precondition {
+class FunCmdPrecondition extends Precondition {
     /**
      *
      * @param { Message } message
@@ -24,4 +24,4 @@ class StaffPrecondition extends Precondition {
             : this.error();
     }
 }
-module.exports = { StaffPrecondition };
+module.exports = { FunCmdPrecondition };
