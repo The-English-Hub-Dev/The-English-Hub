@@ -9,7 +9,7 @@ class KidnapCommand extends Command {
             description: 'Does something fun.',
             usage: '<member>',
             aliases: ['kidn'],
-            preconditions: ['NotOrigCmdChannel', 'Staff'],
+            preconditions: ['NotOrigCmdChannel', 'FunCmd'],
         });
     }
 
