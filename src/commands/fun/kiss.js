@@ -9,7 +9,7 @@ class KissCommand extends Command {
             description: 'Does something exciting.',
             usage: '<member>',
             aliases: [],
-            preconditions: ['NotOrigCmdChannel', 'Staff'],
+            preconditions: ['NotOrigCmdChannel', 'FunCmd'],
         });
     }
 
