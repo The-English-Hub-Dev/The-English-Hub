@@ -56,6 +56,7 @@ class ViewVcbanCommand extends Command {
             .setTitle(`Current active VC Bans`)
             .setDescription(vcString.length ? vcString : 'No current vc bans.')
             .setFooter({ text: `Requested by ${message.author.tag}` })
+            .setURL('https://enghub-dashboard.vercel.app/')
             .setTimestamp();
 
         return message.reply({ embeds: [vcbanEmbed] });
