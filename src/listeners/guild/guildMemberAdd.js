@@ -23,7 +23,7 @@ class GuildMemberAddListener extends Listener {
      * @param { GuildMember } member
      */
     async run(member) {
-        await this.welcomeMember(member);
+        // await this.welcomeMember(member);
         await this.checkMilestone(member);
         await this.sendWelcomeDM(member);
     }
