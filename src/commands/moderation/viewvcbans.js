@@ -56,7 +56,7 @@ class ViewVcbanCommand extends Command {
             .setTitle(`Current active VC Bans`)
             .setDescription(
                 vcString.length
-                    ? vcStrin +
+                    ? vcString +
                           '\n\nYou can also view this online at https://enghub-dashboard.vercel.app/.'
                     : 'No current vc bans.'
             )
