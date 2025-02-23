@@ -9,7 +9,7 @@ class SlapCommand extends Command {
             description: 'Does something VERY exciting.',
             usage: '<member>',
             aliases: [],
-            preconditions: ['NotOrigCmdChannel', 'FunCmd'],
+            preconditions: ['FunCmd'],
         });
     }
 

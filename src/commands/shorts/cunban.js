@@ -13,7 +13,7 @@ class CUnbanCommand extends Command {
             name: 'cunban',
             aliases: ['chillunban'],
             description: 'Calls the vcunban command on the chill guest room.',
-            preconditions: ['NotOrigCmdChannel', 'VcActionPerms'],
+            preconditions: ['VcActionPerms'],
             usage: '<member> [reason]',
         });
     }

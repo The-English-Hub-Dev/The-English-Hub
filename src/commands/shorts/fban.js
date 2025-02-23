@@ -12,7 +12,7 @@ class FBanCommand extends Command {
             ...options,
             name: 'fban',
             description: 'Calls the vcban command on the feminism guest room.',
-            preconditions: ['NotOrigCmdChannel', 'VcActionPerms'],
+            preconditions: ['VcActionPerms'],
             usage: '<member> [reason]',
         });
     }

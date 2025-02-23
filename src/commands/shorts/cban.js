@@ -13,7 +13,7 @@ class CBanCommand extends Command {
             name: 'cban',
             aliases: ['chillban'],
             description: 'Calls the vcban command on the chill guest room.',
-            preconditions: ['NotOrigCmdChannel', 'VcActionPerms'],
+            preconditions: ['VcActionPerms'],
             usage: '<member> [reason]',
         });
     }

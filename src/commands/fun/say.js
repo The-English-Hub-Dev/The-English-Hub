@@ -9,7 +9,7 @@ class SayCommand extends Command {
             description: 'Says things you tell the bot to say.',
             usage: '[channel] <text>',
             aliases: ['echo'],
-            preconditions: ['NotOrigCmdChannel', 'Staff'],
+            preconditions: ['Staff'],
         });
     }
 

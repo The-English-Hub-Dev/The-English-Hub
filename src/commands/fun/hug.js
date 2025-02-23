@@ -9,7 +9,7 @@ class HugCommand extends Command {
             description: 'Does something sweet.',
             usage: '<member>',
             aliases: [],
-            preconditions: ['NotOrigCmdChannel', 'NotOrigCmdChannel', 'Staff'],
+            preconditions: ['Staff'],
         });
     }
 
