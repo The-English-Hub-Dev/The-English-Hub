@@ -54,7 +54,12 @@ class ViewVcbanCommand extends Command {
         const vcbanEmbed = new EmbedBuilder()
             .setColor(Colors.Orange)
             .setTitle(`Current active VC Bans`)
-            .setDescription(vcString.length ? vcString : 'No current vc bans.')
+            .setDescription(
+                vcString.length
+                    ? vcStrin +
+                          '\n\nYou can also view this online at https://enghub-dashboard.vercel.app/.'
+                    : 'No current vc bans.'
+            )
             .setFooter({ text: `Requested by ${message.author.tag}` })
             .setURL('https://enghub-dashboard.vercel.app/')
             .setTimestamp();
