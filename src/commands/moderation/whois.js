@@ -71,11 +71,12 @@ class WhoisCommand extends Command {
             );
         }
 
-        embed.setFooter({
-            text: `Requested by ${message.author.tag}`,
-            iconURL: message.author.avatarURL(),
-        })
-        .setTimestamp();
+        embed
+            .setFooter({
+                text: `Requested by ${message.author.tag}`,
+                iconURL: message.author.avatarURL(),
+            })
+            .setTimestamp();
 
         return message.reply({ embeds: [embed] });
     }
