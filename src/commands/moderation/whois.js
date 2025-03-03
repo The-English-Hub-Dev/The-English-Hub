@@ -24,14 +24,10 @@ class WhoisCommand extends Command {
      */
     async messageRun(message, args) {
         const user = (await args.pickResult('user')).unwrapOr(message.author);
-
-        const roles = member.roles.cache
-            .sort((a, b) => b.position - a.position)
-            .map((role) => role.toString())
-            .slice(0, -1);
+        const member = message.guild?.members.cache.get(user.id);
 
         const embed = new EmbedBuilder()
-            .setColor(member.displayColor || Colors.Blue)
+            .setColor(member?.displayColor || Colors.Blue)
             .setAuthor({
                 name: user.tag,
                 iconURL: user.avatarURL(),
@@ -40,13 +36,27 @@ class WhoisCommand extends Command {
             .addFields(
                 { name: 'ID', value: user.id },
                 {
-                    name: 'Joined Server',
-                    value: time(member.joinedAt, TimestampStyles.RelativeTime),
+                    name: 'Account Created',
+                    value: time(user.createdAt, TimestampStyles.RelativeTime),
                     inline: true,
                 },
                 {
-                    name: 'Account Created',
-                    value: time(user.createdAt, TimestampStyles.RelativeTime),
+                    name: 'Bot',
+                    value: user.bot ? 'Yes' : 'No',
+                    inline: true,
+                }
+            );
+
+        if (member) {
+            const roles = member.roles.cache
+                .sort((a, b) => b.position - a.position)
+                .map((role) => role.toString())
+                .slice(0, -1);
+
+            embed.addFields(
+                {
+                    name: 'Joined Server',
+                    value: time(member.joinedAt, TimestampStyles.RelativeTime),
                     inline: true,
                 },
                 {
@@ -57,18 +67,15 @@ class WhoisCommand extends Command {
                     name: 'Nickname',
                     value: member.nickname || 'None',
                     inline: true,
-                },
-                {
-                    name: 'Bot',
-                    value: user.bot ? 'Yes' : 'No',
-                    inline: true,
                 }
-            )
-            .setFooter({
-                text: `Requested by ${message.author.tag}`,
-                iconURL: message.author.avatarURL(),
-            })
-            .setTimestamp();
+            );
+        }
+
+        embed.setFooter({
+            text: `Requested by ${message.author.tag}`,
+            iconURL: message.author.avatarURL(),
+        })
+        .setTimestamp();
 
         return message.reply({ embeds: [embed] });
     }
