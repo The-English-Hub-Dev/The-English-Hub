@@ -129,7 +129,7 @@ class Tasks {
                     await container.redis.hdel('vcban', vcBans[i][0]);
 
                     const logEmbed = new EmbedBuilder()
-                        .setColor(Colors.DarkRed)
+                        .setColor(Colors.DarkGreen)
                         .setTitle('VC Unban')
                         .setAuthor({
                             name: member.user.tag,
@@ -298,7 +298,7 @@ class Tasks {
             }
         }, Time.Minute);
 
-        container.logger.info('Introduction autopost task initialized.');
+        container.logger.info('Auto Unmute task initialized.');
         this.intervals.autoUnmute = autoUnmuteInterval;
     }
 }

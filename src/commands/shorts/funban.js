@@ -6,12 +6,12 @@ const {
 } = require('@sapphire/framework');
 const { Message } = require('discord.js');
 
-class FBanCommand extends Command {
+class FUnbanCommand extends Command {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: 'fban',
-            description: 'Calls the vcban command on the a specific guest room.',
+            name: 'funban',
+            description: 'Calls the vcunban command on the a specific guest room.',
             preconditions: ['VcActionPerms'],
             usage: '<member> [reason]',
         });
@@ -48,10 +48,10 @@ class FBanCommand extends Command {
             }
         }
 
-        message.content = `${ctx.prefix}vcban 1337490870567440435 ${member.id} ${reason}`;
+        message.content = `${ctx.prefix}vcunban 1337490870567440435 ${member.id} ${reason}`;
 
         this.container.client.emit(Events.PreMessageParsed, message);
     }
 }
 
-module.exports = { FBanCommand };
+module.exports = { FUnbanCommand };
