@@ -11,7 +11,8 @@ class FBanCommand extends Command {
         super(context, {
             ...options,
             name: 'fban',
-            description: 'Calls the vcban command on the a specific guest room.',
+            description:
+                'Calls the vcban command on the a specific guest room.',
             preconditions: ['VcActionPerms'],
             usage: '<member> [reason]',
         });

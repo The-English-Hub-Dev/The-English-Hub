@@ -11,7 +11,8 @@ class FUnbanCommand extends Command {
         super(context, {
             ...options,
             name: 'funban',
-            description: 'Calls the vcunban command on the a specific guest room.',
+            description:
+                'Calls the vcunban command on the a specific guest room.',
             preconditions: ['VcActionPerms'],
             usage: '<member> [reason]',
         });
