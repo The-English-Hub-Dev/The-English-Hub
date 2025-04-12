@@ -298,7 +298,7 @@ class Tasks {
             }
         }, Time.Minute);
 
-        container.logger.info('Auto Unmute task initialized.');
+        container.logger.info('Auto unmute task initialized.');
         this.intervals.autoUnmute = autoUnmuteInterval;
     }
 }
