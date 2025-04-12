@@ -1,5 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
+const gifs = ['[no gif attached]'];
 
 class KissCommand extends Command {
     constructor(context, options) {
@@ -28,6 +29,10 @@ class KissCommand extends Command {
 
         const member = rawMember.unwrap();
         if (message.deletable) await message.delete();
+
+        await message.channel.send(
+            gifs[Math.floor(Math.random() * gifs.length)]
+        );
 
         return message.channel.send({
             content: `${message.author} kissed ${member} 💋`,

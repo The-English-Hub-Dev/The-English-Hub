@@ -1,5 +1,9 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
+const gifs = [
+    'https://tenor.com/view/spongebob-meme-bonk-gif-24279189',
+    'https://tenor.com/view/bonk-gif-13392138837084579216',
+];
 
 class BonkCommand extends Command {
     constructor(context, options) {
@@ -28,6 +32,10 @@ class BonkCommand extends Command {
 
         const member = rawMember.unwrap();
         if (message.deletable) await message.delete();
+
+        await message.channel.send(
+            gifs[Math.floor(Math.random() * gifs.length)]
+        );
 
         return message.channel.send({
             content: `${message.author} bonked ${member} 🫂`,
