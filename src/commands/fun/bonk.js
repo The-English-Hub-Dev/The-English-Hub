@@ -3,6 +3,7 @@ const { Message } = require('discord.js');
 const gifs = [
     'https://tenor.com/view/spongebob-meme-bonk-gif-24279189',
     'https://tenor.com/view/bonk-gif-13392138837084579216',
+    'https://tenor.com/view/wiggle-bonk-doge-rcon-discord-gif-7113561812262633635',
 ];
 
 class BonkCommand extends Command {

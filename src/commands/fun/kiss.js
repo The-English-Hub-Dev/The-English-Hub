@@ -1,6 +1,9 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
-const gifs = ['[no gif attached]'];
+const gifs = [
+    'https://tenor.com/view/peach-goma-kissing-embarrassed-gif-15906171843289693532',
+    'https://tenor.com/view/kiss-gif-2703204269541922014',
+];
 
 class KissCommand extends Command {
     constructor(context, options) {

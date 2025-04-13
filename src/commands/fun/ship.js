@@ -7,7 +7,7 @@ class ShipCommand extends Command {
         super(context, {
             ...options,
             name: 'ship',
-            description: 'Bonk bonk.',
+            description: "What? You're checking your compatibility?",
             usage: '<member>',
             aliases: [],
             preconditions: ['FunCmd'],

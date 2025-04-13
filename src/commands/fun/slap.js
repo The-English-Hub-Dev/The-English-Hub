@@ -1,9 +1,9 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
 const gifs = [
-    'https://tenor.com/view/too-much-alarm-sound-the-gif-24675087',
-    'https://tenor.com/view/blu-zushi-black-and-white-emotes-gif-13851867247344432124',
     'https://tenor.com/view/batman-robin-slap-cachetada-meme-cachetazo-gif-14588588888076113146',
+    'https://tenor.com/view/taiga-toradora-fast-slap-slap-baka-gif-11264049955690132886',
+    'https://tenor.com/view/slap-christmas-gif-24241359',
 ];
 
 class SlapCommand extends Command {

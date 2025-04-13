@@ -1,5 +1,10 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
+const gifs = [
+    'https://tenor.com/view/thom-gif-gif-22589646',
+    'https://tenor.com/view/kidnap-cat-kidnap-aaaaah-fear-horror-film-gif-21768777',
+    'https://tenor.com/view/getting-kidnapped-who-killed-sara-season2-getting-a-bag-over-my-head-kidnapped-gif-21614958',
+];
 
 class KidnapCommand extends Command {
     constructor(context, options) {
@@ -28,6 +33,10 @@ class KidnapCommand extends Command {
 
         const member = rawMember.unwrap();
         if (message.deletable) await message.delete();
+
+        await message.channel.send(
+            gifs[Math.floor(Math.random() * gifs.length)]
+        );
 
         return message.channel.send({
             content: `${member} has been kidnapped by ${message.author} for 1 hour`,
