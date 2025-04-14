@@ -8,7 +8,7 @@ class AvatarCommand extends Command {
             name: 'avatar',
             aliases: ['av'],
             usage: '[user]',
-            preconditions: ['Staff'],
+            preconditions: [['Staff', 'PremiumMember']],
             description: 'Shows the avatar of a user.',
         });
     }
