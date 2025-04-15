@@ -34,6 +34,9 @@ class BonkCommand extends Command {
         const member = rawMember.unwrap();
         if (message.deletable) await message.delete();
 
+        if (member.id === message.author.id)
+            this.container.utility.errReply(message, 'Bonk someone else :(');
+
         await message.channel.send(
             gifs[Math.floor(Math.random() * gifs.length)]
         );

@@ -34,12 +34,12 @@ class HugCommand extends Command {
         const member = rawMember.unwrap();
         if (message.deletable) await message.delete();
 
+        if (member.id === message.author.id)
+            this.container.utility.errReply(message, 'Hug someone else :(');
+
         await message.channel.send(
             gifs[Math.floor(Math.random() * gifs.length)]
         );
-
-        if (member.id === message.author.id)
-            this.container.utility.errReply(message, 'Hug someone else.');
 
         return message.channel.send({
             content: `${message.author} hugged ${member} 🫂`,
