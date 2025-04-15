@@ -1,5 +1,10 @@
 const { Command, Args } = require('@sapphire/framework');
 const { Message } = require('discord.js');
+const gifs = [
+    'https://tenor.com/view/hug-love-hi-bye-cat-gif-5711781834381685182',
+    'https://tenor.com/view/hug-hugs-and-love-gif-8468000449870090869',
+    'https://tenor.com/view/hugs-love-no-crying-gif-167604756388140396',
+];
 
 class HugCommand extends Command {
     constructor(context, options) {
@@ -28,6 +33,13 @@ class HugCommand extends Command {
 
         const member = rawMember.unwrap();
         if (message.deletable) await message.delete();
+
+        await message.channel.send(
+            gifs[Math.floor(Math.random() * gifs.length)]
+        );
+
+        if (member.id === message.author.id)
+            this.container.utility.errReply(message, 'Hug someone else.');
 
         return message.channel.send({
             content: `${message.author} hugged ${member} 🫂`,
