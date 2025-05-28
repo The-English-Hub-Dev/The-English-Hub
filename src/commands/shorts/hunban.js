@@ -56,4 +56,4 @@ class HUnbanCommand extends Command {
     }
 }
 
-module.exports = { QBanCommand };
+module.exports = { HUnbanCommand };
