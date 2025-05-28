@@ -50,7 +50,7 @@ class LUnbanCommand extends Command {
             }
         }
 
-        message.content = `${ctx.prefix}vcban 1353551552945590272 ${member.id} ${reason}`;
+        message.content = `${ctx.prefix}vcunban 1353551552945590272 ${member.id} ${reason}`;
 
         this.container.client.emit(Events.PreMessageParsed, message);
     }

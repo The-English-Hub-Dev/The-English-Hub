@@ -49,7 +49,7 @@ class FBanCommand extends Command {
             }
         }
 
-        message.content = `${ctx.prefix}vcban 1337490870567440435 ${member.id} ${reason}`;
+        message.content = `${ctx.prefix}vcban 1367799103354044446 ${member.id} ${reason}`;
 
         this.container.client.emit(Events.PreMessageParsed, message);
     }

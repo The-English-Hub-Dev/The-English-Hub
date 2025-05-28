@@ -49,7 +49,7 @@ class FUnbanCommand extends Command {
             }
         }
 
-        message.content = `${ctx.prefix}vcunban 1337490870567440435 ${member.id} ${reason}`;
+        message.content = `${ctx.prefix}vcunban 1367799103354044446 ${member.id} ${reason}`;
 
         this.container.client.emit(Events.PreMessageParsed, message);
     }
