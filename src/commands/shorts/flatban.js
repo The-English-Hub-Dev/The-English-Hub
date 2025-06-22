@@ -15,6 +15,7 @@ class FlatBanCommand extends Command {
             description:
                 'Calls the vcban command on the flat world guest room.',
             preconditions: ['VcActionPerms'],
+            flags: ['perm', 'p'],
             usage: '<member> [reason]',
         });
     }
@@ -53,6 +54,13 @@ class FlatBanCommand extends Command {
         message.content = `${ctx.prefix}vcban 1149541570257883277 ${member.id} ${reason}`;
 
         this.container.client.emit(Events.PreMessageParsed, message);
+
+        if (args.getFlags('perm', 'p')) await this.container.redis.hdel(
+            'vcban',
+            `${vChannel.id}:${member.id}`
+        );
+
+        return message.channel.send("Member permanently banned from the flat world guest room. This can only be undone with the `?vcunban` command.");
     }
 }
 
