@@ -55,15 +55,15 @@ class FlatBanCommand extends Command {
 
         this.container.client.emit(Events.PreMessageParsed, message);
 
-        if (args.getFlags('perm', 'p'))
+        if (args.getFlags('perm', 'p')) {
             await this.container.redis.hdel(
                 'vcban',
                 `${vChannel.id}:${member.id}`
             );
-
-        return message.channel.send(
-            'Member permanently banned from the flat world guest room. This can only be undone with the `?vcunban` command.'
-        );
+            await message.channel.send(
+                'Member permanently banned from the flat world guest room. This can only be undone with the `?vcunban` command.'
+            );
+        }
     }
 }
 
