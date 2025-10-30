@@ -4,7 +4,7 @@ const gifs = [
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExczQ4eDl1dzRoaWI0am9idW80empieHo1eW8zOGRodm55ZmduanFxNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VRnt1pl7eseuqia7f6/giphy.gif',
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExczQ4eDl1dzRoaWI0am9idW80empieHo1eW8zOGRodm55ZmduanFxNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/gkONMypx1LOzcQq2D8/giphy.gif',
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMTh2c3Bwb3Q3YjJ0OThueW10MnNtNzBjNzk0MWxoODg2bW96cjB1dSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/wIU9MjBVKF4Qw/giphy.gif',
-    'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YzhheGw2emxwYWF2aGhzMDlxejBkcm5lYTh6ZnMxZzhjcWFoOGR2ayZlcD12MV9naWZzX3NlYXJjaCZjdD1n/QhmuOyBUTKlpVYpi9D/giphy.gif'
+    'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3YzhheGw2emxwYWF2aGhzMDlxejBkcm5lYTh6ZnMxZzhjcWFoOGR2ayZlcD12MV9naWZzX3NlYXJjaCZjdD1n/QhmuOyBUTKlpVYpi9D/giphy.gif',
 ];
 
 class YeetCommand extends Command {
