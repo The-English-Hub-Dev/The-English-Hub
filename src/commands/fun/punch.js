@@ -15,7 +15,7 @@ class PunchCommand extends Command {
             description: 'Punches something (or someone?).',
             usage: '<member>',
             aliases: [],
-            preconditions: ['Staff'],
+            preconditions: ['FunCmd'],
         });
     }
 
@@ -41,6 +41,14 @@ class PunchCommand extends Command {
                 'Why are you punching yourself :('
             );
 
+        await message.channel.send({
+            content: `${message.author} punched ${member}`,
+            allowedMentions: {
+                users: [member.id, message.author.id],
+                roles: [],
+                parse: [],
+            },
+        });
         await message.channel.send(
             gifs[Math.floor(Math.random() * gifs.length)]
         );

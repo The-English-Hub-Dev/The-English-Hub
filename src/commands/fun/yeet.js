@@ -15,7 +15,7 @@ class YeetCommand extends Command {
             description: 'Yeets you into the oblivian.',
             usage: '<member>',
             aliases: [],
-            preconditions: ['Staff'],
+            preconditions: ['FunCmd'],
         });
     }
 
@@ -37,6 +37,15 @@ class YeetCommand extends Command {
 
         if (member.id === message.author.id)
             this.container.utility.errReply(message, 'Yeet someone else :(');
+
+        await message.channel.send({
+            content: `${member} just got yeeted by ${message.author}`,
+            allowedMentions: {
+                users: [member.id, message.author.id],
+                roles: [],
+                parse: [],
+            },
+        });
 
         await message.channel.send(
             gifs[Math.floor(Math.random() * gifs.length)]

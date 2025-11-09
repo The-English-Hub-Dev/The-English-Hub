@@ -15,7 +15,7 @@ class TickleCommand extends Command {
             description: 'Tickle tickle.',
             usage: '<member>',
             aliases: [],
-            preconditions: ['Staff'],
+            preconditions: ['FunCmd'],
         });
     }
 
@@ -38,6 +38,14 @@ class TickleCommand extends Command {
         if (member.id === message.author.id)
             this.container.utility.errReply(message, 'Tickle someone else :(');
 
+        await message.channel.send({
+            content: `${message.author} tickled ${member}`,
+            allowedMentions: {
+                users: [member.id, message.author.id],
+                roles: [],
+                parse: [],
+            },
+        });
         await message.channel.send(
             gifs[Math.floor(Math.random() * gifs.length)]
         );

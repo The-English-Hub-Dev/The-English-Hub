@@ -17,7 +17,7 @@ class GiveCommand extends Command {
             description: 'Gives something.',
             usage: '<member>',
             aliases: [],
-            preconditions: ['Staff'],
+            preconditions: ['FunCmd'],
         });
     }
 
@@ -43,6 +43,14 @@ class GiveCommand extends Command {
                 "You can't give something to yourself :("
             );
 
+        await message.channel.send({
+            content: `${member}`,
+            allowedMentions: {
+                users: [member.id, message.author.id],
+                roles: [],
+                parse: [],
+            },
+        });
         await message.channel.send(
             gifs[Math.floor(Math.random() * gifs.length)]
         );
