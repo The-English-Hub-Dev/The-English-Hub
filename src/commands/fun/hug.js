@@ -4,10 +4,6 @@ const gifs = [
     'https://tenor.com/view/hug-love-hi-bye-cat-gif-5711781834381685182',
     'https://tenor.com/view/hug-hugs-and-love-gif-8468000449870090869',
     'https://tenor.com/view/hugs-love-no-crying-gif-167604756388140396',
-    'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXk3OXp2aHU5YXdtcjA5OHRtcjNueTZvY3Zjd251N2t4Z3k3YjU4OSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/gL6eoV6ScTOnk7WfbS/giphy.gif',
-    'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3amo4NjBnam9wampucTNjeW42MHE0ajhwaXRoNnJhMGg2OXRub295ZiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/g9wyTh6aWsCGzu4NgY/giphy.gif',
-    'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXk3OXp2aHU5YXdtcjA5OHRtcjNueTZvY3Zjd251N2t4Z3k3YjU4OSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/N0CIxcyPLputW/giphy.gif',
-    'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXk3OXp2aHU5YXdtcjA5OHRtcjNueTZvY3Zjd251N2t4Z3k3YjU4OSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/X42IAaDJ42pHqPllGk/giphy.gif',
 ];
 
 class HugCommand extends Command {
