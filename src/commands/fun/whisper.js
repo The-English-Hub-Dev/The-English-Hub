@@ -15,7 +15,7 @@ class WhisperCommand extends Command {
             description: "What? I can't heard you.",
             usage: '<member>',
             aliases: [],
-            preconditions: ['Staff'],
+            preconditions: ['FunCmd'],
             enabled: false,
         });
     }
