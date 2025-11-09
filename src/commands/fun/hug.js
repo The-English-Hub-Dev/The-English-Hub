@@ -18,7 +18,7 @@ class HugCommand extends Command {
             description: 'Does something sweet.',
             usage: '<member>',
             aliases: [],
-            preconditions: ['Staff'],
+            preconditions: ['FunCmd'],
         });
     }
 
