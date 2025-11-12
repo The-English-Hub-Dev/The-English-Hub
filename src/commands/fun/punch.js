@@ -3,7 +3,7 @@ const { Message } = require('discord.js');
 const gifs = [
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcG9kc3Z2ZDdlbGUzdWVsbHh5MHRhNDY3eWJvZHY3ZXBjY2cxb2tsciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/SzC42gUrhHopW/giphy.gif',
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcG9kc3Z2ZDdlbGUzdWVsbHh5MHRhNDY3eWJvZHY3ZXBjY2cxb2tsciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/UENGrMFTLUKUE/giphy.gif',
-    'httpsS.giphy.com/media/v1.Y2lkPTc5MGI3NjExcG9kc3Z2ZDdlbGUzdWVsbHh5MHRhNDY3eWJvZHY3ZXBjY2cxb2tsciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/qIfG2193qAwGgw4hdg/giphy.gif',
+    'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcG9kc3Z2ZDdlbGUzdWVsbHh5MHRhNDY3eWJvZHY3ZXBjY2cxb2tsciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/qIfG2193qAwGgw4hdg/giphy.gif',
     'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3MmVlcnIwaHF1eDkyaHBoYnIzeXlyMGhzNDc0cHN0eG9wYTV4ZGk3OCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VZVK5WCg0A0H37s8ND/giphy.gif',
 ];
 
