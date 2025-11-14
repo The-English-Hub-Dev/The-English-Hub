@@ -44,7 +44,7 @@ class GiveCommand extends Command {
             );
 
         await message.channel.send({
-            content: `${member}`,
+            content: `${member} got a gift from ${message.author}`,
             allowedMentions: {
                 users: [member.id, message.author.id],
                 roles: [],
