@@ -34,7 +34,7 @@ jobs:
               with:
                   ref: ${{ github.head_ref }}
             - name: Run Prettier on code and push
-              uses: creyD/prettier_action@v4.3
+              uses: creyD/prettier_action@v4.6
               with:
                   prettier_options: -w ./src/**/*
                   commit_message: 'chore(formatting[auto]): run prettier on code'
