@@ -156,18 +156,110 @@ class VoiceStateUpdateListener extends Listener {
                 await this.warnUser(member);
             }
         }
-        // User left a camera-required channel
+        // User left a camera-required channel (to a non-camera channel)
         else if (!inTarget && wasInTarget) {
             this.userLeft(userId);
         }
-        // User is still in a camera-required channel - check for camera toggle
+        // User is still in a camera-required channel
         else if (inTarget && wasInTarget) {
-            // Camera turned on
-            if (newState.selfVideo && !oldState.selfVideo) {
-                await this.userComply(member);
+            // Check if user switched between different camera VCs
+            if (oldState.channelId !== newState.channelId) {
+                // User switched from one camera VC to another
+
+                // Check ban
+                const ban = this.vcBannedUsers.get(userId);
+                if (ban && Date.now() < ban.bannedUntil) {
+                    this.container.logger.info(
+                        `[CAMERA ENFORCE] ${member.user.tag} banned - evicting from new VC`
+                    );
+                    await this.lockUserAcrossCameraVCs(
+                        member.guild,
+                        userId,
+                        true
+                    );
+                    if (member.voice && member.voice.channel) {
+                        await member.voice
+                            .disconnect('Banned from camera VCs')
+                            .catch(() => {});
+                    }
+                    const warnCh = await this.container.client.channels
+                        .fetch(cameraWarningChannelID)
+                        .catch(() => null);
+                    if (warnCh) {
+                        const remaining = Math.ceil(
+                            (ban.bannedUntil - Date.now()) / 60000
+                        );
+                        const embed = new EmbedBuilder()
+                            .setTitle('🚫 Ban Active')
+                            .setColor(Colors.Red)
+                            .setDescription(
+                                `${member.user}, ban active for **${remaining} min**.\nExpires: <t:${Math.floor(ban.bannedUntil / 1000)}:R>`
+                            )
+                            .setTimestamp();
+                        await warnCh
+                            .send({
+                                content: `${member.user}`,
+                                embeds: [embed],
+                            })
+                            .catch(() => {});
+                    }
+                    return;
+                }
+
+                // Check probation
+                const probEnd = this.probationList.get(userId);
+                if (probEnd && Date.now() < probEnd) {
+                    this.container.logger.info(
+                        `[CAMERA ENFORCE] ${member.user.tag} on probation - evicting from new VC`
+                    );
+                    await this.lockUserAcrossCameraVCs(
+                        member.guild,
+                        userId,
+                        false
+                    );
+                    if (member.voice && member.voice.channel) {
+                        await member.voice
+                            .disconnect('On probation')
+                            .catch(() => {});
+                    }
+                    const warnCh = await this.container.client.channels
+                        .fetch(cameraWarningChannelID)
+                        .catch(() => null);
+                    if (warnCh) {
+                        const remaining = Math.ceil(
+                            (probEnd - Date.now()) / 60000
+                        );
+                        const embed = new EmbedBuilder()
+                            .setTitle('🔒 Probation Active')
+                            .setColor(Colors.Orange)
+                            .setDescription(
+                                `${member.user}, probation for **${remaining} min**.\nRejoin at: <t:${Math.floor(probEnd / 1000)}:R>`
+                            )
+                            .setTimestamp();
+                        await warnCh
+                            .send({
+                                content: `${member.user}`,
+                                embeds: [embed],
+                            })
+                            .catch(() => {});
+                    }
+                    return;
+                }
+
+                // Not banned/probation - timer continues running (no action needed)
+                // If they don't have camera, the timer that's already running will kick them
+                this.container.logger.info(
+                    `[CAMERA ENFORCE] ${member.user.tag} switched camera VCs - timer continues`
+                );
+                return;
             }
-            // Camera turned off
-            else if (!newState.selfVideo && oldState.selfVideo) {
+
+            // User stayed in same channel - check for camera toggle
+            if (newState.selfVideo && !oldState.selfVideo) {
+                // Camera turned on
+                await this.userComply(member);
+            } else if (!newState.selfVideo && oldState.selfVideo) {
+                // Camera turned off
                 await this.warnUser(member);
             }
         }
