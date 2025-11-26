@@ -81,10 +81,7 @@ class ReadyListener extends Listener {
             }
 
             // Restore locks for banned users
-            for (const [
-                userId,
-                data,
-            ] of voiceListener.vcBannedUsers.entries()) {
+            for (const [userId, data] of voiceListener.vcBannedUsers.entries()) {
                 const remaining = data.bannedUntil - Date.now();
                 const member = await guild.members
                     .fetch(userId)
@@ -120,10 +117,7 @@ class ReadyListener extends Listener {
             }
 
             // Restore locks for probation users
-            for (const [
-                userId,
-                probationEnd,
-            ] of voiceListener.probationList.entries()) {
+            for (const [userId, probationEnd] of voiceListener.probationList.entries()) {
                 const remaining = probationEnd - Date.now();
                 const member = await guild.members
                     .fetch(userId)
