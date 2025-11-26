@@ -712,7 +712,7 @@ class VoiceStateUpdateListener extends Listener {
         const startTime = Date.now();
         const timeoutId = setTimeout(() => {
             if (this.warnedUsers.has(userId)) {
-                this.kickUser(member, warningMessage).catch(console.error);
+                this.kickUser(member, warningMessage).catch((err) => this.container.logger.error(err));
             }
         }, warningData.remainingTime);
 
