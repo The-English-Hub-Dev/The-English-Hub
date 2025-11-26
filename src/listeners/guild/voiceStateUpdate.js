@@ -1,10 +1,21 @@
 const { Listener, Events } = require('@sapphire/framework');
-const { VoiceState, ChannelType, EmbedBuilder, Colors } = require('discord.js');
 const {
-    twoRoomsParentID,
-    threeRoomsParentID,
-    voiceStateLogChannelID,
+    VoiceState,
+    ChannelType,
+    EmbedBuilder,
+    Colors,
+    PermissionsBitField,
+} = require('discord.js');
+const fs = require('fs');
+const path = require('path');
+const {
     mainGuildID,
+    cameraWarningChannelID,
+    cameraOnChannels,
+    cameraWarningTimeout,
+    cameraProbationPeriod,
+    cameraVCBanDuration,
+    cameraMaxViolations,
 } = require('../../../config.json');
 
 class VoiceStateUpdateListener extends Listener {
@@ -14,17 +25,733 @@ class VoiceStateUpdateListener extends Listener {
             name: Events.VoiceStateUpdate,
             event: Events.VoiceStateUpdate,
         });
+
+        // Camera enforcement state
+        this.warnedUsers = new Map();
+        this.probationList = new Map();
+        this.vcBannedUsers = new Map();
+        this.violationTracker = new Map();
+        this.scheduledUnlocks = new Map();
+        this.cameraOnChannelsSet = new Set(cameraOnChannels || []);
+        this.STATE_FILE = path.resolve(__dirname, '../../../vc_state.json');
     }
 
     /**
-     *
      * @param { VoiceState } oldState
      * @param { VoiceState } newState
      */
     async run(oldState, newState) {
+        await this.handleCameraEnforcement(oldState, newState);
+
         await this.logVoicestateChange(oldState, newState);
         // await this.handleRoomTwoCreation(oldState, newState);
         // await this.handleRoomThreeCreation(oldState, newState);
+    }
+
+    // ==================== CAMERA ENFORCEMENT ====================
+
+    /**
+     * Main camera enforcement handler
+     */
+    async handleCameraEnforcement(oldState, newState) {
+        const member =
+            newState.member ||
+            (newState.guild
+                ? await newState.guild.members
+                      .fetch(newState.id)
+                      .catch(() => null)
+                : null);
+        if (!member || member.user.bot) return;
+
+        const userId = member.id;
+        const inTarget = Boolean(
+            newState.channelId &&
+                this.cameraOnChannelsSet.has(newState.channelId)
+        );
+        const wasInTarget = Boolean(
+            oldState.channelId &&
+                this.cameraOnChannelsSet.has(oldState.channelId)
+        );
+
+        // User joined a camera-required channel
+        if (inTarget && !wasInTarget) {
+            // Check ban
+            const ban = this.vcBannedUsers.get(userId);
+            if (ban && Date.now() < ban.bannedUntil) {
+                this.container.logger.info(
+                    `[CAMERA ENFORCE] ${member.user.tag} banned - evicting`
+                );
+                await this.lockUserAcrossCameraVCs(member.guild, userId, true);
+                if (member.voice && member.voice.channel) {
+                    await member.voice
+                        .disconnect('Banned from camera VCs')
+                        .catch(() => {});
+                }
+                const warnCh = await this.container.client.channels
+                    .fetch(cameraWarningChannelID)
+                    .catch(() => null);
+                if (warnCh) {
+                    const remaining = Math.ceil(
+                        (ban.bannedUntil - Date.now()) / 60000
+                    );
+                    const embed = new EmbedBuilder()
+                        .setTitle('🚫 Ban Active')
+                        .setColor(Colors.Red)
+                        .setDescription(
+                            `${member.user}, ban active for **${remaining} min**.\nExpires: <t:${Math.floor(ban.bannedUntil / 1000)}:R>`
+                        )
+                        .setTimestamp();
+                    await warnCh
+                        .send({ content: `${member.user}`, embeds: [embed] })
+                        .catch(() => {});
+                }
+                return;
+            }
+
+            // Check probation
+            const probEnd = this.probationList.get(userId);
+            if (probEnd && Date.now() < probEnd) {
+                this.container.logger.info(
+                    `[CAMERA ENFORCE] ${member.user.tag} on probation - evicting`
+                );
+                await this.lockUserAcrossCameraVCs(member.guild, userId, false);
+                if (member.voice && member.voice.channel) {
+                    await member.voice
+                        .disconnect('On probation')
+                        .catch(() => {});
+                }
+                const warnCh = await this.container.client.channels
+                    .fetch(cameraWarningChannelID)
+                    .catch(() => null);
+                if (warnCh) {
+                    const remaining = Math.ceil((probEnd - Date.now()) / 60000);
+                    const embed = new EmbedBuilder()
+                        .setTitle('🔒 Probation Active')
+                        .setColor(Colors.Orange)
+                        .setDescription(
+                            `${member.user}, probation for **${remaining} min**.\nRejoin at: <t:${Math.floor(probEnd / 1000)}:R>`
+                        )
+                        .setTimestamp();
+                    await warnCh
+                        .send({ content: `${member.user}`, embeds: [embed] })
+                        .catch(() => {});
+                }
+                return;
+            }
+
+            // Check camera
+            if (newState.selfVideo) {
+                return; // Camera already on, no warning needed
+            }
+
+            // Check paused timer
+            const existing = this.warnedUsers.get(userId);
+            if (existing && existing.timeoutId === null) {
+                await this.resumeTimer(member);
+                return;
+            }
+
+            // New warning
+            if (!existing) {
+                await this.warnUser(member);
+            }
+        }
+        // User left a camera-required channel
+        else if (!inTarget && wasInTarget) {
+            this.userLeft(userId);
+        }
+        // User is still in a camera-required channel - check for camera toggle
+        else if (inTarget && wasInTarget) {
+            // Camera turned on
+            if (newState.selfVideo && !oldState.selfVideo) {
+                await this.userComply(member);
+            }
+            // Camera turned off
+            else if (!newState.selfVideo && oldState.selfVideo) {
+                await this.warnUser(member);
+            }
+        }
+    }
+
+    /**
+     * Lock user from camera VCs
+     */
+    async lockUserAcrossCameraVCs(guild, userId, isBan = false) {
+        if (!guild) return;
+        const lockType = isBan ? 'BAN' : 'PROBATION';
+
+        for (const channelId of this.cameraOnChannelsSet) {
+            try {
+                const channel = await this.container.client.channels
+                    .fetch(channelId)
+                    .catch(() => null);
+                if (!channel || !channel.isVoiceBased()) continue;
+
+                const member = await guild.members
+                    .fetch(userId)
+                    .catch(() => null);
+                if (
+                    member &&
+                    member.permissions.has(
+                        PermissionsBitField.Flags.Administrator
+                    )
+                ) {
+                    this.container.logger.info(`[SKIP] ${userId} is Admin`);
+                    continue;
+                }
+
+                await channel.permissionOverwrites
+                    .edit(
+                        userId,
+                        {
+                            ViewChannel: true,
+                            Connect: false,
+                        },
+                        {
+                            reason: isBan
+                                ? `VC Ban: ${userId}`
+                                : `Probation: ${userId}`,
+                        }
+                    )
+                    .catch((err) => {
+                        this.container.logger.error(
+                            `[LOCK ERROR] ${channelId}: ${err?.message}`
+                        );
+                    });
+                this.container.logger.info(
+                    `[${lockType}] Locked ${channel.name || channelId} for ${userId}`
+                );
+            } catch (err) {
+                this.container.logger.error(
+                    `[LOCK ERROR] ${channelId}:`,
+                    err.message
+                );
+            }
+        }
+    }
+
+    /**
+     * Unlock user from camera VCs
+     */
+    async unlockUserAcrossCameraVCs(guild, userId, isBan = false) {
+        if (!guild) return;
+        const lockType = isBan ? 'BAN' : 'PROBATION';
+
+        for (const channelId of this.cameraOnChannelsSet) {
+            try {
+                const channel = await this.container.client.channels
+                    .fetch(channelId)
+                    .catch(() => null);
+                if (!channel || !channel.isVoiceBased()) continue;
+
+                const overwrite =
+                    channel.permissionOverwrites.cache.get(userId);
+                if (overwrite) {
+                    await channel.permissionOverwrites
+                        .delete(userId, {
+                            reason: isBan
+                                ? `VC Ban expired: ${userId}`
+                                : `Probation ended: ${userId}`,
+                        })
+                        .catch((err) => {
+                            this.container.logger.error(
+                                `[UNLOCK ERROR] ${channelId}: ${err?.message}`
+                            );
+                        });
+                    this.container.logger.info(
+                        `[${lockType}] Unlocked ${channel.name || channelId} for ${userId}`
+                    );
+                }
+            } catch (err) {
+                this.container.logger.error(
+                    `[UNLOCK ERROR] ${channelId}:`,
+                    err.message
+                );
+            }
+        }
+    }
+
+    /**
+     * Warn user to enable camera
+     */
+    async warnUser(member, customTimeout = null) {
+        const userId = member.id;
+        if (this.warnedUsers.has(userId)) return;
+
+        const timeoutDuration = customTimeout || cameraWarningTimeout;
+        this.container.logger.info(
+            `[CAMERA WARN] ${member.user.tag} - ${timeoutDuration}ms timer`
+        );
+
+        const warningChannel = await this.container.client.channels
+            .fetch(cameraWarningChannelID)
+            .catch(() => null);
+        if (!warningChannel) {
+            this.container.logger.error('[CAMERA WARN] Channel not found');
+            return;
+        }
+
+        const currentViolations = this.violationTracker.get(userId) || 0;
+        const seconds = Math.ceil(timeoutDuration / 1000);
+
+        const embed = new EmbedBuilder()
+            .setTitle('📷 Camera Required')
+            .setDescription(
+                `Hey ${member.user}, turn on your camera within **${seconds}s**.\n\n⚠️ Violations: **${currentViolations}/${cameraMaxViolations}**`
+            )
+            .setColor(Colors.Red)
+            .setTimestamp();
+
+        const msg = await warningChannel
+            .send({ content: `${member.user}`, embeds: [embed] })
+            .catch(() => null);
+
+        const startTime = Date.now();
+        const timeoutId = setTimeout(() => {
+            if (this.warnedUsers.has(userId)) {
+                this.kickUser(member, msg).catch(console.error);
+            }
+        }, timeoutDuration);
+
+        this.warnedUsers.set(userId, {
+            timeoutId,
+            warningMessageId: msg ? msg.id : null,
+            remainingTime: timeoutDuration,
+            startTime,
+        });
+    }
+
+    /**
+     * Kick user and apply probation/ban
+     */
+    async kickUser(member, warningMessage = null) {
+        const userId = member.id;
+        this.container.logger.info(`[CAMERA KICK] ${member.user.tag}`);
+
+        const currentViolations = (this.violationTracker.get(userId) || 0) + 1;
+        this.violationTracker.set(userId, currentViolations);
+        this.persistState();
+
+        if (member.voice && member.voice.channel) {
+            await member.voice
+                .disconnect('Failed to enable camera')
+                .catch(() => {});
+        }
+
+        if (currentViolations >= cameraMaxViolations) {
+            const bannedUntil = Date.now() + cameraVCBanDuration;
+            this.vcBannedUsers.set(userId, {
+                bannedUntil,
+                violationCount: currentViolations,
+            });
+            this.persistState();
+
+            await this.lockUserAcrossCameraVCs(member.guild, userId, true);
+            this.scheduleUnlock(userId, bannedUntil, true);
+
+            try {
+                const warningChannel = await this.container.client.channels
+                    .fetch(cameraWarningChannelID)
+                    .catch(() => null);
+                const banMinutes = Math.ceil(cameraVCBanDuration / 60000);
+                const banEmbed = new EmbedBuilder()
+                    .setTitle('🚫 VC Ban Issued')
+                    .setColor(Colors.Black)
+                    .setDescription(
+                        `${member.user.tag}, you're banned from camera VCs for **${banMinutes} min**.\n\n🔒 VCs locked. Ban expires: <t:${Math.floor(bannedUntil / 1000)}:R>`
+                    )
+                    .setTimestamp();
+
+                if (warningMessage) {
+                    await warningMessage
+                        .edit({ content: null, embeds: [banEmbed] })
+                        .catch(() => {});
+                } else if (warningChannel) {
+                    await warningChannel
+                        .send({ content: `${member.user}`, embeds: [banEmbed] })
+                        .catch(() => {});
+                }
+            } catch (err) {
+                this.container.logger.error(
+                    '[CAMERA KICK] Ban notice failed:',
+                    err.message
+                );
+            }
+        } else {
+            const probationEndTime = Date.now() + cameraProbationPeriod;
+            this.probationList.set(userId, probationEndTime);
+            this.persistState();
+
+            await this.lockUserAcrossCameraVCs(member.guild, userId, false);
+            this.scheduleUnlock(userId, probationEndTime, false);
+
+            try {
+                const warningChannel = await this.container.client.channels
+                    .fetch(cameraWarningChannelID)
+                    .catch(() => null);
+                const probationMinutes = Math.ceil(
+                    cameraProbationPeriod / 60000
+                );
+                const embed = new EmbedBuilder()
+                    .setTitle('❌ Kicked - Probation Active')
+                    .setColor(0x8b0000)
+                    .setDescription(
+                        `${member.user.tag}, removed for not enabling camera.\n\n🔒 VCs locked for **${probationMinutes} min**.\nRejoin at: <t:${Math.floor(probationEndTime / 1000)}:R>\n\n⚠️ Violations: **${currentViolations}/${cameraMaxViolations}**`
+                    )
+                    .setTimestamp();
+                if (warningMessage) {
+                    await warningMessage
+                        .edit({ content: null, embeds: [embed] })
+                        .catch(() => {});
+                } else if (warningChannel) {
+                    await warningChannel
+                        .send({ content: `${member.user}`, embeds: [embed] })
+                        .catch(() => {});
+                }
+            } catch (err) {
+                this.container.logger.error(
+                    '[CAMERA KICK] Probation notice failed:',
+                    err.message
+                );
+            }
+        }
+
+        this.warnedUsers.delete(userId);
+    }
+
+    /**
+     * Schedule automatic unlock
+     */
+    scheduleUnlock(userId, endTimestamp, isBan) {
+        const now = Date.now();
+        const delay = Math.max(0, endTimestamp - now);
+
+        const prev = this.scheduledUnlocks.get(userId);
+        if (prev) clearTimeout(prev);
+
+        const timeoutId = setTimeout(async () => {
+            try {
+                this.scheduledUnlocks.delete(userId);
+
+                const guild = await this.container.client.guilds
+                    .fetch(mainGuildID)
+                    .catch(() => null);
+                if (!guild) {
+                    this.container.logger.warn(
+                        `[CAMERA UNLOCK] Guild not found`
+                    );
+                    if (isBan) {
+                        this.vcBannedUsers.delete(userId);
+                        this.violationTracker.delete(userId);
+                    } else {
+                        this.probationList.delete(userId);
+                    }
+                    this.persistState();
+                    return;
+                }
+
+                const member = await guild.members
+                    .fetch(userId)
+                    .catch(() => null);
+                if (!member) {
+                    this.container.logger.info(
+                        `[CAMERA UNLOCK] User ${userId} not found in guild`
+                    );
+                    if (isBan) {
+                        this.vcBannedUsers.delete(userId);
+                        this.violationTracker.delete(userId);
+                    } else {
+                        this.probationList.delete(userId);
+                    }
+                    this.persistState();
+                    return;
+                }
+
+                // Remove from state
+                if (isBan) {
+                    this.vcBannedUsers.delete(userId);
+                    this.violationTracker.delete(userId);
+                } else {
+                    this.probationList.delete(userId);
+                }
+
+                // Unlock VCs
+                await this.unlockUserAcrossCameraVCs(guild, userId, isBan);
+                this.persistState();
+
+                // Send notification
+                if (isBan) {
+                    await this.notifyVCUnban(member);
+                } else {
+                    await this.notifyProbationEnd(member);
+                }
+            } catch (err) {
+                this.container.logger.error(
+                    '[CAMERA SCHEDULE UNLOCK] Error:',
+                    err.message
+                );
+            }
+        }, delay);
+
+        this.scheduledUnlocks.set(userId, timeoutId);
+    }
+
+    /**
+     * User complied by enabling camera
+     */
+    async userComply(member) {
+        const userId = member.id;
+        const warningData = this.warnedUsers.get(userId);
+        if (!warningData) return;
+
+        this.container.logger.info(`[CAMERA COMPLY] ${member.user.tag}`);
+
+        const prevViolations = this.violationTracker.get(userId) || 0;
+        let resetMessage = '';
+        if (prevViolations > 0) {
+            this.violationTracker.delete(userId);
+            this.persistState();
+            resetMessage = '\n🔄 Violations reset to 0.';
+            this.container.logger.info(`[CAMERA RESET] ${member.user.tag}`);
+        }
+
+        clearTimeout(warningData.timeoutId);
+
+        try {
+            const warningChannel = await this.container.client.channels
+                .fetch(cameraWarningChannelID)
+                .catch(() => null);
+            if (warningChannel && warningData.warningMessageId) {
+                const msg = await warningChannel.messages
+                    .fetch(warningData.warningMessageId)
+                    .catch(() => null);
+                if (msg) {
+                    const complyEmbed = new EmbedBuilder()
+                        .setTitle('✅ Camera Enabled')
+                        .setColor(Colors.Green)
+                        .setDescription(`Thanks ${member.user}!${resetMessage}`)
+                        .setTimestamp();
+                    await msg
+                        .edit({ content: null, embeds: [complyEmbed] })
+                        .catch(() => {});
+                    setTimeout(() => msg.delete().catch(() => {}), 5000);
+                }
+            }
+        } catch (err) {
+            this.container.logger.warn(
+                '[CAMERA COMPLY] Message update failed:',
+                err.message
+            );
+        }
+
+        this.warnedUsers.delete(userId);
+    }
+
+    /**
+     * User left VC - pause timer
+     */
+    userLeft(userId) {
+        const warningData = this.warnedUsers.get(userId);
+        if (!warningData) return;
+
+        this.container.logger.info(
+            `[CAMERA LEAVE] Pausing timer for ${userId}`
+        );
+        const elapsed = Date.now() - (warningData.startTime || 0);
+        const remaining = Math.max(
+            0,
+            (warningData.remainingTime || cameraWarningTimeout) - elapsed
+        );
+
+        clearTimeout(warningData.timeoutId);
+
+        this.warnedUsers.set(userId, {
+            ...warningData,
+            timeoutId: null,
+            remainingTime: remaining,
+        });
+    }
+
+    /**
+     * Resume timer when user rejoins
+     */
+    async resumeTimer(member) {
+        const userId = member.id;
+        const warningData = this.warnedUsers.get(userId);
+        if (!warningData) return;
+
+        if (!warningData.remainingTime || warningData.remainingTime <= 0) {
+            this.container.logger.info(
+                `[CAMERA RESUME] Timer expired for ${member.user.tag}`
+            );
+            await this.kickUser(member, null);
+            return;
+        }
+
+        this.container.logger.info(
+            `[CAMERA RESUME] ${member.user.tag} - ${warningData.remainingTime}ms`
+        );
+
+        const warningChannel = await this.container.client.channels
+            .fetch(cameraWarningChannelID)
+            .catch(() => null);
+        let warningMessage = null;
+        if (warningChannel && warningData.warningMessageId) {
+            warningMessage = await warningChannel.messages
+                .fetch(warningData.warningMessageId)
+                .catch(() => null);
+        }
+
+        const currentViolations = this.violationTracker.get(userId) || 0;
+        const seconds = Math.ceil(warningData.remainingTime / 1000);
+        if (warningMessage) {
+            const embed = new EmbedBuilder()
+                .setTitle('📷 Timer Resumed')
+                .setColor(0xff6600)
+                .setDescription(
+                    `${member.user}, you have **${seconds}s** left.\n\n⚠️ Violations: **${currentViolations}/${cameraMaxViolations}**`
+                )
+                .setTimestamp();
+            await warningMessage
+                .edit({ content: `${member.user}`, embeds: [embed] })
+                .catch(() => {});
+        }
+
+        const startTime = Date.now();
+        const timeoutId = setTimeout(() => {
+            if (this.warnedUsers.has(userId)) {
+                this.kickUser(member, warningMessage).catch(console.error);
+            }
+        }, warningData.remainingTime);
+
+        this.warnedUsers.set(userId, {
+            ...warningData,
+            timeoutId,
+            startTime,
+        });
+    }
+
+    /**
+     * Notify user probation ended
+     */
+    async notifyProbationEnd(member) {
+        try {
+            const ch = await this.container.client.channels
+                .fetch(cameraWarningChannelID)
+                .catch(() => null);
+            if (!ch) return;
+            const currentViolations = this.violationTracker.get(member.id) || 0;
+            const embed = new EmbedBuilder()
+                .setTitle('🔓 Probation Ended')
+                .setColor(Colors.Orange)
+                .setDescription(
+                    `${member.user}, probation over. VCs unlocked.\n\n⚠️ Violations: **${currentViolations}/${cameraMaxViolations}**`
+                )
+                .setTimestamp();
+            await ch
+                .send({ content: `${member.user}`, embeds: [embed] })
+                .catch(() => {});
+        } catch (err) {
+            this.container.logger.error(
+                '[CAMERA NOTIFY] Probation end failed:',
+                err.message
+            );
+        }
+    }
+
+    /**
+     * Notify user ban expired
+     */
+    async notifyVCUnban(member) {
+        try {
+            const ch = await this.container.client.channels
+                .fetch(cameraWarningChannelID)
+                .catch(() => null);
+            if (!ch) return;
+            const embed = new EmbedBuilder()
+                .setTitle('✅ Ban Expired')
+                .setColor(Colors.Green)
+                .setDescription(
+                    `${member.user}, VC ban over. Violations reset. VCs unlocked.`
+                )
+                .setTimestamp();
+            await ch
+                .send({ content: `${member.user}`, embeds: [embed] })
+                .catch(() => {});
+        } catch (err) {
+            this.container.logger.error(
+                '[CAMERA NOTIFY] Unban failed:',
+                err.message
+            );
+        }
+    }
+
+    /**
+     * Load state from file
+     */
+    loadState() {
+        try {
+            if (!fs.existsSync(this.STATE_FILE)) return;
+            const raw = fs.readFileSync(this.STATE_FILE, 'utf8');
+            if (!raw) return;
+            const parsed = JSON.parse(raw);
+
+            if (parsed.probationList) {
+                for (const [uid, ts] of Object.entries(parsed.probationList)) {
+                    this.probationList.set(uid, ts);
+                }
+            }
+            if (parsed.vcBannedUsers) {
+                for (const [uid, data] of Object.entries(
+                    parsed.vcBannedUsers
+                )) {
+                    this.vcBannedUsers.set(uid, data);
+                }
+            }
+            if (parsed.violationTracker) {
+                for (const [uid, count] of Object.entries(
+                    parsed.violationTracker
+                )) {
+                    this.violationTracker.set(uid, count);
+                }
+            }
+            this.container.logger.info('[CAMERA STATE] Loaded');
+        } catch (err) {
+            this.container.logger.warn(
+                '[CAMERA STATE] Load failed:',
+                err.message
+            );
+        }
+    }
+
+    /**
+     * Persist state to file
+     */
+    persistState() {
+        try {
+            const out = {
+                probationList: Object.fromEntries([
+                    ...this.probationList.entries(),
+                ]),
+                vcBannedUsers: Object.fromEntries([
+                    ...this.vcBannedUsers.entries(),
+                ]),
+                violationTracker: Object.fromEntries([
+                    ...this.violationTracker.entries(),
+                ]),
+            };
+            fs.writeFileSync(
+                this.STATE_FILE,
+                JSON.stringify(out, null, 2),
+                'utf8'
+            );
+            this.container.logger.info('[CAMERA STATE] Saved');
+        } catch (err) {
+            this.container.logger.error(
+                '[CAMERA STATE] Save failed:',
+                err.message
+            );
+        }
     }
 
     /**

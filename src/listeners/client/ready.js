@@ -1,4 +1,4 @@
-const { Listener, Events, MessageCommand } = require('@sapphire/framework');
+const { Listener, Events } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
 const {
     Client,
@@ -8,6 +8,7 @@ const {
     ActivityType,
 } = require('discord.js');
 const { Tasks } = require('../../library/tasks');
+const { mainGuildID } = require('../../../config.json');
 
 class ReadyListener extends Listener {
     constructor(context, options) {
@@ -19,7 +20,6 @@ class ReadyListener extends Listener {
     }
 
     /**
-     *
      * @param { Client } client
      */
     async run(client) {
@@ -46,6 +46,119 @@ class ReadyListener extends Listener {
         this.container.logger.errorLogs = [];
         this.container.tasks = new Tasks();
         await this.container.tasks.initializeTasks();
+
+        // Initialize camera enforcement
+        await this.initializeCameraEnforcement();
+    }
+
+    /**
+     * Initialize camera enforcement state and restore locks
+     */
+    async initializeCameraEnforcement() {
+        try {
+            // Get the VoiceStateUpdate listener instance
+            const voiceListener = this.container.stores
+                .get('listeners')
+                .get('voiceStateUpdate');
+            if (!voiceListener) {
+                this.container.logger.warn(
+                    '[CAMERA INIT] VoiceStateUpdate listener not found'
+                );
+                return;
+            }
+
+            // Load state from file
+            voiceListener.loadState();
+
+            const guild = await this.container.client.guilds
+                .fetch(mainGuildID)
+                .catch(() => null);
+            if (!guild) {
+                this.container.logger.error(
+                    '[CAMERA INIT] Main guild not found'
+                );
+                return;
+            }
+
+            // Restore locks for banned users
+            for (const [
+                userId,
+                data,
+            ] of voiceListener.vcBannedUsers.entries()) {
+                const remaining = data.bannedUntil - Date.now();
+                const member = await guild.members
+                    .fetch(userId)
+                    .catch(() => null);
+
+                if (!member) {
+                    voiceListener.vcBannedUsers.delete(userId);
+                    voiceListener.violationTracker.delete(userId);
+                    continue;
+                }
+
+                await voiceListener.lockUserAcrossCameraVCs(
+                    guild,
+                    userId,
+                    true
+                );
+
+                if (remaining > 0) {
+                    voiceListener.scheduleUnlock(
+                        userId,
+                        data.bannedUntil,
+                        true
+                    );
+                } else {
+                    voiceListener.vcBannedUsers.delete(userId);
+                    voiceListener.violationTracker.delete(userId);
+                    await voiceListener.unlockUserAcrossCameraVCs(
+                        guild,
+                        userId,
+                        true
+                    );
+                }
+            }
+
+            // Restore locks for probation users
+            for (const [
+                userId,
+                probationEnd,
+            ] of voiceListener.probationList.entries()) {
+                const remaining = probationEnd - Date.now();
+                const member = await guild.members
+                    .fetch(userId)
+                    .catch(() => null);
+
+                if (!member) {
+                    voiceListener.probationList.delete(userId);
+                    continue;
+                }
+
+                await voiceListener.lockUserAcrossCameraVCs(
+                    guild,
+                    userId,
+                    false
+                );
+
+                if (remaining > 0) {
+                    voiceListener.scheduleUnlock(userId, probationEnd, false);
+                } else {
+                    voiceListener.probationList.delete(userId);
+                    await voiceListener.unlockUserAcrossCameraVCs(
+                        guild,
+                        userId,
+                        false
+                    );
+                }
+            }
+
+            voiceListener.persistState();
+            this.container.logger.info(
+                '[CAMERA INIT] Locks restored successfully'
+            );
+        } catch (err) {
+            this.container.logger.error('[CAMERA INIT] Failed:', err.message);
+        }
     }
 }
 
