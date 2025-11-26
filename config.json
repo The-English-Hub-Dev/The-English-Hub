@@ -42,7 +42,7 @@
     "funCmdRoles": ["984522935123447860", "1304581454495350884"],
     "cameraWarningChannelID": "1438602109116354723",
     "cameraOnChannels": ["1443102551645093969", "1028003432222699560"],
-    "cameraWarningTimeout": 30000,
+    "cameraWarningTimeout": 10000,
     "cameraProbationPeriod": 60000,
     "cameraVCBanDuration": 1800000,
     "cameraMaxViolations": 3
