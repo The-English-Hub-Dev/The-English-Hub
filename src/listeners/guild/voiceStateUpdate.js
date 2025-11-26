@@ -832,7 +832,7 @@ class VoiceStateUpdateListener extends Listener {
                     ...this.violationTracker.entries(),
                 ]),
             };
-            fs.writeFile(
+            fs.writeFileSync(
                 this.STATE_FILE,
                 JSON.stringify(out, null, 2),
                 'utf8'
