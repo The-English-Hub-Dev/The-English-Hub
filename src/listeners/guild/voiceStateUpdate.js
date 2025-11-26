@@ -401,7 +401,7 @@ class VoiceStateUpdateListener extends Listener {
         const startTime = Date.now();
         const timeoutId = setTimeout(() => {
             if (this.warnedUsers.has(userId)) {
-                this.kickUser(member, msg).catch(console.error);
+                this.kickUser(member, msg).catch((err) => this.container.logger.error(err));
             }
         }, timeoutDuration);
 
