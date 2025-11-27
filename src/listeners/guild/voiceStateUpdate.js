@@ -66,11 +66,11 @@ class VoiceStateUpdateListener extends Listener {
         const userId = member.id;
         const inTarget = Boolean(
             newState.channelId &&
-                this.cameraOnChannelsSet.has(newState.channelId)
+            this.cameraOnChannelsSet.has(newState.channelId)
         );
         const wasInTarget = Boolean(
             oldState.channelId &&
-                this.cameraOnChannelsSet.has(oldState.channelId)
+            this.cameraOnChannelsSet.has(oldState.channelId)
         );
 
         // User joined a camera-required channel
@@ -401,7 +401,9 @@ class VoiceStateUpdateListener extends Listener {
         const startTime = Date.now();
         const timeoutId = setTimeout(() => {
             if (this.warnedUsers.has(userId)) {
-                this.kickUser(member, msg).catch((err) => this.container.logger.error(err));
+                this.kickUser(member, msg).catch((err) =>
+                    this.container.logger.error(err)
+                );
             }
         }, timeoutDuration);
 
@@ -712,7 +714,9 @@ class VoiceStateUpdateListener extends Listener {
         const startTime = Date.now();
         const timeoutId = setTimeout(() => {
             if (this.warnedUsers.has(userId)) {
-                this.kickUser(member, warningMessage).catch((err) => this.container.logger.error(err));
+                this.kickUser(member, warningMessage).catch((err) =>
+                    this.container.logger.error(err)
+                );
             }
         }, warningData.remainingTime);
 
