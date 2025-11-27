@@ -39,5 +39,11 @@
     ],
     "vcbanlogChannelID": "1241791823555461202",
     "mutedRoleID": "852818428698951681",
-    "funCmdRoles": ["984522935123447860", "1304581454495350884"]
+    "funCmdRoles": ["984522935123447860", "1304581454495350884"],
+    "cameraWarningChannelID": "1438602109116354723",
+    "cameraOnChannels": ["1443102551645093969", "1028003432222699560"],
+    "cameraWarningTimeout": 10000,
+    "cameraProbationPeriod": 60000,
+    "cameraVCBanDuration": 1800000,
+    "cameraMaxViolations": 3
 }
