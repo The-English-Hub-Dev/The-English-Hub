@@ -23,7 +23,7 @@
     "homepage": "https://github.com/The-English-Hub/The-English-Hub#readme",
     "dependencies": {
         "@discordjs/voice": "^0.17.0",
-        "@sapphire/discord-utilities": "^3.5.0",
+        "@sapphire/discord-utilities": "^4.0.0",
         "@sapphire/discord.js-utilities": "^7.3.3",
         "@sapphire/framework": "^5.4.0",
         "@sapphire/plugin-logger": "^4.1.0",
