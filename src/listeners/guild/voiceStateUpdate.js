@@ -10,7 +10,6 @@ const fs = require('fs');
 const path = require('path');
 const {
     mainGuildID,
-    cameraWarningChannelID,
     cameraOnChannels,
     cameraWarningTimeout,
     cameraProbationPeriod,
@@ -51,6 +50,41 @@ class VoiceStateUpdateListener extends Listener {
     // ==================== CAMERA ENFORCEMENT ====================
 
     /**
+     * Get the text channel linked to a voice channel
+     * @param {VoiceChannel} voiceChannel
+     * @returns {TextChannel|null}
+     */
+    getLinkedTextChannel(voiceChannel) {
+        if (!voiceChannel) return null;
+
+        // Discord stores the linked text channel in guild.channels
+        // They typically share the same parent and have matching names
+        const guild = voiceChannel.guild;
+
+        // Try to find by exact ID match (if voice channel has messages enabled)
+        // Note: Voice channels with chat enabled act as text channels too
+        if (voiceChannel.isTextBased && voiceChannel.isTextBased()) {
+            return voiceChannel;
+        }
+
+        // Find text channel in same category with matching name
+        const parent = voiceChannel.parent;
+        if (!parent) return null;
+
+        // Look for text channels in same category
+        const linkedChannel = guild.channels.cache.find(
+            (ch) =>
+                ch.type === ChannelType.GuildText &&
+                ch.parentId === parent.id &&
+                (ch.name ===
+                    voiceChannel.name.toLowerCase().replace(/\s+/g, '-') ||
+                    ch.topic?.includes(voiceChannel.id))
+        );
+
+        return linkedChannel || null;
+    }
+
+    /**
      * Main camera enforcement handler
      */
     async handleCameraEnforcement(oldState, newState) {
@@ -87,9 +121,7 @@ class VoiceStateUpdateListener extends Listener {
                         .disconnect('Banned from camera VCs')
                         .catch(() => {});
                 }
-                const warnCh = await this.container.client.channels
-                    .fetch(cameraWarningChannelID)
-                    .catch(() => null);
+                const warnCh = this.getLinkedTextChannel(member.voice?.channel);
                 if (warnCh) {
                     const remaining = Math.ceil(
                         (ban.bannedUntil - Date.now()) / 60000
@@ -120,9 +152,7 @@ class VoiceStateUpdateListener extends Listener {
                         .disconnect('On probation')
                         .catch(() => {});
                 }
-                const warnCh = await this.container.client.channels
-                    .fetch(cameraWarningChannelID)
-                    .catch(() => null);
+                const warnCh = this.getLinkedTextChannel(member.voice?.channel);
                 if (warnCh) {
                     const remaining = Math.ceil((probEnd - Date.now()) / 60000);
                     const embed = new EmbedBuilder()
@@ -182,9 +212,9 @@ class VoiceStateUpdateListener extends Listener {
                             .disconnect('Banned from camera VCs')
                             .catch(() => {});
                     }
-                    const warnCh = await this.container.client.channels
-                        .fetch(cameraWarningChannelID)
-                        .catch(() => null);
+                    const warnCh = this.getLinkedTextChannel(
+                        member.voice?.channel
+                    );
                     if (warnCh) {
                         const remaining = Math.ceil(
                             (ban.bannedUntil - Date.now()) / 60000
@@ -222,9 +252,9 @@ class VoiceStateUpdateListener extends Listener {
                             .disconnect('On probation')
                             .catch(() => {});
                     }
-                    const warnCh = await this.container.client.channels
-                        .fetch(cameraWarningChannelID)
-                        .catch(() => null);
+                    const warnCh = this.getLinkedTextChannel(
+                        member.voice?.channel
+                    );
                     if (warnCh) {
                         const remaining = Math.ceil(
                             (probEnd - Date.now()) / 60000
@@ -375,9 +405,7 @@ class VoiceStateUpdateListener extends Listener {
             `[CAMERA WARN] ${member.user.tag} - ${timeoutDuration}ms timer`
         );
 
-        const warningChannel = await this.container.client.channels
-            .fetch(cameraWarningChannelID)
-            .catch(() => null);
+        const warningChannel = this.getLinkedTextChannel(member.voice?.channel);
         if (!warningChannel) {
             this.container.logger.error('[CAMERA WARN] Channel not found');
             return;
@@ -409,6 +437,7 @@ class VoiceStateUpdateListener extends Listener {
 
         this.warnedUsers.set(userId, {
             timeoutId,
+            channelId: member.voice?.channelId,
             warningMessageId: msg ? msg.id : null,
             remainingTime: timeoutDuration,
             startTime,
@@ -420,6 +449,8 @@ class VoiceStateUpdateListener extends Listener {
      */
     async kickUser(member, warningMessage = null) {
         const userId = member.id;
+        const warningData = this.warnedUsers.get(userId);
+        const storedChannelId = warningData?.channelId;
         this.container.logger.info(`[CAMERA KICK] ${member.user.tag}`);
 
         const currentViolations = (this.violationTracker.get(userId) || 0) + 1;
@@ -444,9 +475,15 @@ class VoiceStateUpdateListener extends Listener {
             this.scheduleUnlock(userId, bannedUntil, true);
 
             try {
-                const warningChannel = await this.container.client.channels
-                    .fetch(cameraWarningChannelID)
-                    .catch(() => null);
+                const voiceChannel =
+                    member.voice?.channel ||
+                    (storedChannelId
+                        ? await member.guild.channels
+                              .fetch(storedChannelId)
+                              .catch(() => null)
+                        : null);
+
+                const warningChannel = this.getLinkedTextChannel(voiceChannel);
                 const banMinutes = Math.ceil(cameraVCBanDuration / 60000);
                 const banEmbed = new EmbedBuilder()
                     .setTitle('🚫 VC Ban Issued')
@@ -480,9 +517,15 @@ class VoiceStateUpdateListener extends Listener {
             this.scheduleUnlock(userId, probationEndTime, false);
 
             try {
-                const warningChannel = await this.container.client.channels
-                    .fetch(cameraWarningChannelID)
-                    .catch(() => null);
+                const voiceChannel =
+                    member.voice?.channel ||
+                    (storedChannelId
+                        ? await member.guild.channels
+                              .fetch(storedChannelId)
+                              .catch(() => null)
+                        : null);
+
+                const warningChannel = this.getLinkedTextChannel(voiceChannel);
                 const probationMinutes = Math.ceil(
                     cameraProbationPeriod / 60000
                 );
@@ -612,9 +655,9 @@ class VoiceStateUpdateListener extends Listener {
         clearTimeout(warningData.timeoutId);
 
         try {
-            const warningChannel = await this.container.client.channels
-                .fetch(cameraWarningChannelID)
-                .catch(() => null);
+            const warningChannel = this.getLinkedTextChannel(
+                member.voice?.channel
+            );
             if (warningChannel && warningData.warningMessageId) {
                 const msg = await warningChannel.messages
                     .fetch(warningData.warningMessageId)
@@ -686,9 +729,7 @@ class VoiceStateUpdateListener extends Listener {
             `[CAMERA RESUME] ${member.user.tag} - ${warningData.remainingTime}ms`
         );
 
-        const warningChannel = await this.container.client.channels
-            .fetch(cameraWarningChannelID)
-            .catch(() => null);
+        const warningChannel = this.getLinkedTextChannel(member.voice?.channel);
         let warningMessage = null;
         if (warningChannel && warningData.warningMessageId) {
             warningMessage = await warningChannel.messages
@@ -732,9 +773,7 @@ class VoiceStateUpdateListener extends Listener {
      */
     async notifyProbationEnd(member) {
         try {
-            const ch = await this.container.client.channels
-                .fetch(cameraWarningChannelID)
-                .catch(() => null);
+            const ch = this.getLinkedTextChannel(member.voice?.channel);
             if (!ch) return;
             const currentViolations = this.violationTracker.get(member.id) || 0;
             const embed = new EmbedBuilder()
@@ -760,9 +799,7 @@ class VoiceStateUpdateListener extends Listener {
      */
     async notifyVCUnban(member) {
         try {
-            const ch = await this.container.client.channels
-                .fetch(cameraWarningChannelID)
-                .catch(() => null);
+            const ch = await this.getLinkedTextChannel(member.voice?.channel);
             if (!ch) return;
             const embed = new EmbedBuilder()
                 .setTitle('✅ Ban Expired')
