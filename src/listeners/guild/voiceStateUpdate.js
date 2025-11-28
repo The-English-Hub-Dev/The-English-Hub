@@ -40,7 +40,7 @@ class VoiceStateUpdateListener extends Listener {
      * @param { VoiceState } newState
      */
     async run(oldState, newState) {
-        await this.handleCameraEnforcement(oldState, newState);
+        // await this.handleCameraEnforcement(oldState, newState);
 
         await this.logVoicestateChange(oldState, newState);
         // await this.handleRoomTwoCreation(oldState, newState);
