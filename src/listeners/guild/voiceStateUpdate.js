@@ -15,6 +15,7 @@ const {
     cameraProbationPeriod,
     cameraVCBanDuration,
     cameraMaxViolations,
+    voiceStateLogChannelID,
 } = require('../../../config.json');
 
 class VoiceStateUpdateListener extends Listener {
