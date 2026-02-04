@@ -33,6 +33,7 @@ class VoiceStateUpdateListener extends Listener {
         this.scheduledUnlocks = new Map();
         this.cameraOnChannelsSet = new Set(cameraOnChannels || []);
         this.STATE_FILE = path.resolve(__dirname, '../../../vc_state.json');
+        this.persistTimeout = null;
     }
 
     /**
@@ -227,11 +228,21 @@ class VoiceStateUpdateListener extends Listener {
                     return;
                 }
 
-                // Not banned - timer continues running (no action needed)
-                // If they don't have camera, the timer that's already running will kick them
-                this.container.logger.info(
-                    `[CAMERA ENFORCE] ${member.user.tag} switched camera VCs - timer continues`
-                );
+                // Clear existing timer to prevent race condition
+                const existing = this.warnedUsers.get(userId);
+                if (existing?.timeoutId) {
+                    clearTimeout(existing.timeoutId);
+                    this.container.logger.info(
+                        `[CAMERA ENFORCE] ${member.user.tag} switched VCs - cleared old timer`
+                    );
+                }
+
+                // Restart timer if camera is still off
+                if (!newState.selfVideo) {
+                    await this.warnUser(member);
+                } else {
+                    this.warnedUsers.delete(userId);
+                }
                 return;
             }
 
@@ -240,7 +251,14 @@ class VoiceStateUpdateListener extends Listener {
                 // Camera turned on
                 await this.userComply(member);
             } else if (!newState.selfVideo && oldState.selfVideo) {
-                // Camera turned off
+                // Camera turned off - clear existing timer first
+                const existing = this.warnedUsers.get(userId);
+                if (existing?.timeoutId) {
+                    clearTimeout(existing.timeoutId);
+                    this.container.logger.info(
+                        `[CAMERA ENFORCE] ${member.user.tag} camera toggled off - cleared old timer`
+                    );
+                }
                 await this.warnUser(member);
             }
         }
@@ -602,7 +620,10 @@ class VoiceStateUpdateListener extends Listener {
             (warningData.remainingTime || cameraWarningTimeout) - elapsed
         );
 
-        clearTimeout(warningData.timeoutId);
+        // Clear timeout to prevent memory leak
+        if (warningData.timeoutId) {
+            clearTimeout(warningData.timeoutId);
+        }
 
         this.warnedUsers.set(userId, {
             ...warningData,
@@ -663,10 +684,12 @@ class VoiceStateUpdateListener extends Listener {
             }
         }, warningData.remainingTime);
 
+        // Store timeoutId to ensure proper cleanup
         this.warnedUsers.set(userId, {
             ...warningData,
             timeoutId,
             startTime,
+            remainingTime: warningData.remainingTime,
         });
     }
 
@@ -729,30 +752,35 @@ class VoiceStateUpdateListener extends Listener {
     }
 
     /**
-     * Persist state to file
+     * Persist state to file (debounced to prevent race conditions)
      */
     persistState() {
-        try {
-            const out = {
-                vcBannedUsers: Object.fromEntries([
-                    ...this.vcBannedUsers.entries(),
-                ]),
-                violationTracker: Object.fromEntries([
-                    ...this.violationTracker.entries(),
-                ]),
-            };
-            fs.writeFileSync(
-                this.STATE_FILE,
-                JSON.stringify(out, null, 2),
-                'utf8'
-            );
-            this.container.logger.info('[CAMERA STATE] Saved');
-        } catch (err) {
-            this.container.logger.error(
-                '[CAMERA STATE] Save failed:',
-                err.message
-            );
+        if (this.persistTimeout) {
+            clearTimeout(this.persistTimeout);
         }
+        this.persistTimeout = setTimeout(() => {
+            try {
+                const out = {
+                    vcBannedUsers: Object.fromEntries([
+                        ...this.vcBannedUsers.entries(),
+                    ]),
+                    violationTracker: Object.fromEntries([
+                        ...this.violationTracker.entries(),
+                    ]),
+                };
+                fs.writeFileSync(
+                    this.STATE_FILE,
+                    JSON.stringify(out, null, 2),
+                    'utf8'
+                );
+                this.container.logger.info('[CAMERA STATE] Saved');
+            } catch (err) {
+                this.container.logger.error(
+                    '[CAMERA STATE] Save failed:',
+                    err.message
+                );
+            }
+        }, 1000);
     }
 
     /**
