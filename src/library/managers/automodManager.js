@@ -76,7 +76,7 @@ class AutomodManager {
             await logChannel.send({
                 embeds: [logEmbed],
             });
-            setTimeout(() => reply.delete(), 4000);
+            setTimeout(() => reply.delete().catch(() => {}), 4000);
             return false;
         }
         return true;
@@ -124,7 +124,7 @@ class AutomodManager {
             await logChannel.send({
                 embeds: [logEmbed],
             });
-            setTimeout(() => reply.delete(), 4000);
+            setTimeout(() => reply.delete().catch(() => {}), 4000);
             return false;
         }
         return true;

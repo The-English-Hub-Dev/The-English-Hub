@@ -66,4 +66,35 @@ Sentry.init({
     integrations: [new Sentry.Integrations.Http({ tracing: true })],
 });
 
+// Graceful shutdown handler
+const shutdown = async (signal) => {
+    container.logger.info(`Received ${signal}, shutting down gracefully...`);
+    
+    // Cleanup tasks intervals
+    if (container.tasks) {
+        container.tasks.cleanup();
+    }
+    
+    // Close Redis connection
+    if (container.redis) {
+        await container.redis.quit();
+        container.logger.info('Redis connection closed.');
+    }
+    
+    // Close database connection
+    if (container.db && container.db.dataSource) {
+        await container.db.dataSource.destroy();
+        container.logger.info('Database connection closed.');
+    }
+    
+    // Destroy client
+    client.destroy();
+    container.logger.info('Client destroyed.');
+    
+    process.exit(0);
+};
+
+process.on('SIGINT', () => shutdown('SIGINT'));
+process.on('SIGTERM', () => shutdown('SIGTERM'));
+
 client.login();
