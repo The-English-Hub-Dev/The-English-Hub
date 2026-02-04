@@ -41,14 +41,14 @@ class VoiceStateUpdateListener extends Listener {
      * @param { VoiceState } newState
      */
     async run(oldState, newState) {
-        // await this.handleCameraEnforcement(oldState, newState);
+        await this.handleCameraEnforcement(oldState, newState);
 
         await this.logVoicestateChange(oldState, newState);
         // await this.handleRoomTwoCreation(oldState, newState);
         // await this.handleRoomThreeCreation(oldState, newState);
     }
 
-    // ==================== CAMERA ENFORCEMENT ====================
+    // Camera Enforcement Logic
 
     /**
      * Get the text channel linked to a voice channel
@@ -101,11 +101,11 @@ class VoiceStateUpdateListener extends Listener {
         const userId = member.id;
         const inTarget = Boolean(
             newState.channelId &&
-            this.cameraOnChannelsSet.has(newState.channelId)
+                this.cameraOnChannelsSet.has(newState.channelId)
         );
         const wasInTarget = Boolean(
             oldState.channelId &&
-            this.cameraOnChannelsSet.has(oldState.channelId)
+                this.cameraOnChannelsSet.has(oldState.channelId)
         );
 
         // User joined a camera-required channel
