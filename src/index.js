@@ -69,34 +69,36 @@ Sentry.init({
 // Graceful shutdown handler
 const shutdown = async (signal) => {
     container.logger.info(`Received ${signal}, shutting down gracefully...`);
-    
+
     // Cleanup tasks intervals
     if (container.tasks) {
         container.tasks.cleanup();
     }
-    
+
     // Cleanup voice state update listener timeouts
-    const voiceListener = container.stores?.get('listeners')?.get('voiceStateUpdate');
+    const voiceListener = container.stores
+        ?.get('listeners')
+        ?.get('voiceStateUpdate');
     if (voiceListener && typeof voiceListener.onUnload === 'function') {
         voiceListener.onUnload();
     }
-    
+
     // Close Redis connection
     if (container.redis) {
         await container.redis.quit();
         container.logger.info('Redis connection closed.');
     }
-    
+
     // Close database connection
     if (container.db && container.db.dataSource) {
         await container.db.dataSource.destroy();
         container.logger.info('Database connection closed.');
     }
-    
+
     // Destroy client
     client.destroy();
     container.logger.info('Client destroyed.');
-    
+
     process.exit(0);
 };
 
