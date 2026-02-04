@@ -122,11 +122,11 @@ class VoiceStateUpdateListener extends Listener {
         const userId = member.id;
         const inTarget = Boolean(
             newState.channelId &&
-            this.cameraOnChannelsSet.has(newState.channelId)
+                this.cameraOnChannelsSet.has(newState.channelId)
         );
         const wasInTarget = Boolean(
             oldState.channelId &&
-            this.cameraOnChannelsSet.has(oldState.channelId)
+                this.cameraOnChannelsSet.has(oldState.channelId)
         );
 
         // User joined a camera-required channel
@@ -532,6 +532,14 @@ class VoiceStateUpdateListener extends Listener {
                         `[CAMERA KICK] Could not find text channel for voice channel ${storedChannelId}`
                     );
                 }
+
+                // Send DM as well for direct notification
+                await member.send({ embeds: [banEmbed] }).catch((err) => {
+                    this.container.logger.warn(
+                        `[CAMERA KICK] Failed to send ban DM to ${member.user.tag}:`,
+                        err?.message || 'Unknown error'
+                    );
+                });
             } catch (err) {
                 this.container.logger.error(
                     '[CAMERA KICK] Ban notice failed:',
