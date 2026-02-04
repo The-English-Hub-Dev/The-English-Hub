@@ -28,17 +28,31 @@ class ReadyListener extends Listener {
         const hasRebooted = await this.container.redis.hget('tasks', 'restart');
         if (hasRebooted) {
             const [channelID, restartTime] = hasRebooted.split(':');
-            this.container.client.channels.cache.get(channelID).send({
-                embeds: [
-                    new EmbedBuilder()
-                        .setDescription(
-                            `The bot restarted successfully in ${new DurationFormatter().format(
-                                Date.now() - restartTime
-                            )}`
-                        )
-                        .setColor(Colors.Green),
-                ],
-            });
+            const channel = this.container.client.channels.cache.get(channelID);
+            if (channel) {
+                await channel
+                    .send({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setDescription(
+                                    `The bot restarted successfully in ${new DurationFormatter().format(
+                                        Date.now() - restartTime
+                                    )}`
+                                )
+                                .setColor(Colors.Green),
+                        ],
+                    })
+                    .catch((err) => {
+                        this.container.logger.error(
+                            'Failed to send restart message:',
+                            err
+                        );
+                    });
+            } else {
+                this.container.logger.warn(
+                    `Restart notification channel ${channelID} not found`
+                );
+            }
             await this.container.redis.hdel('tasks', 'restart');
         }
 

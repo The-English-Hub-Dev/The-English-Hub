@@ -105,16 +105,19 @@ class Tasks {
                     const vChannel =
                         container.client.channels.cache.get(vChannelID);
                     if (!vChannel || vChannel.type !== ChannelType.GuildVoice) {
-                        return container.logger.warn(
+                        container.logger.warn(
                             `Removing VC ban task: VC unban channel not found. Voice Channel ID: ${vChannelID}`
                         );
+                        await container.redis.hdel('vcban', vcBans[i][0]);
+                        continue;
                     }
 
                     const member = await vChannel.guild.members
                         .fetch(memberID)
                         .catch(() => null);
                     if (!member) {
-                        return container.redis.hdel('vcban', vcBans[i][0]); // just delete the vc ban because this means the user left the server
+                        await container.redis.hdel('vcban', vcBans[i][0]); // just delete the vc ban because this means the user left the server
+                        continue;
                     }
 
                     await vChannel.permissionOverwrites.delete(
@@ -221,13 +224,15 @@ class Tasks {
                 const memberID = currentMutedMembers[i][0].split(':')[0];
 
                 if (expireTime - muteTime <= 0) {
-                    const member = await guild.members.fetch(memberID);
-                    // .catch(() => null);
+                    const member = await guild.members
+                        .fetch(memberID)
+                        .catch(() => null);
                     if (!member) {
-                        return container.redis.hdel(
+                        await container.redis.hdel(
                             'muted',
                             currentMutedMembers[i][0]
-                        ); // just delete the vc ban because this means the user left the server
+                        ); // just delete the mute because this means the user left the server
+                        continue;
                     }
 
                     await member.roles.remove(
@@ -257,53 +262,6 @@ class Tasks {
                         'muted',
                         currentMutedMembers[i][0]
                     );
-
-                    const logEmbed = new EmbedBuilder()
-                        .setColor(Colors.Orange)
-                        .setTitle('Mute')
-                        .setAuthor({
-                            name: member.user.tag,
-                            iconURL: member.user.avatarURL(),
-                        })
-                        .addFields(
-                            {
-                                name: 'Punishment ID',
-                                value: `\`${punishment.punishment_id}\``,
-                            },
-                            {
-                                name: 'User',
-                                value: `${member.user.tag} (${member.user.id})`,
-                            },
-                            {
-                                name: 'Moderator',
-                                value: `${message.author.tag} (${message.author.id})`,
-                            },
-                            { name: 'Reason', value: reason },
-                            {
-                                name: 'Date',
-                                value: time(
-                                    new Date(),
-                                    TimestampStyles.LongDateTime
-                                ),
-                            },
-                            {
-                                name: 'Expires',
-                                value: time(
-                                    expiry,
-                                    TimestampStyles.LongDateTime
-                                ),
-                            }
-                        )
-                        .setFooter({
-                            text: 'Moderation Logs',
-                            iconURL: message.guild.iconURL(),
-                        })
-                        .setThumbnail(this.container.client.user.avatarURL());
-
-                    const logCh = guild.channels.cache.get(logChannelID);
-                    if (!logCh) return;
-
-                    await logCh.send({ embeds: [logEmbed] });
 
                     container.logger.info(
                         `Removing mute task: Unmuted ${member.user.tag} as their mute has expired.`

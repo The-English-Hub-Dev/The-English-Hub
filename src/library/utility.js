@@ -4,7 +4,20 @@ const { Message, EmbedBuilder, Colors } = require('discord.js');
 const { staffRoles } = require('../../config.json');
 
 class Utility {
-    constructor() {}
+    constructor() {
+        // Track active timeouts for cleanup if needed
+        this.activeTimeouts = new Set();
+    }
+
+    /**
+     * Clean up all active timeouts
+     */
+    cleanup() {
+        for (const timeoutId of this.activeTimeouts) {
+            clearTimeout(timeoutId);
+        }
+        this.activeTimeouts.clear();
+    }
 
     /**
      *
@@ -47,10 +60,12 @@ class Utility {
         });
 
         // Schedule deletion of both messages independently after 5 seconds
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
+            this.activeTimeouts.delete(timeoutId);
             message.delete().catch(() => {});
             reply.delete().catch(() => {});
         }, 5000);
+        this.activeTimeouts.add(timeoutId);
     }
 
     /**

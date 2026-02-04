@@ -70,6 +70,8 @@ class Punishment {
     }
 
     async savePunishment(punishment) {
+        // Ensure database is initialized before saving
+        await container.db.ensureInitialized();
         return container.db.punishments.save(punishment);
     }
 }

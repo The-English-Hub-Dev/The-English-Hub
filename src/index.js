@@ -27,6 +27,12 @@ container.utility = new Utility();
 container.automodManager = new AutomodManager();
 container.triggerManager = new TriggerManager();
 
+// Ensure database is initialized before proceeding
+container.db.initPromise.catch((err) => {
+    container.logger.error('Failed to initialize database:', err);
+    process.exit(1);
+});
+
 const client = new SapphireClient({
     intents: [
         GatewayIntentBits.Guilds,
@@ -99,11 +105,16 @@ const shutdown = async (signal) => {
         }
 
         // Close database connection
-        if (container.db && container.db.dataSource) {
-            await container.db.dataSource.destroy().catch((err) => {
+        if (container.db && container.db.typeorm) {
+            await container.db.typeorm.destroy().catch((err) => {
                 container.logger.error('Error closing database:', err);
             });
             container.logger.info('Database connection closed.');
+        }
+
+        // Cleanup utility timeouts
+        if (container.utility) {
+            container.utility.cleanup();
         }
 
         // Destroy client

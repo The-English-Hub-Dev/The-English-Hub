@@ -100,7 +100,7 @@ class VoiceStateUpdateListener extends Listener {
         // Skip camera enforcement for admins
         if (member.permissions.has(PermissionsBitField.Flags.Administrator)) {
             this.container.logger.info(
-                'Skipping cam enforcement since user is an Administrator'
+                'Skipping camera enforcement since user is an Administrator'
             );
             return;
         }
@@ -111,7 +111,7 @@ class VoiceStateUpdateListener extends Listener {
             );
             if (hasWhitelistedRole) {
                 this.container.logger.info(
-                    'Skipping cam enforcement since user has a role on the whitelist list'
+                    'Skipping camera enforcement since user has a role on the whitelist list'
                 );
                 return;
             }

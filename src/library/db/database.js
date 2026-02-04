@@ -10,14 +10,33 @@ class Database {
             synchronize: true,
             entities: [require('./entities/PunishmentEntity').punishmentEntity],
         });
-        ds.initialize().catch((e) => console.error(e));
-
         this.typeorm = ds;
-        this.punishments = this.typeorm.getRepository('PunishmentEntity');
+        this.isInitialized = false;
+
+        // Initialize asynchronously but track state
+        this.initPromise = ds
+            .initialize()
+            .then(() => {
+                this.punishments =
+                    this.typeorm.getRepository('PunishmentEntity');
+                this.isInitialized = true;
+            })
+            .catch((e) => {
+                console.error('Database initialization failed:', e);
+                throw e;
+            });
     }
 
     async initializeDB() {
-        await this.typeorm.initialize();
+        if (!this.isInitialized) {
+            await this.initPromise;
+        }
+    }
+
+    async ensureInitialized() {
+        if (!this.isInitialized) {
+            await this.initPromise;
+        }
     }
 }
 
