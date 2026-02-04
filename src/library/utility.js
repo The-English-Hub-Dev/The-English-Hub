@@ -46,7 +46,8 @@ class Utility {
             allowedMentions: { users: [], roles: [], parse: [] },
         });
 
-        return setTimeout(() => {
+        // Schedule deletion of both messages independently after 5 seconds
+        setTimeout(() => {
             message.delete().catch(() => {});
             reply.delete().catch(() => {});
         }, 5000);
