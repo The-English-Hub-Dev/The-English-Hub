@@ -12,12 +12,12 @@ class Database {
         });
         ds.initialize().catch((e) => console.error(e));
 
-        this.typeorm = ds;
-        this.punishments = this.typeorm.getRepository('PunishmentEntity');
+        this.dataSource = ds;
+        this.punishments = this.dataSource.getRepository('PunishmentEntity');
     }
 
     async initializeDB() {
-        await this.typeorm.initialize();
+        await this.dataSource.initialize();
     }
 }
 

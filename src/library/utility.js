@@ -4,7 +4,10 @@ const { Message, EmbedBuilder, Colors } = require('discord.js');
 const { staffRoles } = require('../../config.json');
 
 class Utility {
-    constructor() {}
+    constructor() {
+        // Track timeouts for proper cleanup
+        this.timeouts = new Set();
+    }
 
     /**
      *
@@ -21,8 +24,10 @@ class Utility {
         container.logger.errorLogs.push(exception);
 
         // Keep only last 1000 errors to prevent unbounded growth
+        // Use slice instead of shift for better performance
         if (container.logger.errorLogs.length > 1000) {
-            container.logger.errorLogs.shift();
+            container.logger.errorLogs =
+                container.logger.errorLogs.slice(-1000);
         }
 
         container.logger.error(
@@ -47,10 +52,12 @@ class Utility {
         });
 
         // Schedule deletion of both messages independently after 5 seconds
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
             message.delete().catch(() => {});
             reply.delete().catch(() => {});
+            this.timeouts.delete(timeoutId);
         }, 5000);
+        this.timeouts.add(timeoutId);
     }
 
     /**
@@ -86,6 +93,18 @@ class Utility {
         return `https://hastebin.com/share/${
             (await res.json()).key
         }.${extension}`;
+    }
+
+    /**
+     * Cleanup method to prevent memory leaks
+     * Clears all pending timeouts when utility is destroyed
+     */
+    cleanup() {
+        for (const timeoutId of this.timeouts) {
+            clearTimeout(timeoutId);
+        }
+        this.timeouts.clear();
+        container.logger.info('Utility: All timeouts cleared.');
     }
 }
 

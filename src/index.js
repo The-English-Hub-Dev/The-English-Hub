@@ -82,6 +82,16 @@ const shutdown = async (signal) => {
             container.tasks.cleanup();
         }
 
+        // Cleanup automod manager timeouts
+        if (container.automodManager) {
+            container.automodManager.cleanup();
+        }
+
+        // Cleanup utility timeouts
+        if (container.utility) {
+            container.utility.cleanup();
+        }
+
         // Cleanup voice state update listener timeouts
         const voiceListener = container.stores
             ?.get('listeners')

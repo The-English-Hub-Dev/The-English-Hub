@@ -10,7 +10,10 @@ const {
 const { logChannelID, automodByRoles } = require('../../../config.json');
 
 class AutomodManager {
-    constructor() {}
+    constructor() {
+        // Track timeouts for proper cleanup
+        this.timeouts = new Set();
+    }
 
     /**
      *
@@ -76,7 +79,13 @@ class AutomodManager {
             await logChannel.send({
                 embeds: [logEmbed],
             });
-            setTimeout(() => reply.delete().catch(() => {}), 4000);
+
+            const timeoutId = setTimeout(() => {
+                reply.delete().catch(() => {});
+                this.timeouts.delete(timeoutId);
+            }, 4000);
+            this.timeouts.add(timeoutId);
+
             return false;
         }
         return true;
@@ -124,10 +133,28 @@ class AutomodManager {
             await logChannel.send({
                 embeds: [logEmbed],
             });
-            setTimeout(() => reply.delete().catch(() => {}), 4000);
+
+            const timeoutId = setTimeout(() => {
+                reply.delete().catch(() => {});
+                this.timeouts.delete(timeoutId);
+            }, 4000);
+            this.timeouts.add(timeoutId);
+
             return false;
         }
         return true;
+    }
+
+    /**
+     * Cleanup method to prevent memory leaks
+     * Clears all pending timeouts when manager is destroyed
+     */
+    cleanup() {
+        for (const timeoutId of this.timeouts) {
+            clearTimeout(timeoutId);
+        }
+        this.timeouts.clear();
+        container.logger.info('AutomodManager: All timeouts cleared.');
     }
 }
 
