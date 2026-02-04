@@ -98,14 +98,22 @@ class VoiceStateUpdateListener extends Listener {
                 : null);
         if (!member || member.user.bot) return;
 
+        // Skip camera enforcement for admins
+        if (member.permissions.has(PermissionsBitField.Flags.Administrator)) {
+            this.container.logger.info(
+                'Skipping cam enforcement since user is an Administrator'
+            );
+            return;
+        }
+
         const userId = member.id;
         const inTarget = Boolean(
             newState.channelId &&
-            this.cameraOnChannelsSet.has(newState.channelId)
+                this.cameraOnChannelsSet.has(newState.channelId)
         );
         const wasInTarget = Boolean(
             oldState.channelId &&
-            this.cameraOnChannelsSet.has(oldState.channelId)
+                this.cameraOnChannelsSet.has(oldState.channelId)
         );
 
         // User joined a camera-required channel
@@ -309,19 +317,6 @@ class VoiceStateUpdateListener extends Listener {
                     .fetch(channelId)
                     .catch(() => null);
                 if (!channel || !channel.isVoiceBased()) continue;
-
-                const member = await guild.members
-                    .fetch(userId)
-                    .catch(() => null);
-                if (
-                    member &&
-                    member.permissions.has(
-                        PermissionsBitField.Flags.Administrator
-                    )
-                ) {
-                    this.container.logger.info(`[SKIP] ${userId} is Admin`);
-                    continue;
-                }
 
                 await channel.permissionOverwrites
                     .edit(
