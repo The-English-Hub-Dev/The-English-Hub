@@ -119,39 +119,6 @@ class ReadyListener extends Listener {
                 }
             }
 
-            // Restore locks for probation users
-            for (const [
-                userId,
-                probationEnd,
-            ] of voiceListener.probationList.entries()) {
-                const remaining = probationEnd - Date.now();
-                const member = await guild.members
-                    .fetch(userId)
-                    .catch(() => null);
-
-                if (!member) {
-                    voiceListener.probationList.delete(userId);
-                    continue;
-                }
-
-                await voiceListener.lockUserAcrossCameraVCs(
-                    guild,
-                    userId,
-                    false
-                );
-
-                if (remaining > 0) {
-                    voiceListener.scheduleUnlock(userId, probationEnd, false);
-                } else {
-                    voiceListener.probationList.delete(userId);
-                    await voiceListener.unlockUserAcrossCameraVCs(
-                        guild,
-                        userId,
-                        false
-                    );
-                }
-            }
-
             voiceListener.persistState();
             this.container.logger.info(
                 '[CAMERA INIT] Locks restored successfully'

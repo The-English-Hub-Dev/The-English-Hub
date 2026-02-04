@@ -12,7 +12,6 @@ const {
     mainGuildID,
     cameraOnChannels,
     cameraWarningTimeout,
-    cameraProbationPeriod,
     cameraVCBanDuration,
     cameraMaxViolations,
     voiceStateLogChannelID,
@@ -29,7 +28,6 @@ class VoiceStateUpdateListener extends Listener {
 
         // Camera enforcement state
         this.warnedUsers = new Map();
-        this.probationList = new Map();
         this.vcBannedUsers = new Map();
         this.violationTracker = new Map();
         this.scheduledUnlocks = new Map();
@@ -122,11 +120,11 @@ class VoiceStateUpdateListener extends Listener {
         const userId = member.id;
         const inTarget = Boolean(
             newState.channelId &&
-            this.cameraOnChannelsSet.has(newState.channelId)
+                this.cameraOnChannelsSet.has(newState.channelId)
         );
         const wasInTarget = Boolean(
             oldState.channelId &&
-            this.cameraOnChannelsSet.has(oldState.channelId)
+                this.cameraOnChannelsSet.has(oldState.channelId)
         );
 
         // User joined a camera-required channel
@@ -153,35 +151,6 @@ class VoiceStateUpdateListener extends Listener {
                         .setColor(Colors.Red)
                         .setDescription(
                             `${member.user}, ban active for **${remaining} min**.\nExpires: <t:${Math.floor(ban.bannedUntil / 1000)}:R>`
-                        )
-                        .setTimestamp();
-                    await warnCh
-                        .send({ content: `${member.user}`, embeds: [embed] })
-                        .catch(() => {});
-                }
-                return;
-            }
-
-            // Check probation
-            const probEnd = this.probationList.get(userId);
-            if (probEnd && Date.now() < probEnd) {
-                this.container.logger.info(
-                    `[CAMERA ENFORCE] ${member.user.tag} on probation - evicting`
-                );
-                await this.lockUserAcrossCameraVCs(member.guild, userId, false);
-                if (member.voice && member.voice.channel) {
-                    await member.voice
-                        .disconnect('On probation')
-                        .catch(() => {});
-                }
-                const warnCh = this.getLinkedTextChannel(member.voice?.channel);
-                if (warnCh) {
-                    const remaining = Math.ceil((probEnd - Date.now()) / 60000);
-                    const embed = new EmbedBuilder()
-                        .setTitle('🔒 Probation Active')
-                        .setColor(Colors.Orange)
-                        .setDescription(
-                            `${member.user}, probation for **${remaining} min**.\nRejoin at: <t:${Math.floor(probEnd / 1000)}:R>`
                         )
                         .setTimestamp();
                     await warnCh
@@ -258,47 +227,7 @@ class VoiceStateUpdateListener extends Listener {
                     return;
                 }
 
-                // Check probation
-                const probEnd = this.probationList.get(userId);
-                if (probEnd && Date.now() < probEnd) {
-                    this.container.logger.info(
-                        `[CAMERA ENFORCE] ${member.user.tag} on probation - evicting from new VC`
-                    );
-                    await this.lockUserAcrossCameraVCs(
-                        member.guild,
-                        userId,
-                        false
-                    );
-                    if (member.voice && member.voice.channel) {
-                        await member.voice
-                            .disconnect('On probation')
-                            .catch(() => {});
-                    }
-                    const warnCh = this.getLinkedTextChannel(
-                        member.voice?.channel
-                    );
-                    if (warnCh) {
-                        const remaining = Math.ceil(
-                            (probEnd - Date.now()) / 60000
-                        );
-                        const embed = new EmbedBuilder()
-                            .setTitle('🔒 Probation Active')
-                            .setColor(Colors.Orange)
-                            .setDescription(
-                                `${member.user}, probation for **${remaining} min**.\nRejoin at: <t:${Math.floor(probEnd / 1000)}:R>`
-                            )
-                            .setTimestamp();
-                        await warnCh
-                            .send({
-                                content: `${member.user}`,
-                                embeds: [embed],
-                            })
-                            .catch(() => {});
-                    }
-                    return;
-                }
-
-                // Not banned/probation - timer continues running (no action needed)
+                // Not banned - timer continues running (no action needed)
                 // If they don't have camera, the timer that's already running will kick them
                 this.container.logger.info(
                     `[CAMERA ENFORCE] ${member.user.tag} switched camera VCs - timer continues`
@@ -320,9 +249,8 @@ class VoiceStateUpdateListener extends Listener {
     /**
      * Lock user from camera VCs
      */
-    async lockUserAcrossCameraVCs(guild, userId, isBan = false) {
+    async lockUserAcrossCameraVCs(guild, userId, isBan = true) {
         if (!guild) return;
-        const lockType = isBan ? 'BAN' : 'PROBATION';
 
         for (const channelId of this.cameraOnChannelsSet) {
             try {
@@ -344,9 +272,7 @@ class VoiceStateUpdateListener extends Listener {
                             Connect: false,
                         },
                         {
-                            reason: isBan
-                                ? `VC Ban: ${userId}`
-                                : `Probation: ${userId}`,
+                            reason: `VC Ban: ${userId}`,
                         }
                     )
                     .catch((err) => {
@@ -355,7 +281,7 @@ class VoiceStateUpdateListener extends Listener {
                         );
                     });
                 this.container.logger.info(
-                    `[${lockType}] Locked 📸 ${channel.name || channelId} || ${Array.from(this.cameraOnChannelsSet).indexOf(channelId) + 1} for ${userId}`
+                    `[BAN] Locked 📸 ${channel.name || channelId} || ${Array.from(this.cameraOnChannelsSet).indexOf(channelId) + 1} for ${userId}`
                 );
             } catch (err) {
                 this.container.logger.error(
@@ -368,9 +294,8 @@ class VoiceStateUpdateListener extends Listener {
     /**
      * Unlock user from camera VCs
      */
-    async unlockUserAcrossCameraVCs(guild, userId, isBan = false) {
+    async unlockUserAcrossCameraVCs(guild, userId, isBan = true) {
         if (!guild) return;
-        const lockType = isBan ? 'BAN' : 'PROBATION';
 
         for (const channelId of this.cameraOnChannelsSet) {
             try {
@@ -389,9 +314,7 @@ class VoiceStateUpdateListener extends Listener {
                 if (overwrite) {
                     await channel.permissionOverwrites
                         .delete(userId, {
-                            reason: isBan
-                                ? `VC Ban expired: ${userId}`
-                                : `Probation ended: ${userId}`,
+                            reason: `VC Ban expired: ${userId}`,
                         })
                         .catch((err) => {
                             this.container.logger.error(
@@ -399,7 +322,7 @@ class VoiceStateUpdateListener extends Listener {
                             );
                         });
                     this.container.logger.info(
-                        `[${lockType}] Unlocked 📸 ${channel.name || channelId} || ${Array.from(this.cameraOnChannelsSet).indexOf(channelId) + 1} for ${userId}`
+                        `[BAN] Unlocked 📸 ${channel.name || channelId} || ${Array.from(this.cameraOnChannelsSet).indexOf(channelId) + 1} for ${userId}`
                     );
                 }
             } catch (err) {
@@ -462,7 +385,7 @@ class VoiceStateUpdateListener extends Listener {
     }
 
     /**
-     * Kick user and apply probation/ban
+     * Kick user and apply ban
      */
     async kickUser(member, warningMessage = null) {
         const userId = member.id;
@@ -546,59 +469,6 @@ class VoiceStateUpdateListener extends Listener {
                     err?.message || 'Unknown error'
                 );
             }
-        } else {
-            const probationEndTime = Date.now() + cameraProbationPeriod;
-            this.probationList.set(userId, probationEndTime);
-            this.persistState();
-
-            await this.lockUserAcrossCameraVCs(member.guild, userId, false);
-            this.scheduleUnlock(userId, probationEndTime, false);
-
-            try {
-                // Use the stored channel before disconnect, then fallback to fetching
-                const voiceChannel =
-                    preDisconnectChannel ||
-                    (storedChannelId
-                        ? await member.guild.channels
-                              .fetch(storedChannelId)
-                              .catch(() => null)
-                        : null);
-
-                const warningChannel = this.getLinkedTextChannel(voiceChannel);
-                const probationMinutes = Math.ceil(
-                    cameraProbationPeriod / 60000
-                );
-                const embed = new EmbedBuilder()
-                    .setTitle('❌ Kicked - Probation Active')
-                    .setColor(0x8b0000)
-                    .setDescription(
-                        `${member.user.tag}, removed for not enabling camera.\n\n🔒 VCs locked for **${probationMinutes} min**.\nRejoin at: <t:${Math.floor(probationEndTime / 1000)}:R>\n\n⚠️ Violations: **${currentViolations}/${cameraMaxViolations}**`
-                    )
-                    .setTimestamp();
-                if (warningMessage) {
-                    await warningMessage
-                        .edit({ content: null, embeds: [embed] })
-                        .catch(() => {});
-                } else if (warningChannel) {
-                    await warningChannel
-                        .send({ content: `${member.user}`, embeds: [embed] })
-                        .catch((err) => {
-                            this.container.logger.error(
-                                '[CAMERA KICK] Probation message send failed:',
-                                err?.message || 'Unknown error'
-                            );
-                        });
-                } else {
-                    this.container.logger.warn(
-                        `[CAMERA KICK] Could not find text channel for voice channel ${storedChannelId}`
-                    );
-                }
-            } catch (err) {
-                this.container.logger.error(
-                    '[CAMERA KICK] Probation notice failed:',
-                    err?.message || 'Unknown error'
-                );
-            }
         }
 
         this.warnedUsers.delete(userId);
@@ -625,12 +495,8 @@ class VoiceStateUpdateListener extends Listener {
                     this.container.logger.warn(
                         `[CAMERA UNLOCK] Guild not found`
                     );
-                    if (isBan) {
-                        this.vcBannedUsers.delete(userId);
-                        this.violationTracker.delete(userId);
-                    } else {
-                        this.probationList.delete(userId);
-                    }
+                    this.vcBannedUsers.delete(userId);
+                    this.violationTracker.delete(userId);
                     this.persistState();
                     return;
                 }
@@ -642,34 +508,22 @@ class VoiceStateUpdateListener extends Listener {
                     this.container.logger.info(
                         `[CAMERA UNLOCK] User ${userId} not found in guild`
                     );
-                    if (isBan) {
-                        this.vcBannedUsers.delete(userId);
-                        this.violationTracker.delete(userId);
-                    } else {
-                        this.probationList.delete(userId);
-                    }
+                    this.vcBannedUsers.delete(userId);
+                    this.violationTracker.delete(userId);
                     this.persistState();
                     return;
                 }
 
                 // Remove from state
-                if (isBan) {
-                    this.vcBannedUsers.delete(userId);
-                    this.violationTracker.delete(userId);
-                } else {
-                    this.probationList.delete(userId);
-                }
+                this.vcBannedUsers.delete(userId);
+                this.violationTracker.delete(userId);
 
                 // Unlock VCs
                 await this.unlockUserAcrossCameraVCs(guild, userId, isBan);
                 this.persistState();
 
                 // Send notification
-                if (isBan) {
-                    await this.notifyVCUnban(member);
-                } else {
-                    await this.notifyProbationEnd(member);
-                }
+                await this.notifyVCUnban(member);
             } catch (err) {
                 this.container.logger.error(
                     '[CAMERA SCHEDULE UNLOCK] Error:',
@@ -817,32 +671,6 @@ class VoiceStateUpdateListener extends Listener {
     }
 
     /**
-     * Notify user probation ended
-     */
-    async notifyProbationEnd(member) {
-        try {
-            const ch = this.getLinkedTextChannel(member.voice?.channel);
-            if (!ch) return;
-            const currentViolations = this.violationTracker.get(member.id) || 0;
-            const embed = new EmbedBuilder()
-                .setTitle('🔓 Probation Ended')
-                .setColor(Colors.Orange)
-                .setDescription(
-                    `${member.user}, probation over. VCs unlocked.\n\n⚠️ Violations: **${currentViolations}/${cameraMaxViolations}**`
-                )
-                .setTimestamp();
-            await ch
-                .send({ content: `${member.user}`, embeds: [embed] })
-                .catch(() => {});
-        } catch (err) {
-            this.container.logger.error(
-                '[CAMERA NOTIFY] Probation end failed:',
-                err.message
-            );
-        }
-    }
-
-    /**
      * Notify user ban expired
      */
     async notifyVCUnban(member) {
@@ -877,11 +705,6 @@ class VoiceStateUpdateListener extends Listener {
             if (!raw) return;
             const parsed = JSON.parse(raw);
 
-            if (parsed.probationList) {
-                for (const [uid, ts] of Object.entries(parsed.probationList)) {
-                    this.probationList.set(uid, ts);
-                }
-            }
             if (parsed.vcBannedUsers) {
                 for (const [uid, data] of Object.entries(
                     parsed.vcBannedUsers
@@ -911,9 +734,6 @@ class VoiceStateUpdateListener extends Listener {
     persistState() {
         try {
             const out = {
-                probationList: Object.fromEntries([
-                    ...this.probationList.entries(),
-                ]),
                 vcBannedUsers: Object.fromEntries([
                     ...this.vcBannedUsers.entries(),
                 ]),
