@@ -196,7 +196,9 @@ class MessageCreateListener extends Listener {
             await this.container.redis.hdel('afk', message.author.id);
             await message
                 .reply('Welcome back! Your AFK status has been removed.')
-                .then((m) => setTimeout(() => m.delete(), 5000));
+                .then((m) =>
+                    setTimeout(() => m.delete().catch(() => {}), 5000)
+                );
         }
     }
 }

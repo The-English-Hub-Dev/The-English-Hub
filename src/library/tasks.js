@@ -29,6 +29,20 @@ class Tasks {
         this.initializeIntroductionAutpost();
     }
 
+    /**
+     * Cleanup all running intervals
+     * Call this on bot shutdown to prevent memory leaks
+     */
+    cleanup() {
+        Object.values(this.intervals).forEach((intervalId) => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        });
+        this.intervals = {};
+        container.logger.info('All task intervals cleared.');
+    }
+
     async initializeStatusTask() {
         const statusInterval = setInterval(() => {
             if (statusNum == 3) {

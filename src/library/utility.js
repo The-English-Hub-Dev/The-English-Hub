@@ -13,7 +13,18 @@ class Utility {
      */
     async exception(exception, type) {
         const sentryID = Sentry.captureException(exception);
+
+        // Add to error logs with size limit to prevent memory leak
+        if (!container.logger.errorLogs) {
+            container.logger.errorLogs = [];
+        }
         container.logger.errorLogs.push(exception);
+
+        // Keep only last 1000 errors to prevent unbounded growth
+        if (container.logger.errorLogs.length > 1000) {
+            container.logger.errorLogs.shift();
+        }
+
         container.logger.error(
             `${type} exception with ID ${sentryID} sent to Sentry`
         );
@@ -35,8 +46,10 @@ class Utility {
             allowedMentions: { users: [], roles: [], parse: [] },
         });
 
-        return setTimeout(() => {
-            message.delete().then(reply.delete());
+        // Schedule deletion of both messages independently after 5 seconds
+        setTimeout(() => {
+            message.delete().catch(() => {});
+            reply.delete().catch(() => {});
         }, 5000);
     }
 

@@ -1058,6 +1058,32 @@ class VoiceStateUpdateListener extends Listener {
         }
         return voiceStateLogChannel.send({ embeds: [logEmbed] });
     }
+
+    /**
+     * Cleanup method to prevent memory leaks
+     * Clears all timeouts and scheduled unlocks when listener is destroyed
+     */
+    onUnload() {
+        // Clear all warning timeouts
+        for (const [userId, warningData] of this.warnedUsers.entries()) {
+            if (warningData.timeoutId) {
+                clearTimeout(warningData.timeoutId);
+            }
+        }
+        this.warnedUsers.clear();
+
+        // Clear all scheduled unlocks
+        for (const [userId, timeoutId] of this.scheduledUnlocks.entries()) {
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+        }
+        this.scheduledUnlocks.clear();
+
+        this.container.logger.info(
+            '[CAMERA CLEANUP] All timeouts and scheduled unlocks cleared'
+        );
+    }
 }
 
 module.exports = { VoiceStateUpdateListener };

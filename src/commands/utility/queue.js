@@ -92,12 +92,14 @@ class QueueCommand extends Command {
             await m.edit({ embeds: [newEmbed] });
             return message
                 .reply('Queue restored from ID!')
-                .then((m) => setTimeout(() => m.delete(), 5000));
+                .then((m) =>
+                    setTimeout(() => m.delete().catch(() => {}), 5000)
+                );
         }
 
         await message
             .reply('Queue created!')
-            .then((m) => setTimeout(() => m.delete(), 5000));
+            .then((m) => setTimeout(() => m.delete().catch(() => {}), 5000));
 
         return true;
     }
