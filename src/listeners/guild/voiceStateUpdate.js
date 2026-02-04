@@ -120,11 +120,11 @@ class VoiceStateUpdateListener extends Listener {
         const userId = member.id;
         const inTarget = Boolean(
             newState.channelId &&
-                this.cameraOnChannelsSet.has(newState.channelId)
+            this.cameraOnChannelsSet.has(newState.channelId)
         );
         const wasInTarget = Boolean(
             oldState.channelId &&
-                this.cameraOnChannelsSet.has(oldState.channelId)
+            this.cameraOnChannelsSet.has(oldState.channelId)
         );
 
         // User joined a camera-required channel
