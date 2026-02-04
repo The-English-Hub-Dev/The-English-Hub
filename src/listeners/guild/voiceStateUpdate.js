@@ -16,7 +16,7 @@ const {
     cameraVCBanDuration,
     cameraMaxViolations,
     voiceStateLogChannelID,
-    cameraWhitelistedRoles
+    cameraWhitelistedRoles,
 } = require('../../../config.json');
 
 class VoiceStateUpdateListener extends Listener {
@@ -108,7 +108,7 @@ class VoiceStateUpdateListener extends Listener {
         }
         // Check if user has whitelisted role
         if (cameraWhitelistedRoles && cameraWhitelistedRoles.length > 0) {
-            const hasWhitelistedRole = member.roles.cache.some(role => 
+            const hasWhitelistedRole = member.roles.cache.some((role) =>
                 cameraWhitelistedRoles.includes(role.id)
             );
             if (hasWhitelistedRole) {
