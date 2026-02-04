@@ -75,6 +75,12 @@ const shutdown = async (signal) => {
         container.tasks.cleanup();
     }
     
+    // Cleanup voice state update listener timeouts
+    const voiceListener = container.stores?.get('listeners')?.get('voiceStateUpdate');
+    if (voiceListener && typeof voiceListener.onUnload === 'function') {
+        voiceListener.onUnload();
+    }
+    
     // Close Redis connection
     if (container.redis) {
         await container.redis.quit();
