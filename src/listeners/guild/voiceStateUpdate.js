@@ -16,6 +16,7 @@ const {
     cameraVCBanDuration,
     cameraMaxViolations,
     voiceStateLogChannelID,
+    cameraWhitelistedRoles
 } = require('../../../config.json');
 
 class VoiceStateUpdateListener extends Listener {
@@ -104,6 +105,18 @@ class VoiceStateUpdateListener extends Listener {
                 'Skipping cam enforcement since user is an Administrator'
             );
             return;
+        }
+        // Check if user has whitelisted role
+        if (cameraWhitelistedRoles && cameraWhitelistedRoles.length > 0) {
+            const hasWhitelistedRole = member.roles.cache.some(role => 
+                cameraWhitelistedRoles.includes(role.id)
+            );
+            if (hasWhitelistedRole) {
+                this.container.logger.info(
+                    'Skipping cam enforcement since user has a role on the whitelist list'
+                );
+                return;
+            }
         }
 
         const userId = member.id;

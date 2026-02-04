@@ -45,8 +45,9 @@
         "1028003432222699560",
         "1451608549724786718"
     ],
-    "cameraWarningTimeout": 15000,
-    "cameraProbationPeriod": 60000,
+    "cameraWarningTimeout": 25000,
+    "cameraProbationPeriod": 30000,
     "cameraVCBanDuration": 1800000,
-    "cameraMaxViolations": 3
+    "cameraMaxViolations": 3,
+    "cameraWhitelistedRoles": ["852814479569059840"]
 }
