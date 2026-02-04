@@ -328,7 +328,12 @@ class VoiceStateUpdateListener extends Listener {
             try {
                 const channel = await this.container.client.channels
                     .fetch(channelId)
-                    .catch(() => null);
+                    .catch((err) => {
+                        this.container.logger.warn(
+                            `[LOCK ERROR] Failed to fetch channel ${channelId}: ${err?.message}`
+                        );
+                        return null;
+                    });
                 if (!channel || !channel.isVoiceBased()) continue;
 
                 await channel.permissionOverwrites
@@ -346,16 +351,15 @@ class VoiceStateUpdateListener extends Listener {
                     )
                     .catch((err) => {
                         this.container.logger.error(
-                            `[LOCK ERROR] ${channelId}: ${err?.message}`
+                            `[LOCK ERROR] Failed to edit overwrite for ${channelId} (${channel?.name}): ${err?.message}`
                         );
                     });
                 this.container.logger.info(
-                    `[${lockType}] Locked ${channel.name || channelId} for ${userId}`
+                    `[${lockType}] Locked 📸 ${channel.name || channelId} || ${Array.from(this.cameraOnChannelsSet).indexOf(channelId) + 1} for ${userId}`
                 );
             } catch (err) {
                 this.container.logger.error(
-                    `[LOCK ERROR] ${channelId}:`,
-                    err.message
+                    `[LOCK ERROR] ${channelId}: ${err?.message}`
                 );
             }
         }
@@ -372,7 +376,12 @@ class VoiceStateUpdateListener extends Listener {
             try {
                 const channel = await this.container.client.channels
                     .fetch(channelId)
-                    .catch(() => null);
+                    .catch((err) => {
+                        this.container.logger.warn(
+                            `[UNLOCK ERROR] Failed to fetch channel ${channelId}: ${err?.message}`
+                        );
+                        return null;
+                    });
                 if (!channel || !channel.isVoiceBased()) continue;
 
                 const overwrite =
@@ -386,17 +395,16 @@ class VoiceStateUpdateListener extends Listener {
                         })
                         .catch((err) => {
                             this.container.logger.error(
-                                `[UNLOCK ERROR] ${channelId}: ${err?.message}`
+                                `[UNLOCK ERROR] Failed to delete overwrite for ${channelId} (${channel?.name}): ${err?.message}`
                             );
                         });
                     this.container.logger.info(
-                        `[${lockType}] Unlocked ${channel.name || channelId} for ${userId}`
+                        `[${lockType}] Unlocked 📸 ${channel.name || channelId} || ${Array.from(this.cameraOnChannelsSet).indexOf(channelId) + 1} for ${userId}`
                     );
                 }
             } catch (err) {
                 this.container.logger.error(
-                    `[UNLOCK ERROR] ${channelId}:`,
-                    err.message
+                    `[UNLOCK ERROR] ${channelId}: ${err?.message}`
                 );
             }
         }
@@ -466,6 +474,9 @@ class VoiceStateUpdateListener extends Listener {
         this.violationTracker.set(userId, currentViolations);
         this.persistState();
 
+        // Store the channel before disconnecting
+        const preDisconnectChannel = member.voice?.channel;
+
         if (member.voice && member.voice.channel) {
             await member.voice
                 .disconnect('Failed to enable camera')
@@ -484,8 +495,9 @@ class VoiceStateUpdateListener extends Listener {
             this.scheduleUnlock(userId, bannedUntil, true);
 
             try {
+                // Use the stored channel before disconnect, then fallback to fetching
                 const voiceChannel =
-                    member.voice?.channel ||
+                    preDisconnectChannel ||
                     (storedChannelId
                         ? await member.guild.channels
                               .fetch(storedChannelId)
@@ -509,12 +521,21 @@ class VoiceStateUpdateListener extends Listener {
                 } else if (warningChannel) {
                     await warningChannel
                         .send({ content: `${member.user}`, embeds: [banEmbed] })
-                        .catch(() => {});
+                        .catch((err) => {
+                            this.container.logger.error(
+                                '[CAMERA KICK] Ban message send failed:',
+                                err?.message || 'Unknown error'
+                            );
+                        });
+                } else {
+                    this.container.logger.warn(
+                        `[CAMERA KICK] Could not find text channel for voice channel ${storedChannelId}`
+                    );
                 }
             } catch (err) {
                 this.container.logger.error(
                     '[CAMERA KICK] Ban notice failed:',
-                    err.message
+                    err?.message || 'Unknown error'
                 );
             }
         } else {
@@ -526,8 +547,9 @@ class VoiceStateUpdateListener extends Listener {
             this.scheduleUnlock(userId, probationEndTime, false);
 
             try {
+                // Use the stored channel before disconnect, then fallback to fetching
                 const voiceChannel =
-                    member.voice?.channel ||
+                    preDisconnectChannel ||
                     (storedChannelId
                         ? await member.guild.channels
                               .fetch(storedChannelId)
@@ -552,12 +574,21 @@ class VoiceStateUpdateListener extends Listener {
                 } else if (warningChannel) {
                     await warningChannel
                         .send({ content: `${member.user}`, embeds: [embed] })
-                        .catch(() => {});
+                        .catch((err) => {
+                            this.container.logger.error(
+                                '[CAMERA KICK] Probation message send failed:',
+                                err?.message || 'Unknown error'
+                            );
+                        });
+                } else {
+                    this.container.logger.warn(
+                        `[CAMERA KICK] Could not find text channel for voice channel ${storedChannelId}`
+                    );
                 }
             } catch (err) {
                 this.container.logger.error(
                     '[CAMERA KICK] Probation notice failed:',
-                    err.message
+                    err?.message || 'Unknown error'
                 );
             }
         }
