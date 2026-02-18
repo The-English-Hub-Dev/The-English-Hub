@@ -81,8 +81,8 @@ class ReadyListener extends Listener {
                 return;
             }
 
-            // Load state from file
-            voiceListener.loadState();
+            // Load state from Redis
+            await voiceListener.loadState();
 
             const guild = await this.container.client.guilds
                 .fetch(mainGuildID)

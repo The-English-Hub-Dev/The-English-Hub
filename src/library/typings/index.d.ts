@@ -9,7 +9,7 @@ import { ILogger } from '@sapphire/plugin-logger';
 import { Duration } from '@sapphire/time-utilities';
 import { GuildMember, Guild, Message, User } from 'discord.js';
 import { Database } from '../db/database';
-import { RedisCommander } from 'ioredis';
+import { Redis } from 'ioredis';
 import { Punishments } from '../punishments';
 import { Utility } from '../utility';
 import { AutomodManager } from '../managers/automodManager';
@@ -20,7 +20,7 @@ declare module '@sapphire/pieces' {
     interface Container {
         client: SapphireClient;
         utility: Utility;
-        redis: RedisCommander;
+        redis: Redis;
         db: Database;
         punishments: Punishments;
         stores: StoreRegistry;

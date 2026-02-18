@@ -6,8 +6,6 @@ const {
     Colors,
     PermissionsBitField,
 } = require('discord.js');
-const fs = require('fs');
-const path = require('path');
 const {
     mainGuildID,
     cameraOnChannels,
@@ -32,7 +30,6 @@ class VoiceStateUpdateListener extends Listener {
         this.violationTracker = new Map();
         this.scheduledUnlocks = new Map();
         this.cameraOnChannelsSet = new Set(cameraOnChannels || []);
-        this.STATE_FILE = path.resolve(__dirname, '../../../vc_state.json');
         this.persistTimeout = null;
     }
 
@@ -121,11 +118,11 @@ class VoiceStateUpdateListener extends Listener {
         const userId = member.id;
         const inTarget = Boolean(
             newState.channelId &&
-            this.cameraOnChannelsSet.has(newState.channelId)
+                this.cameraOnChannelsSet.has(newState.channelId)
         );
         const wasInTarget = Boolean(
             oldState.channelId &&
-            this.cameraOnChannelsSet.has(oldState.channelId)
+                this.cameraOnChannelsSet.has(oldState.channelId)
         );
 
         // User joined a camera-required channel
@@ -719,30 +716,47 @@ class VoiceStateUpdateListener extends Listener {
     }
 
     /**
-     * Load state from file
+     * Load state from Redis
      */
-    loadState() {
+    async loadState() {
         try {
-            if (!fs.existsSync(this.STATE_FILE)) return;
-            const raw = fs.readFileSync(this.STATE_FILE, 'utf8');
-            if (!raw) return;
-            const parsed = JSON.parse(raw);
+            const vcBannedUsersData = await this.container.redis.hgetall(
+                'camera:vcBannedUsers'
+            );
+            const violationTrackerData = await this.container.redis.hgetall(
+                'camera:violationTracker'
+            );
 
-            if (parsed.vcBannedUsers) {
-                for (const [uid, data] of Object.entries(
-                    parsed.vcBannedUsers
+            if (vcBannedUsersData) {
+                for (const [uid, dataStr] of Object.entries(
+                    vcBannedUsersData
                 )) {
-                    this.vcBannedUsers.set(uid, data);
+                    try {
+                        const data = JSON.parse(dataStr);
+                        this.vcBannedUsers.set(uid, data);
+                    } catch (e) {
+                        this.container.logger.warn(
+                            `[CAMERA STATE] Failed to parse vcBannedUsers data for ${uid}:`,
+                            e.message
+                        );
+                    }
                 }
             }
-            if (parsed.violationTracker) {
-                for (const [uid, count] of Object.entries(
-                    parsed.violationTracker
+
+            if (violationTrackerData) {
+                for (const [uid, countStr] of Object.entries(
+                    violationTrackerData
                 )) {
-                    this.violationTracker.set(uid, count);
+                    const count = parseInt(countStr, 10);
+                    if (!isNaN(count)) {
+                        this.violationTracker.set(uid, count);
+                    }
                 }
             }
-            this.container.logger.info('[CAMERA STATE] Loaded');
+
+            this.container.logger.info(
+                `[CAMERA STATE] Loaded from Redis - ${this.vcBannedUsers.size} bans, ${this.violationTracker.size} violations`
+            );
         } catch (err) {
             this.container.logger.warn(
                 '[CAMERA STATE] Load failed:',
@@ -752,28 +766,45 @@ class VoiceStateUpdateListener extends Listener {
     }
 
     /**
-     * Persist state to file (debounced to prevent race conditions)
+     * Persist state to Redis (debounced to prevent excessive writes)
      */
     persistState() {
         if (this.persistTimeout) {
             clearTimeout(this.persistTimeout);
         }
-        this.persistTimeout = setTimeout(() => {
+        this.persistTimeout = setTimeout(async () => {
             try {
-                const out = {
-                    vcBannedUsers: Object.fromEntries([
-                        ...this.vcBannedUsers.entries(),
-                    ]),
-                    violationTracker: Object.fromEntries([
-                        ...this.violationTracker.entries(),
-                    ]),
-                };
-                fs.writeFileSync(
-                    this.STATE_FILE,
-                    JSON.stringify(out, null, 2),
-                    'utf8'
+                const pipeline = this.container.redis.pipeline();
+
+                // Clear existing data
+                pipeline.del('camera:vcBannedUsers');
+                pipeline.del('camera:violationTracker');
+
+                // Save vcBannedUsers
+                if (this.vcBannedUsers.size > 0) {
+                    const vcBannedData = {};
+                    for (const [uid, data] of this.vcBannedUsers.entries()) {
+                        vcBannedData[uid] = JSON.stringify(data);
+                    }
+                    pipeline.hmset('camera:vcBannedUsers', vcBannedData);
+                }
+
+                // Save violationTracker
+                if (this.violationTracker.size > 0) {
+                    const violationData = {};
+                    for (const [
+                        uid,
+                        count,
+                    ] of this.violationTracker.entries()) {
+                        violationData[uid] = count.toString();
+                    }
+                    pipeline.hmset('camera:violationTracker', violationData);
+                }
+
+                await pipeline.exec();
+                this.container.logger.info(
+                    `[CAMERA STATE] Saved to Redis - ${this.vcBannedUsers.size} bans, ${this.violationTracker.size} violations`
                 );
-                this.container.logger.info('[CAMERA STATE] Saved');
             } catch (err) {
                 this.container.logger.error(
                     '[CAMERA STATE] Save failed:',
@@ -974,6 +1005,12 @@ class VoiceStateUpdateListener extends Listener {
             }
         }
         this.scheduledUnlocks.clear();
+
+        // Clear persist timeout to prevent memory leak
+        if (this.persistTimeout) {
+            clearTimeout(this.persistTimeout);
+            this.persistTimeout = null;
+        }
 
         this.container.logger.info(
             '[CAMERA CLEANUP] All timeouts and scheduled unlocks cleared'
