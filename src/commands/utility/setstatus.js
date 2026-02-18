@@ -1,6 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Message, EmbedBuilder } = require('discord.js');
+const { Message, EmbedBuilder, ActivityType } = require('discord.js');
 
 class SetstatusCommand extends Command {
     constructor(context, options) {
@@ -33,13 +33,19 @@ class SetstatusCommand extends Command {
                 'Please provide a status to set.'
             );
 
-        // Clear the existing status interval if it exists
+        const actTypes = {
+            playing: ActivityType.Playing,
+            watching: ActivityType.Watching,
+            listening: ActivityType.Listening,
+            competing: ActivityType.Competing,
+        };
+
         if (this.container.intervals?.status) {
             clearInterval(this.container.intervals.status);
         }
 
         this.container.client.user.setActivity(status.unwrap(), {
-            type: type.toUpperCase(),
+            type: actTypes[type],
         });
 
         return message.reply(
