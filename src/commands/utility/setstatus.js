@@ -33,7 +33,11 @@ class SetstatusCommand extends Command {
                 'Please provide a status to set.'
             );
 
-        clearInterval(this.container.intervals.status);
+        // Clear the existing status interval if it exists
+        if (this.container.intervals?.status) {
+            clearInterval(this.container.intervals.status);
+        }
+        
         this.container.client.user.setActivity(status.unwrap(), {
             type: type.toUpperCase(),
         });

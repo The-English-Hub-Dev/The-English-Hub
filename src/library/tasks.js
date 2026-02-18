@@ -22,6 +22,9 @@ class Tasks {
     }
 
     async initializeTasks() {
+        // Make intervals accessible from container
+        container.intervals = this.intervals;
+
         await this.initializeStatusTask();
         await this.initializeHealthcheck();
         await this.initializeVcUnbanTask();
