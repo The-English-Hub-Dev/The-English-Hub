@@ -37,7 +37,7 @@ class SetstatusCommand extends Command {
         if (this.container.intervals?.status) {
             clearInterval(this.container.intervals.status);
         }
-        
+
         this.container.client.user.setActivity(status.unwrap(), {
             type: type.toUpperCase(),
         });
