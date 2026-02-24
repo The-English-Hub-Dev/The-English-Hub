@@ -96,33 +96,24 @@ class VoiceStateUpdateListener extends Listener {
         if (!member || member.user.bot) return;
 
         // Skip camera enforcement for admins
-        if (member.permissions.has(PermissionsBitField.Flags.Administrator)) {
-            this.container.logger.info(
-                'Skipping camera enforcement since user is an Administrator'
-            );
+        if (member.permissions.has(PermissionsBitField.Flags.Administrator))
             return;
-        }
         // Check if user has whitelisted role
         if (cameraWhitelistedRoles && cameraWhitelistedRoles.length > 0) {
             const hasWhitelistedRole = member.roles.cache.some((role) =>
                 cameraWhitelistedRoles.includes(role.id)
             );
-            if (hasWhitelistedRole) {
-                this.container.logger.info(
-                    'Skipping camera enforcement since user has a role on the whitelist list'
-                );
-                return;
-            }
+            if (hasWhitelistedRole) return;
         }
 
         const userId = member.id;
         const inTarget = Boolean(
             newState.channelId &&
-            this.cameraOnChannelsSet.has(newState.channelId)
+                this.cameraOnChannelsSet.has(newState.channelId)
         );
         const wasInTarget = Boolean(
             oldState.channelId &&
-            this.cameraOnChannelsSet.has(oldState.channelId)
+                this.cameraOnChannelsSet.has(oldState.channelId)
         );
 
         // User joined a camera-required channel
