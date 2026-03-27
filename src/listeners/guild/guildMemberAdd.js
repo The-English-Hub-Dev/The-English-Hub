@@ -23,7 +23,7 @@ class GuildMemberAddListener extends Listener {
      * @param { GuildMember } member
      */
     async run(member) {
-        // await this.welcomeMember(member);
+        await this.welcomeMember(member);
         await this.checkMilestone(member);
         await this.sendWelcomeDM(member);
     }
@@ -36,7 +36,7 @@ class GuildMemberAddListener extends Listener {
         const channel = member.guild.channels.cache.get(welcomeChannel);
         if (!channel || channel.type !== ChannelType.GuildText) return;
         return channel.send({
-            content: `Hello ${member}, Welcome to the server!`,
+            content: `Greetings ${member} and welcome to the English Hub, the most prestigious English learning server on discord! We're happy to have you here, feel free to check out (insert relevant channels and VCs) and enjoy your stay.`,
             allowedMentions: { users: [member.id], roles: [], parse: [] },
         });
     }
