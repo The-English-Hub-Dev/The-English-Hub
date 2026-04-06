@@ -46,7 +46,7 @@ jobs:
         steps:
             - name: Send restart signal via api to server
               id: sendapireq
-              uses: fjogeleit/http-request-action@v1
+              uses: fjogeleit/http-request-action@v2
               with:
                   url: ${{ secrets.SH_SERVER_URL }}
                   method: 'POST'
