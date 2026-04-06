@@ -33,7 +33,7 @@
         "@sentry/node": "^7.120.4",
         "@sentry/tracing": "^7.120.4",
         "canvas": "^3.2.0",
-        "discord.js": "^14.24.2",
+        "discord.js": "^14.26.2",
         "ioredis": "^5.8.2",
         "pg": "^8.16.3",
         "reflect-metadata": "^0.2.2",
