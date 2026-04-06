@@ -9,6 +9,7 @@ const {
     TimestampStyles,
     ButtonStyle,
     PermissionFlagsBits,
+    MessageFlags,
 } = require('discord.js');
 const { logChannelID } = require('../../../config.json');
 
@@ -87,7 +88,7 @@ class RemovepunishmentCommand extends Command {
             if (interaction.user.id === message.author.id) return true;
             return interaction.reply({
                 content: 'This embed is not for you.',
-                ephemeral: true,
+                flags: MessageFlags.Ephemeral,
             });
         };
 

@@ -2,7 +2,12 @@ const {
     InteractionHandler,
     InteractionHandlerTypes,
 } = require('@sapphire/framework');
-const { ButtonInteraction, EmbedBuilder, Colors } = require('discord.js');
+const {
+    ButtonInteraction,
+    EmbedBuilder,
+    Colors,
+    MessageFlags,
+} = require('discord.js');
 
 class DefineButtonHandler extends InteractionHandler {
     constructor(ctx) {
@@ -218,7 +223,7 @@ class DefineButtonHandler extends InteractionHandler {
     async parse(interaction) {
         if (!interaction.customId.startsWith('define:')) return this.none();
 
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         return this.some();
     }
 }

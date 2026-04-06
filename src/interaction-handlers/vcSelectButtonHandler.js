@@ -8,6 +8,7 @@ const {
     Colors,
     ChannelType,
     PermissionFlagsBits,
+    MessageFlags,
 } = require('discord.js');
 
 class VcSelectButtonHandler extends InteractionHandler {
@@ -70,7 +71,7 @@ class VcSelectButtonHandler extends InteractionHandler {
     async parse(interaction) {
         if (!interaction.customId.startsWith('vcselect:')) return this.none();
 
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         return this.some(interaction.customId.split(':')[1]);
     }
 }

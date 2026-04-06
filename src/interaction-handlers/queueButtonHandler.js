@@ -2,7 +2,12 @@ const {
     InteractionHandler,
     InteractionHandlerTypes,
 } = require('@sapphire/framework');
-const { ButtonInteraction, EmbedBuilder, Colors } = require('discord.js');
+const {
+    ButtonInteraction,
+    EmbedBuilder,
+    Colors,
+    MessageFlags,
+} = require('discord.js');
 const { eventManagerRoles, staffRoles } = require('../../config.json');
 
 class QueueButtonHandler extends InteractionHandler {
@@ -28,7 +33,6 @@ class QueueButtonHandler extends InteractionHandler {
                 if (alreadyJoined !== null)
                     return interaction.editReply({
                         content: 'You have already joined this queue!',
-                        ephemeral: true,
                     });
                 await this.container.redis.lpush(
                     `queue_${queueId}`,
@@ -39,14 +43,12 @@ class QueueButtonHandler extends InteractionHandler {
                 return interaction.editReply({
                     content:
                         'You have successfully joined this queue! Use the `Leave` button if you would like to leave.',
-                    ephemeral: true,
                 });
             case 'leave':
                 if (alreadyJoined === null) {
                     return interaction.editReply({
                         content:
                             'You have not joined this queue! Use the `Join` button if you would like to join.',
-                        ephemeral: true,
                     });
                 }
                 await this.container.redis.lrem(
@@ -59,7 +61,6 @@ class QueueButtonHandler extends InteractionHandler {
                 return interaction.editReply({
                     content:
                         'You have successfully left this queue! Use the `Join` button if you would like to join again.',
-                    ephemeral: true,
                 });
             case 'clear':
                 if (
@@ -73,7 +74,6 @@ class QueueButtonHandler extends InteractionHandler {
                     return interaction.editReply({
                         content:
                             'You do not have permission to clear this queue!',
-                        ephemeral: true,
                     });
                 }
                 await this.container.redis.del(`queue_${queueId}`);
@@ -81,7 +81,6 @@ class QueueButtonHandler extends InteractionHandler {
 
                 return interaction.editReply({
                     content: 'You have successfully cleared this queue!',
-                    ephemeral: true,
                 });
             default:
                 break;
@@ -129,7 +128,7 @@ class QueueButtonHandler extends InteractionHandler {
     async parse(interaction) {
         if (!interaction.customId.startsWith('queue:')) return this.none();
 
-        await interaction.deferReply({ ephemeral: true });
+        await interaction.deferReply({ flags: MessageFlags.Ephemeral });
         return this.some();
     }
 }
