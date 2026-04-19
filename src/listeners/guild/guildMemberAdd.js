@@ -49,7 +49,7 @@ Feel free to check out: ⁠
 
 **Have fun and enjoy your stay!**
 
-\- The English Hub <a:enghub:932293018185244742>
+- The English Hub <a:enghub:932293018185244742>
 _ _
 _ _`,
             allowedMentions: { users: [member.id], roles: [], parse: [] },
