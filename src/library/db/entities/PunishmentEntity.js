@@ -66,13 +66,19 @@ class Punishment {
         this.type = type;
         this.expiration = expiration;
 
-        this.savePunishment(punishment);
+        this._record = punishment;
     }
 
-    async savePunishment(punishment) {
+    static async create(modID, uID, reason, type, expiration = null) {
+        const punishment = new Punishment(modID, uID, reason, type, expiration);
+        await punishment.savePunishment();
+        return punishment;
+    }
+
+    async savePunishment() {
         // Ensure database is initialized before saving
         await container.db.ensureInitialized();
-        return container.db.punishments.save(punishment);
+        return container.db.punishments.save(this._record);
     }
 }
 

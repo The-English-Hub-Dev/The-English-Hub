@@ -56,7 +56,7 @@ class NoteCommand extends Command {
             );
         }
 
-        const punishment = new Punishment(
+        const punishment = await Punishment.create(
             message.author.id,
             member.id,
             reason,

@@ -66,7 +66,7 @@ class BanCommand extends Command {
 
         if (message.deletable) await message.delete();
 
-        const punishment = new Punishment(
+        const punishment = await Punishment.create(
             message.author.id,
             member.user.id,
             reason,

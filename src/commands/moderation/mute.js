@@ -103,7 +103,7 @@ class MuteCommand extends Command {
             expiry
         );
 
-        const punishment = new Punishment(
+        const punishment = await Punishment.create(
             message.author.id,
             member.id,
             reason,
