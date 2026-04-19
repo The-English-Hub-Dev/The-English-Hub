@@ -36,7 +36,22 @@ class GuildMemberAddListener extends Listener {
         const channel = member.guild.channels.cache.get(welcomeChannel);
         if (!channel || channel.type !== ChannelType.GuildText) return;
         return channel.send({
-            content: `Greetings ${member} and welcome to the English Hub, the most prestigious English learning server on discord! We're happy to have you here, feel free to check out (insert relevant channels and VCs) and enjoy your stay.`,
+            content: `_ _
+**Greetings <:bkermsleep:1045589641899823134> ${member}**   
+
+Welcome to The English Hub, the most prestigious English learning server on discord! We're happy to have you here.
+
+Feel free to check out: ⁠
+
+<#852829236662370324> 
+<#852790844100444191> 
+<#852806317163937823> 
+
+**Have fun and enjoy your stay!**
+
+\- The English Hub <a:enghub:932293018185244742>
+_ _
+_ _`,
             allowedMentions: { users: [member.id], roles: [], parse: [] },
         });
     }
