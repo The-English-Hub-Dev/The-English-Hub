@@ -19,6 +19,25 @@ let statusNum = 1;
 class Tasks {
     constructor() {
         this.intervals = {};
+        this.runningTasks = {
+            healthCheck: false,
+            vcUnban: false,
+            autoUnmute: false,
+            introAutopost: false,
+        };
+    }
+
+    async runWithLock(lockName, taskFn) {
+        if (this.runningTasks[lockName]) return;
+        this.runningTasks[lockName] = true;
+
+        try {
+            await taskFn();
+        } catch (err) {
+            container.logger.error(`[TASK ${lockName}] Failed:`, err);
+        } finally {
+            this.runningTasks[lockName] = false;
+        }
     }
 
     async initializeTasks() {
@@ -87,8 +106,17 @@ class Tasks {
             return;
         }
         const healthCheckInterval = setInterval(async () => {
-            await fetch(process.env.HEALTHCHECK_URL, {
-                method: 'POST',
+            await this.runWithLock('healthCheck', async () => {
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                try {
+                    await fetch(process.env.HEALTHCHECK_URL, {
+                        method: 'POST',
+                        signal: controller.signal,
+                    });
+                } finally {
+                    clearTimeout(timeoutId);
+                }
             });
         }, 120000);
 
@@ -98,99 +126,108 @@ class Tasks {
 
     async initializeVcUnbanTask() {
         const vcUnbanInterval = setInterval(async () => {
-            const vcBans = Object.entries(
-                await container.redis.hgetall('vcban')
-            );
-            for (var i = 0; i < vcBans.length; i++) {
-                const [vChannelID, memberID] = vcBans[i][0].split(':');
-                const banTime = Number(vcBans[i][1]);
-                if (Date.now() - banTime > Time.Day) {
-                    const vChannel =
-                        container.client.channels.cache.get(vChannelID);
-                    if (!vChannel || vChannel.type !== ChannelType.GuildVoice) {
-                        container.logger.warn(
-                            `Removing VC ban task: VC unban channel not found. Voice Channel ID: ${vChannelID}`
+            await this.runWithLock('vcUnban', async () => {
+                const vcBans = Object.entries(
+                    await container.redis.hgetall('vcban')
+                );
+                for (let i = 0; i < vcBans.length; i++) {
+                    const [vChannelID, memberID] = vcBans[i][0].split(':');
+                    const banTime = Number(vcBans[i][1]);
+                    if (Date.now() - banTime > Time.Day) {
+                        const vChannel =
+                            container.client.channels.cache.get(vChannelID);
+                        if (
+                            !vChannel ||
+                            vChannel.type !== ChannelType.GuildVoice
+                        ) {
+                            container.logger.warn(
+                                `Removing VC ban task: VC unban channel not found. Voice Channel ID: ${vChannelID}`
+                            );
+                            await container.redis.hdel('vcban', vcBans[i][0]);
+                            continue;
+                        }
+
+                        const member = await vChannel.guild.members
+                            .fetch(memberID)
+                            .catch(() => null);
+                        if (!member) {
+                            await container.redis.hdel('vcban', vcBans[i][0]);
+                            continue;
+                        }
+
+                        await vChannel.permissionOverwrites.delete(
+                            member,
+                            `Auto removing vc ban after 24 hours.`
                         );
+
+                        const dmEmbed = new EmbedBuilder()
+                            .setColor(Colors.DarkGreen)
+                            .setTitle(
+                                `You were unbanned from the vc ${vChannel}`
+                            )
+                            .setAuthor({
+                                name: vChannel.guild.name,
+                                iconURL: vChannel.guild.iconURL(),
+                            })
+                            .setDescription(
+                                `You can now join and chat in ${vChannel} again since 24 hours have passed. Make sure not to break any rules to prevent further action.`
+                            )
+                            .setFooter({
+                                text: vChannel.guild.name,
+                                iconURL: vChannel.guild.iconURL(),
+                            })
+                            .setTimestamp();
+
+                        await member
+                            .send({ embeds: [dmEmbed] })
+                            .catch(() => {});
+
                         await container.redis.hdel('vcban', vcBans[i][0]);
-                        continue;
+
+                        const logEmbed = new EmbedBuilder()
+                            .setColor(Colors.DarkGreen)
+                            .setTitle('VC Unban')
+                            .setAuthor({
+                                name: member.user.tag,
+                                iconURL: member.user.avatarURL(),
+                            })
+                            .addFields(
+                                {
+                                    name: 'User',
+                                    value: `${member.user.tag} (${member.user.id})`,
+                                },
+                                {
+                                    name: 'Moderator',
+                                    value: `${container.client.user.tag} (${container.client.user.id})`,
+                                },
+                                {
+                                    name: 'Reason',
+                                    value: `Auto VC unban after 24 hours.`,
+                                },
+                                {
+                                    name: 'Date',
+                                    value: time(
+                                        new Date(),
+                                        TimestampStyles.LongDateTime
+                                    ),
+                                }
+                            )
+                            .setFooter({
+                                text: 'Moderation Logs',
+                                iconURL: member.guild.iconURL(),
+                            })
+                            .setThumbnail(container.client.user.avatarURL());
+
+                        const logCh =
+                            member.guild.channels.cache.get(vcbanlogChannelID);
+                        if (logCh) await logCh.send({ embeds: [logEmbed] });
+
+                        container.logger.info(
+                            `Removing VC ban task: Unbanned ${member.user.tag} from ${vChannel.name} after 24 hours.`
+                        );
                     }
-
-                    const member = await vChannel.guild.members
-                        .fetch(memberID)
-                        .catch(() => null);
-                    if (!member) {
-                        await container.redis.hdel('vcban', vcBans[i][0]); // just delete the vc ban because this means the user left the server
-                        continue;
-                    }
-
-                    await vChannel.permissionOverwrites.delete(
-                        member,
-                        `Auto removing vc ban after 24 hours.`
-                    );
-
-                    const dmEmbed = new EmbedBuilder()
-                        .setColor(Colors.DarkGreen)
-                        .setTitle(`You were unbanned from the vc ${vChannel}`)
-                        .setAuthor({
-                            name: vChannel.guild.name,
-                            iconURL: vChannel.guild.iconURL(),
-                        })
-                        .setDescription(
-                            `You can now join and chat in ${vChannel} again since 24 hours have passed. Make sure not to break any rules to prevent further action.`
-                        )
-                        .setFooter({
-                            text: vChannel.guild.name,
-                            iconURL: vChannel.guild.iconURL(),
-                        })
-                        .setTimestamp();
-
-                    await member.send({ embeds: [dmEmbed] }).catch(() => {});
-
-                    await container.redis.hdel('vcban', vcBans[i][0]);
-
-                    const logEmbed = new EmbedBuilder()
-                        .setColor(Colors.DarkGreen)
-                        .setTitle('VC Unban')
-                        .setAuthor({
-                            name: member.user.tag,
-                            iconURL: member.user.avatarURL(),
-                        })
-                        .addFields(
-                            {
-                                name: 'User',
-                                value: `${member.user.tag} (${member.user.id})`,
-                            },
-                            {
-                                name: 'Moderator',
-                                value: `${container.client.user.tag} (${container.client.user.id})`,
-                            },
-                            {
-                                name: 'Reason',
-                                value: `Auto VC unban after 24 hours.`,
-                            },
-                            {
-                                name: 'Date',
-                                value: time(
-                                    new Date(),
-                                    TimestampStyles.LongDateTime
-                                ),
-                            }
-                        )
-                        .setFooter({
-                            text: 'Moderation Logs',
-                            iconURL: member.guild.iconURL(),
-                        })
-                        .setThumbnail(container.client.user.avatarURL());
-
-                    const logCh =
-                        member.guild.channels.cache.get(vcbanlogChannelID);
-                    if (logCh) await logCh.send({ embeds: [logEmbed] });
-
-                    container.logger.info(
-                        `Removing VC ban task: Unbanned ${member.user.tag} from ${vChannel.name} after 24 hours.`
-                    );
                 }
-            }
+            });
         }, Time.Minute);
 
         container.logger.info('VC unban task initialized.');
@@ -199,13 +236,15 @@ class Tasks {
 
     async initializeIntroductionAutpost() {
         const introAutopostInterval = setInterval(async () => {
-            const introChannel =
-                container.client.channels.cache.get('852806317163937823');
-            if (!introChannel) return;
+            await this.runWithLock('introAutopost', async () => {
+                const introChannel =
+                    container.client.channels.cache.get('852806317163937823');
+                if (!introChannel) return;
 
-            await introChannel.send(
-                'Welcome to the auspicious learning universe. Join **Voice Channels** and **Classes** to enhance your English communication skills.'
-            );
+                await introChannel.send(
+                    'Welcome to the auspicious learning universe. Join **Voice Channels** and **Classes** to enhance your English communication skills.'
+                );
+            });
         }, Time.Hour * 3);
 
         container.logger.info('Introduction autopost task initialized.');
@@ -214,27 +253,28 @@ class Tasks {
 
     async initializeAutoUnmuteTask() {
         const autoUnmuteInterval = setInterval(async () => {
-            const currentMutedMembers = Object.entries(
-                await container.redis.hgetall('muted')
-            );
-            const guild = container.client.guilds.cache.get(mainGuildID);
-
-            for (var i = 0; i < currentMutedMembers.length; i++) {
-                const muteTime = Number(
-                    currentMutedMembers[i][0].split(':')[1]
+            await this.runWithLock('autoUnmute', async () => {
+                const currentMutedMembers = Object.entries(
+                    await container.redis.hgetall('muted')
                 );
-                const expireTime = Number(currentMutedMembers[i][1]);
-                const memberID = currentMutedMembers[i][0].split(':')[0];
+                const guild = container.client.guilds.cache.get(mainGuildID);
+                if (!guild) return;
 
-                if (expireTime - muteTime <= 0) {
+                for (let i = 0; i < currentMutedMembers.length; i++) {
+                    const key = currentMutedMembers[i][0];
+                    const expireTime = Number(currentMutedMembers[i][1]);
+                    const memberID = key.split(':')[0];
+                    const expiresAtMs = expireTime * 1000;
+
+                    if (Number.isNaN(expiresAtMs) || Date.now() < expiresAtMs) {
+                        continue;
+                    }
+
                     const member = await guild.members
                         .fetch(memberID)
                         .catch(() => null);
                     if (!member) {
-                        await container.redis.hdel(
-                            'muted',
-                            currentMutedMembers[i][0]
-                        ); // just delete the mute because this means the user left the server
+                        await container.redis.hdel('muted', key);
                         continue;
                     }
 
@@ -261,16 +301,13 @@ class Tasks {
 
                     await member.send({ embeds: [dmEmbed] }).catch(() => {});
 
-                    await container.redis.hdel(
-                        'muted',
-                        currentMutedMembers[i][0]
-                    );
+                    await container.redis.hdel('muted', key);
 
                     container.logger.info(
                         `Removing mute task: Unmuted ${member.user.tag} as their mute has expired.`
                     );
                 }
-            }
+            });
         }, Time.Minute);
 
         container.logger.info('Auto unmute task initialized.');

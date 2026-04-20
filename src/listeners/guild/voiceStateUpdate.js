@@ -109,11 +109,11 @@ class VoiceStateUpdateListener extends Listener {
         const userId = member.id;
         const inTarget = Boolean(
             newState.channelId &&
-            this.cameraOnChannelsSet.has(newState.channelId)
+                this.cameraOnChannelsSet.has(newState.channelId)
         );
         const wasInTarget = Boolean(
             oldState.channelId &&
-            this.cameraOnChannelsSet.has(oldState.channelId)
+                this.cameraOnChannelsSet.has(oldState.channelId)
         );
 
         // User joined a camera-required channel
@@ -260,14 +260,16 @@ class VoiceStateUpdateListener extends Listener {
 
         for (const channelId of this.cameraOnChannelsSet) {
             try {
-                const channel = await this.container.client.channels
-                    .fetch(channelId)
-                    .catch((err) => {
-                        this.container.logger.warn(
-                            `[LOCK ERROR] Failed to fetch channel ${channelId}: ${err?.message}`
-                        );
-                        return null;
-                    });
+                const channel =
+                    guild.channels.cache.get(channelId) ||
+                    (await this.container.client.channels
+                        .fetch(channelId)
+                        .catch((err) => {
+                            this.container.logger.warn(
+                                `[LOCK ERROR] Failed to fetch channel ${channelId}: ${err?.message}`
+                            );
+                            return null;
+                        }));
                 if (!channel || !channel.isVoiceBased()) continue;
 
                 await channel.permissionOverwrites
@@ -305,14 +307,16 @@ class VoiceStateUpdateListener extends Listener {
 
         for (const channelId of this.cameraOnChannelsSet) {
             try {
-                const channel = await this.container.client.channels
-                    .fetch(channelId)
-                    .catch((err) => {
-                        this.container.logger.warn(
-                            `[UNLOCK ERROR] Failed to fetch channel ${channelId}: ${err?.message}`
-                        );
-                        return null;
-                    });
+                const channel =
+                    guild.channels.cache.get(channelId) ||
+                    (await this.container.client.channels
+                        .fetch(channelId)
+                        .catch((err) => {
+                            this.container.logger.warn(
+                                `[UNLOCK ERROR] Failed to fetch channel ${channelId}: ${err?.message}`
+                            );
+                            return null;
+                        }));
                 if (!channel || !channel.isVoiceBased()) continue;
 
                 const overwrite =
@@ -879,6 +883,20 @@ class VoiceStateUpdateListener extends Listener {
         const voiceStateLogChannel = newState.guild.channels.cache.get(
             voiceStateLogChannelID
         );
+        if (!voiceStateLogChannel) return;
+
+        const formatMembers = (members) => {
+            if (!members || members.size === 0) return 'None';
+
+            const shown = members
+                .first(15)
+                .map((member) => member.user)
+                .join(', ');
+            return members.size > 15
+                ? `${shown}, and ${members.size - 15} more`
+                : shown;
+        };
+
         if (oldState.channelId === newState.channelId) return;
         if (oldState.channelId && newState.channelId) {
             // member switched vcs
@@ -902,11 +920,7 @@ class VoiceStateUpdateListener extends Listener {
                     },
                     {
                         name: `Current Members of ${newState.channel.name}`,
-                        value: newState.channel.members.size
-                            ? newState.channel.members
-                                  .map((member) => member.user)
-                                  .join(', ')
-                            : 'None',
+                        value: formatMembers(newState.channel.members),
                     }
                 )
                 .setTimestamp();
@@ -938,11 +952,7 @@ class VoiceStateUpdateListener extends Listener {
                     },
                     {
                         name: `Current Members of ${newState.channel.name}`,
-                        value: newState.channel.members.size
-                            ? newState.channel.members
-                                  .map((member) => member.user)
-                                  .join(', ')
-                            : 'None',
+                        value: formatMembers(newState.channel.members),
                     }
                 )
                 .setTimestamp();
@@ -964,11 +974,7 @@ class VoiceStateUpdateListener extends Listener {
                     },
                     {
                         name: `Current Members of ${oldState.channel.name}`,
-                        value: oldState.channel.members.size
-                            ? oldState.channel.members
-                                  .map((member) => member.user)
-                                  .join(', ')
-                            : 'None',
+                        value: formatMembers(oldState.channel.members),
                     }
                 )
                 .setTimestamp();

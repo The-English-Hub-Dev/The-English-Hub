@@ -2,7 +2,13 @@ const { container } = require('@sapphire/framework');
 const { Message, EmbedBuilder } = require('discord.js');
 
 class TriggerManager {
-    constructor() {}
+    constructor() {
+        this.vivekTriggerCache = {
+            value: [],
+            expiresAt: 0,
+        };
+        this.guildTriggerCache = new Map();
+    }
 
     /**
      *
@@ -10,13 +16,13 @@ class TriggerManager {
      * @returns { boolean } if a trigger was activated or not on the specific message
      */
     async runTriggersOnMessage(message) {
-        let triggered = false;
         if (message.author.bot) return false;
+        if (!message.content) return false;
 
-        triggered = await this.runGuildMessageTriggers(message);
-        triggered = await this.runHlTriggers(message);
+        const guildTriggered = await this.runGuildMessageTriggers(message);
+        const hlTriggered = await this.runHlTriggers(message);
 
-        return triggered;
+        return guildTriggered || hlTriggered;
     }
 
     /**
@@ -36,11 +42,7 @@ class TriggerManager {
      * @returns { Promise<boolean> } if triggered or not
      */
     async runVivekHighlightTriggers(message) {
-        const vivekhltriggers = await container.redis.lrange(
-            'hltriggers_vivek',
-            0,
-            -1
-        );
+        const vivekhltriggers = await this.getCachedVivekTriggers();
 
         let triggered = false;
 
@@ -74,6 +76,43 @@ class TriggerManager {
         return triggered;
     }
 
+    async getCachedVivekTriggers() {
+        const now = Date.now();
+        if (this.vivekTriggerCache.expiresAt > now) {
+            return this.vivekTriggerCache.value;
+        }
+
+        const triggers = await container.redis.lrange(
+            'hltriggers_vivek',
+            0,
+            -1
+        );
+        this.vivekTriggerCache = {
+            value: triggers,
+            expiresAt: now + 30_000,
+        };
+
+        return triggers;
+    }
+
+    async getCachedGuildTriggers(guildId) {
+        const cached = this.guildTriggerCache.get(guildId);
+        const now = Date.now();
+        if (cached && cached.expiresAt > now) {
+            return cached.value;
+        }
+
+        const triggers = await container.redis.hgetall(
+            `guildtriggers_${guildId}`
+        );
+        this.guildTriggerCache.set(guildId, {
+            value: triggers,
+            expiresAt: now + 15_000,
+        });
+
+        return triggers;
+    }
+
     /**
      * @param { Message } message
      * @returns { Promise<boolean> } if triggered or not by guild triggers
@@ -82,7 +121,7 @@ class TriggerManager {
         let triggered = false;
 
         const guildMessageTriggers = Object.entries(
-            await container.redis.hgetall(`guildtriggers_${message.guild.id}`)
+            await this.getCachedGuildTriggers(message.guild.id)
         );
 
         for (let i = 0; i < guildMessageTriggers.length; i++) {

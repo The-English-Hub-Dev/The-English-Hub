@@ -36,13 +36,16 @@ class MoveAllCommand extends Command {
 
         const vcMembers = [...vc.unwrap().members.map((member) => member)];
 
-        for (let i = 0; i < vcMembers.size; i++) {
-            const member = vcMembers[i];
-            await member.voice.setChannel(vcMove.unwrap());
+        const chunkSize = 5;
+        for (let i = 0; i < vcMembers.length; i += chunkSize) {
+            const chunk = vcMembers.slice(i, i + chunkSize);
+            await Promise.allSettled(
+                chunk.map((member) => member.voice.setChannel(vcMove.unwrap()))
+            );
         }
 
         return message.reply(
-            `Moved ${vcMembers.size} members from ${vc.unwrap()} to ${vcMove.unwrap()}.`
+            `Moved ${vcMembers.length} members from ${vc.unwrap()} to ${vcMove.unwrap()}.`
         );
     }
 }

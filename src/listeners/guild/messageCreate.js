@@ -173,10 +173,19 @@ class MessageCreateListener extends Listener {
      * @param { Message} message
      */
     async checkAFK(message) {
+        if (!message.content) return;
+
         const mentionedUsers = [...message.mentions.users.values()];
         if (mentionedUsers.length > 0) {
-            for (const user of mentionedUsers) {
-                const afkData = await this.container.redis.hget('afk', user.id);
+            const mentionedUserIds = mentionedUsers.map((user) => user.id);
+            const afkResults = await this.container.redis.hmget(
+                'afk',
+                ...mentionedUserIds
+            );
+
+            for (let i = 0; i < mentionedUsers.length; i++) {
+                const user = mentionedUsers[i];
+                const afkData = afkResults[i];
                 if (afkData) {
                     const [timestamp, reason] = afkData.split(':');
                     await message.reply({

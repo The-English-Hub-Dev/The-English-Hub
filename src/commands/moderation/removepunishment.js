@@ -82,7 +82,10 @@ class RemovepunishmentCommand extends Command {
                 .setStyle(ButtonStyle.Danger)
         );
 
-        await message.reply({ embeds: [confirmationEmbed], components: [row] });
+        const confirmationMessage = await message.reply({
+            embeds: [confirmationEmbed],
+            components: [row],
+        });
 
         const filter = (interaction) => {
             if (interaction.user.id === message.author.id) return true;
@@ -92,9 +95,10 @@ class RemovepunishmentCommand extends Command {
             });
         };
 
-        const collector = message.channel.createMessageComponentCollector({
+        const collector = confirmationMessage.createMessageComponentCollector({
             filter,
-            max: 2,
+            max: 1,
+            time: 60_000,
         });
 
         collector.on('collect', async (ButtonInteraction) => {
@@ -112,7 +116,7 @@ class RemovepunishmentCommand extends Command {
                     )
                     .setColor(Colors.DarkRed);
 
-                ButtonInteraction.update({
+                await ButtonInteraction.update({
                     embeds: [confirmedEmbed],
                     components: [],
                 });
@@ -172,7 +176,8 @@ class RemovepunishmentCommand extends Command {
 
                 const logChannelFetched =
                     message.guild.channels.cache.get(logChannelID);
-                await logChannelFetched.send({ embeds: [logEmbed] });
+                if (logChannelFetched)
+                    await logChannelFetched.send({ embeds: [logEmbed] });
                 return collector.stop();
             } else if (id === 'rmpunish_cancel') {
                 const cancelledEmbed = new EmbedBuilder()
@@ -188,6 +193,24 @@ class RemovepunishmentCommand extends Command {
                 });
 
                 return collector.stop();
+            }
+        });
+
+        collector.on('end', async (_, reason) => {
+            if (reason === 'time') {
+                await confirmationMessage
+                    .edit({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setTitle('Timed Out')
+                                .setDescription(
+                                    'This punishment removal confirmation expired.'
+                                )
+                                .setColor(Colors.Grey),
+                        ],
+                        components: [],
+                    })
+                    .catch(() => {});
             }
         });
     }

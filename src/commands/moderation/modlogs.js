@@ -56,14 +56,27 @@ class ModlogsCommand extends Command {
                 .setAuthor({ name: user.tag, iconURL: user.avatarURL() })
                 .setColor(Colors.LuminousVividPink);
 
+            const uniqueModeratorIds = [
+                ...new Set(punishments.map((p) => p.moderator_id)),
+            ];
+            const moderatorCache = new Map(
+                await Promise.all(
+                    uniqueModeratorIds.map(async (id) => {
+                        const moderator = await this.container.client.users
+                            .fetch(id)
+                            .catch(() => null);
+                        return [id, moderator];
+                    })
+                )
+            );
+
             const warnsEmbedFields = [];
-            for (var i = 0; i < punishments.length; ++i) {
+            for (let i = 0; i < punishments.length && i < 25; ++i) {
                 const punishment = punishments[i];
-                const moderator = await this.container.client.users.fetch(
-                    punishment.moderator_id
-                );
+                const moderator = moderatorCache.get(punishment.moderator_id);
+                const moderatorTag = moderator?.tag || punishment.moderator_id;
                 warnsEmbedFields.push({
-                    name: `Punishment ID: ${punishment.punishment_id} | Moderator: ${moderator.tag}`,
+                    name: `Punishment ID: ${punishment.punishment_id} | Moderator: ${moderatorTag}`,
                     value: blockQuote(
                         `**Type:** ${punishment.type}\n**Reason:** ${
                             punishment.reason
@@ -79,6 +92,13 @@ class ModlogsCommand extends Command {
                                 : 'Never'
                         }`
                     ),
+                });
+            }
+
+            if (punishments.length > 25) {
+                warnsEmbedFields.push({
+                    name: 'Results truncated',
+                    value: `Showing first 25 of ${punishments.length} punishments.`,
                 });
             }
             warnsEmbed.addFields(warnsEmbedFields);
@@ -103,7 +123,7 @@ class ModlogsCommand extends Command {
                 .setColor(Colors.LuminousVividPink);
 
             const warnsEmbedFields = [];
-            for (var x = 0; x < punishments.length; ++x) {
+            for (let x = 0; x < punishments.length && x < 25; ++x) {
                 const punishment = punishments[x];
                 warnsEmbedFields.push({
                     name: punishment.punishment_id,
@@ -122,6 +142,13 @@ class ModlogsCommand extends Command {
                                 : 'Never'
                         }`
                     ),
+                });
+            }
+
+            if (punishments.length > 25) {
+                warnsEmbedFields.push({
+                    name: 'Results truncated',
+                    value: `Showing first 25 of ${punishments.length} punishments.`,
                 });
             }
             warnsEmbed.addFields(warnsEmbedFields);

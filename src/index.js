@@ -17,9 +17,25 @@ process.on('uncaughtException', async (error) => {
     }
 });
 
+process.on('unhandledRejection', async (reason) => {
+    const error =
+        reason instanceof Error
+            ? reason
+            : new Error(`Unhandled rejection: ${String(reason)}`);
+
+    if (!container || !container.utility || process.env.node_env == 'testing') {
+        container.logger.error(error);
+    } else {
+        await container.utility.exception(error, 'UnhandledRejection');
+    }
+});
+
 const redis = new Redis(process.env.REDIS_URL, {});
 redis.on('connect', () => {
     container.logger.info('Connected to Redis Instance!');
+});
+redis.on('error', (err) => {
+    container.logger.error('Redis connection error:', err);
 });
 container.redis = redis;
 container.db = new Database();
@@ -68,7 +84,7 @@ const client = new SapphireClient({
 
 Sentry.init({
     dsn: process.env.SENTRY_DSN,
-    tracesSampleRate: 1.0,
+    tracesSampleRate: Number(process.env.SENTRY_TRACES_SAMPLE_RATE || 0.1),
     integrations: [new Sentry.Integrations.Http({ tracing: true })],
 });
 
@@ -133,4 +149,14 @@ const shutdown = async (signal) => {
 process.on('SIGINT', () => shutdown('SIGINT'));
 process.on('SIGTERM', () => shutdown('SIGTERM'));
 
-client.login();
+const bootstrap = async () => {
+    try {
+        await container.db.ensureInitialized();
+        await client.login();
+    } catch (err) {
+        container.logger.error('Startup failed:', err);
+        process.exit(1);
+    }
+};
+
+void bootstrap();
