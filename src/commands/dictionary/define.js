@@ -7,16 +7,11 @@ const {
     ButtonStyle,
     blockQuote,
 } = require('discord.js');
-const overridenDefinitions = [
-    [
-        'bow tie',
+const overridenDefinitions = {
+    'bow tie':
         'That guy in the server with some abnormal fascination of all things related to bow ties. Chatterbox, biscuit lover and drinker of tea.',
-    ],
-    [
-        'vivek',
-        'He is a very charming dude that hangs out here. Always down for a game of chess. Has a desire to post random emojis.',
-    ],
-];
+    vivek: 'He is a very charming dude that hangs out here. Always down for a game of chess. Has a desire to post random emojis.',
+};
 
 class DefineCommand extends Command {
     constructor(context, options) {
@@ -42,7 +37,18 @@ class DefineCommand extends Command {
                 'You must provide a word to define.'
             );
 
-        const word = rawWord.unwrap();
+        let word = rawWord.unwrap();
+
+        await message.channel.sendTyping();
+
+        // 2. Clean the input string of weird characters
+        word = word
+            .trim()
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '');
+
+        // 3. Encode it for the URL (leaves the display `word` variable untouched)
+        const encodedWord = encodeURIComponent(word);
 
         const defActionRow1 = new ActionRowBuilder().addComponents([
             new ButtonBuilder()
@@ -74,30 +80,17 @@ class DefineCommand extends Command {
                 .setStyle(ButtonStyle.Secondary),
         ]);
 
-        if (
-            overridenDefinitions.map((a) => a[0]).includes(word.toLowerCase())
-        ) {
+        const overrideDef = overridenDefinitions[word];
+        if (overrideDef) {
             const definitionEmbed = new EmbedBuilder()
                 .setTitle(`Word: ${word}`)
-                .setDescription(
-                    blockQuote(
-                        `**Definition:** ${
-                            overridenDefinitions.find(
-                                (a) => a[0] == word.toLowerCase()
-                            )[1]
-                        }`
-                    )
-                )
+                .setDescription(blockQuote(`**Definition:** ${overrideDef}`))
                 .setFooter({
                     text: `Definition requested by ${message.author.tag}`,
                 })
                 .setColor('Random');
             return message.reply({
-                content: `${
-                    word.toLowerCase() == 'vivek'
-                        ? '<@1031266462272336003>'
-                        : ''
-                }`,
+                content: `${word == 'vivek' ? '<@1031266462272336003>' : ''}`,
                 embeds: [definitionEmbed],
                 allowedMentions: {
                     users: ['1031266462272336003'],
@@ -109,7 +102,7 @@ class DefineCommand extends Command {
         }
 
         const res = await fetch(
-            `https://wordsapiv1.p.rapidapi.com/words/${word}/definitions`,
+            `https://wordsapiv1.p.rapidapi.com/words/${encodedWord}/definitions`,
             {
                 method: 'GET',
                 headers: {
@@ -122,6 +115,12 @@ class DefineCommand extends Command {
         if (res.status == '404') {
             return message.reply(
                 `:x: That word could not be found in the dictionary.`
+            );
+        }
+
+        if (!res.ok) {
+            return message.reply(
+                `:warning: The dictionary service is currently unavailable (Status: ${res.status}). Please try again later.`
             );
         }
 
@@ -141,22 +140,31 @@ class DefineCommand extends Command {
             }
         }
 
-        const hasteBinLink = await this.container.utility.createHastebin(
-            `Definitions of ${word}\n` +
-                resData.definitions
-                    .slice(3)
-                    .map(
-                        (def, index) =>
-                            `Definition ${index + 4} (${def.partOfSpeech}): ${
-                                def.definition
-                            }`
-                    )
-                    .join('\n'),
-            'txt'
-        );
-
+        let hasteBinLink = null;
         if (resData.definitions.length > 2) {
+            try {
+                hasteBinLink = await this.container.utility.createHastebin(
+                    `Definitions of ${word}\n` +
+                        resData.definitions
+                            .slice(3)
+                            .map(
+                                (def, index) =>
+                                    `Definition ${index + 4} (${def.partOfSpeech}): ${
+                                        def.definition
+                                    }`
+                            )
+                            .join('\n'),
+                    'txt'
+                );
+            } catch (error) {
+                console.error('Failed to generate Hastebin:', error);
+            }
+        }
+
+        if (hasteBinLink) {
             description += `\n\nOther definitions can be found [here](${hasteBinLink})`;
+        } else if (resData.definitions.length > 2) {
+            description += `\n\n*(More definitions exist, but the text dump service is temporarily unavailable. Try again later.)*`;
         }
 
         const definitionEmbed = new EmbedBuilder()
@@ -166,7 +174,7 @@ class DefineCommand extends Command {
                 text: `Definition requested by ${message.author.tag}`,
             })
             .setColor(
-                description == 'No definitions listed' ? 'Red' : 'Random'
+                description == 'No definitions listed.' ? 'Red' : 'Random'
             );
 
         return message.reply({
