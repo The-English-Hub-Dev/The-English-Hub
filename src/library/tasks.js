@@ -14,7 +14,6 @@ const {
     mutedRoleID,
     welcomeChannel,
 } = require('../../config.json');
-let statusNum = 1;
 
 class Tasks {
     constructor() {
@@ -25,6 +24,7 @@ class Tasks {
             autoUnmute: false,
             introAutopost: false,
         };
+        this.statusNum = 1;
     }
 
     async runWithLock(lockName, taskFn) {

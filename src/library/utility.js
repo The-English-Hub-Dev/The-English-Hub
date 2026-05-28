@@ -54,16 +54,18 @@ class Utility {
             .setDescription(error)
             .setColor(Colors.Red);
 
-        const reply = await message.reply({
-            embeds: [errEmbed],
-            allowedMentions: { users: [], roles: [], parse: [] },
-        });
+        const reply = await message
+            .reply({
+                embeds: [errEmbed],
+                allowedMentions: { users: [], roles: [], parse: [] },
+            })
+            .catch(() => {});
 
         // Schedule deletion of both messages independently after 5 seconds
         const timeoutId = setTimeout(() => {
             this.activeTimeouts.delete(timeoutId);
             message.delete().catch(() => {});
-            reply.delete().catch(() => {});
+            reply?.delete().catch(() => {});
         }, 5000);
         this.activeTimeouts.add(timeoutId);
     }
@@ -104,6 +106,7 @@ class Utility {
                 signal: controller.signal,
                 headers: {
                     Authorization: `Bearer ${process.env.HASTEBIN_API_KEY}`,
+                    'Content-Type': 'text/plain',
                 },
             });
 
