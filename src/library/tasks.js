@@ -48,7 +48,7 @@ class Tasks {
         await this.initializeHealthcheck();
         await this.initializeVcUnbanTask();
         await this.initializeAutoUnmuteTask();
-        this.initializeIntroductionAutpost();
+        await this.initializeIntroductionAutpost();
     }
 
     /**
