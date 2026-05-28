@@ -1,6 +1,5 @@
 const { Precondition } = require('@sapphire/framework');
 const { Message } = require('discord.js');
-const { testingServerID } = require('../../config.json');
 
 class DeveloperPrecondition extends Precondition {
     async fetchApplicationWithTimeout(timeoutMs = 5000) {
@@ -21,7 +20,8 @@ class DeveloperPrecondition extends Precondition {
      * @returns
      */
     async messageRun(message) {
-        if (message.guild.id === testingServerID) return this.ok();
+        // SECURITY FIX: Removed testing server bypass - this allowed anyone in the test guild to be a developer
+        // Only the actual application owner(s) can execute developer commands, regardless of guild
         if (!this.container.client.application.owner)
             await this.fetchApplicationWithTimeout();
         return this.container.client.application.owner.members.has(

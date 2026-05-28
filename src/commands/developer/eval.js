@@ -27,6 +27,7 @@ class EvalCommand extends Command {
                 'maxarraylength',
                 'maxstringlength',
             ],
+            enabled: false,
         });
     }
     /**

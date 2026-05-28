@@ -88,19 +88,45 @@ class Utility {
      * @returns
      */
     async createHastebin(text, extension = 'txt') {
-        const res = await fetch('https://hastebin.com/documents', {
-            method: 'POST',
-            body: text,
-            headers: {
-                Authorization: `Bearer ${process.env.HASTEBIN_API_KEY}`,
-            },
-        });
-        if (res.status !== 200) {
-            return 'An error occurred while trying to upload the content to hastebin :(';
+        // SECURITY: Validate API key exists before attempting request
+        if (!process.env.HASTEBIN_API_KEY) {
+            container.logger.warn('Hastebin API key not configured');
+            return 'Hastebin integration is not configured.';
         }
-        return `https://hastebin.com/share/${
-            (await res.json()).key
-        }.${extension}`;
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        try {
+            const res = await fetch('https://hastebin.com/documents', {
+                method: 'POST',
+                body: text,
+                signal: controller.signal,
+                headers: {
+                    Authorization: `Bearer ${process.env.HASTEBIN_API_KEY}`,
+                },
+            });
+
+            if (res.status !== 200) {
+                return 'An error occurred while trying to upload the content to hastebin :(';
+            }
+
+            return `https://hastebin.com/share/${
+                (await res.json()).key
+            }.${extension}`;
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                container.logger.error('Hastebin request timed out');
+            } else {
+                container.logger.error(
+                    'Hastebin request failed:',
+                    error.message
+                );
+            }
+            return 'An error occurred while trying to upload the content to hastebin :(';
+        } finally {
+            clearTimeout(timeoutId);
+        }
     }
 }
 
