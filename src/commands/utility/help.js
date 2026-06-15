@@ -22,7 +22,11 @@ class HelpCommand extends Command {
      */
     async canUserUseCommand(message, cmd) {
         // If command has no preconditions, user can use it
-        if (!cmd.preconditions || !Array.isArray(cmd.preconditions) || cmd.preconditions.length === 0) {
+        if (
+            !cmd.preconditions ||
+            !Array.isArray(cmd.preconditions) ||
+            cmd.preconditions.length === 0
+        ) {
             return true;
         }
 
