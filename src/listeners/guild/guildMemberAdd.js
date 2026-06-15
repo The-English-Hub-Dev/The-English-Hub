@@ -65,6 +65,13 @@ _ _`,
         const channel = member.guild.channels.cache.get(mainChannel);
         if (!channel || channel.type !== ChannelType.GuildText) return;
 
+        const milestone = member.guild.memberCount;
+        const milestoneKey = `milestones:announced:${member.guild.id}`;
+
+        // Check if this milestone has already been announced
+        const alreadyAnnounced = await this.container.redis.sismember(milestoneKey, milestone.toString());
+        if (alreadyAnnounced) return;
+
         const milestoneEmbed = new EmbedBuilder()
             .setTitle(`We've hit a membercount milestone!`)
             .setColor(Colors.LuminousVividPink)
@@ -78,10 +85,12 @@ _ _`,
                 text: `Milestone reached!`,
             });
 
-        return channel.send({
+        await channel.send({
             embeds: [milestoneEmbed],
             allowedMentions: { users: [], roles: [], parse: [] },
         });
+
+        await this.container.redis.sadd(milestoneKey, milestone.toString());
     }
 
     /**
