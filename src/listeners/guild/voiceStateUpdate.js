@@ -20,7 +20,6 @@ class VoiceStateUpdateListener extends Listener {
     constructor(context, options) {
         super(context, {
             ...options,
-            name: Events.VoiceStateUpdate,
             event: Events.VoiceStateUpdate,
         });
 
@@ -83,9 +82,79 @@ class VoiceStateUpdateListener extends Listener {
     }
 
     /**
+     * Resolve a channel from cameraOnChannelsSet by ID
+     * @param {string} channelId
+     * @param {Guild} guild
+     * @returns {Promise<VoiceChannel|null>}
+     */
+    async resolveChannelFromSet(channelId, guild) {
+        try {
+            const channel =
+                guild.channels.cache.get(channelId) ||
+                (await this.container.client.channels
+                    .fetch(channelId)
+                    .catch((err) => {
+                        this.container.logger.warn(
+                            `[CHANNEL RESOLVE] Failed to fetch channel ${channelId}: ${err?.message}`
+                        );
+                        return null;
+                    }));
+            if (!channel || !channel.isVoiceBased()) return null;
+            return channel;
+        } catch (err) {
+            this.container.logger.error(
+                `[CHANNEL RESOLVE] ${channelId}: ${err?.message}`
+            );
+            return null;
+        }
+    }
+
+    /**
+     * Handle active ban eviction (user tried to join camera VC while banned)
+     * @param {GuildMember} member
+     * @param {Object} ban
+     * @param {number} ban.bannedUntil
+     */
+    async handleActiveBanEviction(member, ban) {
+        const userId = member.id;
+        this.container.logger.info(
+            `[CAMERA ENFORCE] ${member.username} banned - evicting`
+        );
+        await this.lockUserAcrossCameraVCs(member.guild, userId);
+        if (member.voice && member.voice.channel) {
+            await member.voice
+                .disconnect('Banned from camera VCs')
+                .catch(() => {});
+        }
+
+        const warnCh = this.getLinkedTextChannel(member.voice?.channel);
+        if (warnCh) {
+            const remaining = Math.ceil((ban.bannedUntil - Date.now()) / 60000);
+            const embed = new EmbedBuilder()
+                .setTitle('🚫 Ban Active')
+                .setColor(Colors.Red)
+                .setDescription(
+                    `${member.user}, ban active for **${remaining} min**.\nExpires: <t:${Math.floor(ban.bannedUntil / 1000)}:R>`
+                )
+                .setTimestamp();
+            await warnCh
+                .send({ content: `${member.user}`, embeds: [embed] })
+                .catch(() => {});
+        }
+    }
+
+    /**
      * Main camera enforcement handler
      */
     async handleCameraEnforcement(oldState, newState) {
+        // Guard: only enforce in main guild
+        if (
+            oldState.guild?.id !== mainGuildID &&
+            newState.guild?.id !== mainGuildID
+        ) {
+            return;
+        }
+
         const member =
             newState.member ||
             (newState.guild
@@ -109,11 +178,11 @@ class VoiceStateUpdateListener extends Listener {
         const userId = member.id;
         const inTarget = Boolean(
             newState.channelId &&
-            this.cameraOnChannelsSet.has(newState.channelId)
+                this.cameraOnChannelsSet.has(newState.channelId)
         );
         const wasInTarget = Boolean(
             oldState.channelId &&
-            this.cameraOnChannelsSet.has(oldState.channelId)
+                this.cameraOnChannelsSet.has(oldState.channelId)
         );
 
         // User joined a camera-required channel
@@ -121,31 +190,7 @@ class VoiceStateUpdateListener extends Listener {
             // Check ban
             const ban = this.vcBannedUsers.get(userId);
             if (ban && Date.now() < ban.bannedUntil) {
-                this.container.logger.info(
-                    `[CAMERA ENFORCE] ${member.user.tag} banned - evicting`
-                );
-                await this.lockUserAcrossCameraVCs(member.guild, userId, true);
-                if (member.voice && member.voice.channel) {
-                    await member.voice
-                        .disconnect('Banned from camera VCs')
-                        .catch(() => {});
-                }
-                const warnCh = this.getLinkedTextChannel(member.voice?.channel);
-                if (warnCh) {
-                    const remaining = Math.ceil(
-                        (ban.bannedUntil - Date.now()) / 60000
-                    );
-                    const embed = new EmbedBuilder()
-                        .setTitle('🚫 Ban Active')
-                        .setColor(Colors.Red)
-                        .setDescription(
-                            `${member.user}, ban active for **${remaining} min**.\nExpires: <t:${Math.floor(ban.bannedUntil / 1000)}:R>`
-                        )
-                        .setTimestamp();
-                    await warnCh
-                        .send({ content: `${member.user}`, embeds: [embed] })
-                        .catch(() => {});
-                }
+                await this.handleActiveBanEviction(member, ban);
                 return;
             }
 
@@ -179,40 +224,7 @@ class VoiceStateUpdateListener extends Listener {
                 // Check ban
                 const ban = this.vcBannedUsers.get(userId);
                 if (ban && Date.now() < ban.bannedUntil) {
-                    this.container.logger.info(
-                        `[CAMERA ENFORCE] ${member.user.tag} banned - evicting from new VC`
-                    );
-                    await this.lockUserAcrossCameraVCs(
-                        member.guild,
-                        userId,
-                        true
-                    );
-                    if (member.voice && member.voice.channel) {
-                        await member.voice
-                            .disconnect('Banned from camera VCs')
-                            .catch(() => {});
-                    }
-                    const warnCh = this.getLinkedTextChannel(
-                        member.voice?.channel
-                    );
-                    if (warnCh) {
-                        const remaining = Math.ceil(
-                            (ban.bannedUntil - Date.now()) / 60000
-                        );
-                        const embed = new EmbedBuilder()
-                            .setTitle('🚫 Ban Active')
-                            .setColor(Colors.Red)
-                            .setDescription(
-                                `${member.user}, ban active for **${remaining} min**.\nExpires: <t:${Math.floor(ban.bannedUntil / 1000)}:R>`
-                            )
-                            .setTimestamp();
-                        await warnCh
-                            .send({
-                                content: `${member.user}`,
-                                embeds: [embed],
-                            })
-                            .catch(() => {});
-                    }
+                    await this.handleActiveBanEviction(member, ban);
                     return;
                 }
 
@@ -221,15 +233,15 @@ class VoiceStateUpdateListener extends Listener {
                 if (existing?.timeoutId) {
                     clearTimeout(existing.timeoutId);
                     this.container.logger.info(
-                        `[CAMERA ENFORCE] ${member.user.tag} switched VCs - cleared old timer`
+                        `[CAMERA ENFORCE] ${member.username} switched VCs - cleared old timer`
                     );
                 }
 
                 // Restart timer if camera is still off
+                // FIX #1: Delete stale entry so warnUser doesn't no-op
+                this.warnedUsers.delete(userId);
                 if (!newState.selfVideo) {
                     await this.warnUser(member);
-                } else {
-                    this.warnedUsers.delete(userId);
                 }
                 return;
             }
@@ -244,9 +256,11 @@ class VoiceStateUpdateListener extends Listener {
                 if (existing?.timeoutId) {
                     clearTimeout(existing.timeoutId);
                     this.container.logger.info(
-                        `[CAMERA ENFORCE] ${member.user.tag} camera toggled off - cleared old timer`
+                        `[CAMERA ENFORCE] ${member.username} camera toggled off - cleared old timer`
                     );
                 }
+                // FIX #1: Delete stale entry so warnUser doesn't no-op
+                this.warnedUsers.delete(userId);
                 await this.warnUser(member);
             }
         }
@@ -255,89 +269,62 @@ class VoiceStateUpdateListener extends Listener {
     /**
      * Lock user from camera VCs
      */
-    async lockUserAcrossCameraVCs(guild, userId, isBan = true) {
+    async lockUserAcrossCameraVCs(guild, userId) {
         if (!guild) return;
 
+        let idx = 0;
         for (const channelId of this.cameraOnChannelsSet) {
-            try {
-                const channel =
-                    guild.channels.cache.get(channelId) ||
-                    (await this.container.client.channels
-                        .fetch(channelId)
-                        .catch((err) => {
-                            this.container.logger.warn(
-                                `[LOCK ERROR] Failed to fetch channel ${channelId}: ${err?.message}`
-                            );
-                            return null;
-                        }));
-                if (!channel || !channel.isVoiceBased()) continue;
+            idx++;
+            const channel = await this.resolveChannelFromSet(channelId, guild);
+            if (!channel) continue;
 
-                await channel.permissionOverwrites
-                    .edit(
-                        userId,
-                        {
-                            ViewChannel: true,
-                            Connect: false,
-                        },
-                        {
-                            reason: `VC Ban: ${userId}`,
-                        }
-                    )
-                    .catch((err) => {
-                        this.container.logger.error(
-                            `[LOCK ERROR] Failed to edit overwrite for ${channelId} (${channel?.name}): ${err?.message}`
-                        );
-                    });
-                this.container.logger.info(
-                    `[BAN] Locked 📸 ${channel.name || channelId} || ${Array.from(this.cameraOnChannelsSet).indexOf(channelId) + 1} for ${userId}`
-                );
-            } catch (err) {
-                this.container.logger.error(
-                    `[LOCK ERROR] ${channelId}: ${err?.message}`
-                );
-            }
+            await channel.permissionOverwrites
+                .edit(
+                    userId,
+                    {
+                        ViewChannel: true,
+                        Connect: false,
+                    },
+                    {
+                        reason: `VC Ban: ${userId}`,
+                    }
+                )
+                .catch((err) => {
+                    this.container.logger.error(
+                        `[LOCK ERROR] Failed to edit overwrite for ${channelId} (${channel?.name}): ${err?.message}`
+                    );
+                });
+            this.container.logger.info(
+                `[BAN] Locked 📸 ${channel.name || channelId} || ${idx} for ${userId}`
+            );
         }
     }
 
     /**
      * Unlock user from camera VCs
      */
-    async unlockUserAcrossCameraVCs(guild, userId, isBan = true) {
+    async unlockUserAcrossCameraVCs(guild, userId) {
         if (!guild) return;
 
+        let idx = 0;
         for (const channelId of this.cameraOnChannelsSet) {
-            try {
-                const channel =
-                    guild.channels.cache.get(channelId) ||
-                    (await this.container.client.channels
-                        .fetch(channelId)
-                        .catch((err) => {
-                            this.container.logger.warn(
-                                `[UNLOCK ERROR] Failed to fetch channel ${channelId}: ${err?.message}`
-                            );
-                            return null;
-                        }));
-                if (!channel || !channel.isVoiceBased()) continue;
+            idx++;
+            const channel = await this.resolveChannelFromSet(channelId, guild);
+            if (!channel) continue;
 
-                const overwrite =
-                    channel.permissionOverwrites.cache.get(userId);
-                if (overwrite) {
-                    await channel.permissionOverwrites
-                        .delete(userId, {
-                            reason: `VC Ban expired: ${userId}`,
-                        })
-                        .catch((err) => {
-                            this.container.logger.error(
-                                `[UNLOCK ERROR] Failed to delete overwrite for ${channelId} (${channel?.name}): ${err?.message}`
-                            );
-                        });
-                    this.container.logger.info(
-                        `[BAN] Unlocked 📸 ${channel.name || channelId} || ${Array.from(this.cameraOnChannelsSet).indexOf(channelId) + 1} for ${userId}`
-                    );
-                }
-            } catch (err) {
-                this.container.logger.error(
-                    `[UNLOCK ERROR] ${channelId}: ${err?.message}`
+            const overwrite = channel.permissionOverwrites.cache.get(userId);
+            if (overwrite) {
+                await channel.permissionOverwrites
+                    .delete(userId, {
+                        reason: `VC Ban expired: ${userId}`,
+                    })
+                    .catch((err) => {
+                        this.container.logger.error(
+                            `[UNLOCK ERROR] Failed to delete overwrite for ${channelId} (${channel?.name}): ${err?.message}`
+                        );
+                    });
+                this.container.logger.info(
+                    `[BAN] Unlocked 📸 ${channel.name || channelId} || ${idx} for ${userId}`
                 );
             }
         }
@@ -352,7 +339,7 @@ class VoiceStateUpdateListener extends Listener {
 
         const timeoutDuration = customTimeout || cameraWarningTimeout;
         this.container.logger.info(
-            `[CAMERA WARN] ${member.user.tag} - ${timeoutDuration}ms timer`
+            `[CAMERA WARN] ${member.username} - ${timeoutDuration}ms timer`
         );
 
         const warningChannel = this.getLinkedTextChannel(member.voice?.channel);
@@ -391,6 +378,7 @@ class VoiceStateUpdateListener extends Listener {
             warningMessageId: msg ? msg.id : null,
             remainingTime: timeoutDuration,
             startTime,
+            inComplianceWindow: true,
         });
     }
 
@@ -402,12 +390,11 @@ class VoiceStateUpdateListener extends Listener {
         const warningData = this.warnedUsers.get(userId);
         const storedChannelId = warningData?.channelId;
         this.container.logger.info(
-            `[CAMERA KICK] ${member.user.tag} (${userId})`
+            `[CAMERA KICK] ${member.username} (${userId})`
         );
 
         const currentViolations = (this.violationTracker.get(userId) || 0) + 1;
         this.violationTracker.set(userId, currentViolations);
-        this.persistState();
 
         // Store the channel before disconnecting
         const preDisconnectChannel = member.voice?.channel;
@@ -424,10 +411,9 @@ class VoiceStateUpdateListener extends Listener {
                 bannedUntil,
                 violationCount: currentViolations,
             });
-            this.persistState();
 
-            await this.lockUserAcrossCameraVCs(member.guild, userId, true);
-            this.scheduleUnlock(userId, bannedUntil, true);
+            await this.lockUserAcrossCameraVCs(member.guild, userId);
+            this.scheduleUnlock(userId, bannedUntil);
 
             // Prepare ban notification embed
             const banMinutes = Math.ceil(cameraVCBanDuration / 60000);
@@ -435,7 +421,7 @@ class VoiceStateUpdateListener extends Listener {
                 .setTitle('🚫 VC Ban Issued')
                 .setColor(Colors.Black)
                 .setDescription(
-                    `${member.user.tag}, you're banned from camera VCs for **${banMinutes} min**.\n\n🔒 VCs locked. Ban expires: <t:${Math.floor(bannedUntil / 1000)}:R>`
+                    `${member.user}, you're banned from camera VCs for **${banMinutes} min**.\n\n🔒 VCs locked. Ban expires: <t:${Math.floor(bannedUntil / 1000)}:R>`
                 )
                 .setTimestamp();
 
@@ -457,7 +443,7 @@ class VoiceStateUpdateListener extends Listener {
                         .edit({ content: null, embeds: [banEmbed] })
                         .catch((err) => {
                             this.container.logger.warn(
-                                `[CAMERA KICK] Failed to edit warning message for ${member.user.tag} (${userId}) in channel ${warningMessage?.channelId || 'unknown'}: ${err?.message || 'Unknown error'}`
+                                `[CAMERA KICK] Failed to edit warning message for ${member.username} (${userId}) in channel ${warningMessage?.channelId || 'unknown'}: ${err?.message || 'Unknown error'}`
                             );
                         });
                 } else if (warningChannel) {
@@ -466,17 +452,17 @@ class VoiceStateUpdateListener extends Listener {
                         .send({ content: `${member.user}`, embeds: [banEmbed] })
                         .catch((err) => {
                             this.container.logger.error(
-                                `[CAMERA KICK] Failed to send ban message to text channel ${warningChannel.id} (${warningChannel.name}) for user ${member.user.tag} (${userId}): ${err?.message || 'Unknown error'}`
+                                `[CAMERA KICK] Failed to send ban message to text channel ${warningChannel.id} (${warningChannel.name}) for user ${member.username} (${userId}): ${err?.message || 'Unknown error'}`
                             );
                         });
                 } else {
                     this.container.logger.error(
-                        `[CAMERA KICK] Could not find text channel for voice channel ${storedChannelId || 'unknown'} when banning user ${member.user.tag} (${userId})`
+                        `[CAMERA KICK] Could not find text channel for voice channel ${storedChannelId || 'unknown'} when banning user ${member.username} (${userId})`
                     );
                 }
             } catch (err) {
                 this.container.logger.error(
-                    `[CAMERA KICK] Unexpected error in text channel notification for ${member.user.tag} (${userId}): ${err?.message || 'Unknown error'}`
+                    `[CAMERA KICK] Unexpected error in text channel notification for ${member.username} (${userId}): ${err?.message || 'Unknown error'}`
                 );
             }
 
@@ -485,23 +471,25 @@ class VoiceStateUpdateListener extends Listener {
                 await member.send({ embeds: [banEmbed] }).catch((err) => {
                     // Log as warn, not error, since closed DMs are expected
                     this.container.logger.warn(
-                        `[CAMERA KICK] Failed to send ban DM to ${member.user.tag} (${userId}) - this is expected if DMs are closed: ${err?.message || 'Unknown error'}`
+                        `[CAMERA KICK] Failed to send ban DM to ${member.username} (${userId}) - this is expected if DMs are closed: ${err?.message || 'Unknown error'}`
                     );
                 });
             } catch (err) {
                 this.container.logger.warn(
-                    `[CAMERA KICK] Unexpected error sending DM to ${member.user.tag} (${userId}): ${err?.message || 'Unknown error'}`
+                    `[CAMERA KICK] Unexpected error sending DM to ${member.username} (${userId}): ${err?.message || 'Unknown error'}`
                 );
             }
         }
 
         this.warnedUsers.delete(userId);
+        // FIX #5: Only persist once at the end
+        this.persistState();
     }
 
     /**
      * Schedule automatic unlock
      */
-    scheduleUnlock(userId, endTimestamp, isBan) {
+    async scheduleUnlock(userId, endTimestamp) {
         const now = Date.now();
         const delay = Math.max(0, endTimestamp - now);
 
@@ -543,7 +531,7 @@ class VoiceStateUpdateListener extends Listener {
                 this.violationTracker.delete(userId);
 
                 // Unlock VCs
-                await this.unlockUserAcrossCameraVCs(guild, userId, isBan);
+                await this.unlockUserAcrossCameraVCs(guild, userId);
                 this.persistState();
 
                 // Send notification
@@ -561,21 +549,24 @@ class VoiceStateUpdateListener extends Listener {
 
     /**
      * User complied by enabling camera
+     * FIX #3: Only reset violations if user has been compliant for the full session
      */
     async userComply(member) {
         const userId = member.id;
         const warningData = this.warnedUsers.get(userId);
         if (!warningData) return;
 
-        this.container.logger.info(`[CAMERA COMPLY] ${member.user.tag}`);
+        this.container.logger.info(`[CAMERA COMPLY] ${member.username}`);
 
+        // Only reset violations if user was warned but complied within the window
+        // (i.e., they didn't exploit toggle cycling)
         const prevViolations = this.violationTracker.get(userId) || 0;
         let resetMessage = '';
-        if (prevViolations > 0) {
+        if (prevViolations > 0 && warningData.inComplianceWindow) {
             this.violationTracker.delete(userId);
             this.persistState();
             resetMessage = '\n🔄 Violations reset to 0.';
-            this.container.logger.info(`[CAMERA RESET] ${member.user.tag}`);
+            this.container.logger.info(`[CAMERA RESET] ${member.username}`);
         }
 
         clearTimeout(warningData.timeoutId);
@@ -635,6 +626,7 @@ class VoiceStateUpdateListener extends Listener {
             ...warningData,
             timeoutId: null,
             remainingTime: remaining,
+            inComplianceWindow: false,
         });
     }
 
@@ -648,14 +640,14 @@ class VoiceStateUpdateListener extends Listener {
 
         if (!warningData.remainingTime || warningData.remainingTime <= 0) {
             this.container.logger.info(
-                `[CAMERA RESUME] Timer expired for ${member.user.tag}`
+                `[CAMERA RESUME] Timer expired for ${member.username}`
             );
             await this.kickUser(member, null);
             return;
         }
 
         this.container.logger.info(
-            `[CAMERA RESUME] ${member.user.tag} - ${warningData.remainingTime}ms`
+            `[CAMERA RESUME] ${member.username} - ${warningData.remainingTime}ms`
         );
 
         const warningChannel = this.getLinkedTextChannel(member.voice?.channel);
@@ -696,29 +688,56 @@ class VoiceStateUpdateListener extends Listener {
             timeoutId,
             startTime,
             remainingTime: warningData.remainingTime,
+            inComplianceWindow: true,
         });
     }
 
     /**
      * Notify user ban expired
+     * FIX #2: Send DM first, then fallback to guild channels
      */
     async notifyVCUnban(member) {
         try {
-            const ch = await this.getLinkedTextChannel(member.voice?.channel);
-            if (!ch) return;
             const embed = new EmbedBuilder()
                 .setTitle('✅ Ban Expired')
                 .setColor(Colors.Green)
                 .setDescription(
-                    `${member.user}, VC ban over. Violations reset. VCs unlocked.`
+                    `${member.user}, your VC ban has expired. Violations reset. VCs unlocked.`
                 )
                 .setTimestamp();
-            await ch
-                .send({ content: `${member.user}`, embeds: [embed] })
-                .catch(() => {});
+
+            // Try DM first (most reliable when user is offline/not in VC)
+            try {
+                await member.send({ embeds: [embed] }).catch(() => null);
+                this.container.logger.info(
+                    `[CAMERA NOTIFY] Sent unban DM to ${member.username}`
+                );
+                return;
+            } catch (dmErr) {
+                this.container.logger.warn(
+                    `[CAMERA NOTIFY] DM failed for ${member.username}, trying guild channel`
+                );
+            }
+
+            // Fallback: try to send to current VC's linked text channel
+            const ch = this.getLinkedTextChannel(member.voice?.channel);
+            if (ch) {
+                await ch
+                    .send({ content: `${member.user}`, embeds: [embed] })
+                    .catch(() => {});
+                this.container.logger.info(
+                    `[CAMERA NOTIFY] Sent unban message to ${ch.name}`
+                );
+                return;
+            }
+
+            // Last resort: log and accept silent failure (user can re-join to see they're unbanned)
+            this.container.logger.warn(
+                `[CAMERA NOTIFY] Could not notify ${member.username} of unban - user offline/no linked channel`
+            );
         } catch (err) {
             this.container.logger.error(
-                '[CAMERA NOTIFY] Unban failed:',
+                '[CAMERA NOTIFY] Unban notification error:',
                 err.message
             );
         }
@@ -835,7 +854,7 @@ class VoiceStateUpdateListener extends Listener {
             .filter(
                 (channel) =>
                     channel.parent &&
-                    channel.type == ChannelType.GuildVoice &&
+                    channel.type === ChannelType.GuildVoice &&
                     channel.parent.id === twoRoomsParentID
             )
             .sort((a, b) => a.position - b.position);
@@ -866,7 +885,7 @@ class VoiceStateUpdateListener extends Listener {
             .filter(
                 (channel) =>
                     channel.parent &&
-                    channel.type == ChannelType.GuildVoice &&
+                    channel.type === ChannelType.GuildVoice &&
                     channel.parent.id === threeRoomsParentID
             )
             .sort((a, b) => a.position - b.position);
