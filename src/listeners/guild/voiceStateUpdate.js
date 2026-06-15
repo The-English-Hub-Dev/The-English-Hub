@@ -401,7 +401,7 @@ class VoiceStateUpdateListener extends Listener {
         const userId = member.id;
         const warningData = this.warnedUsers.get(userId);
         const storedChannelId = warningData?.channelId;
-        this.container.logger.info(`[CAMERA KICK] ${member.user.tag}`);
+        this.container.logger.info(`[CAMERA KICK] ${member.user.tag} (${userId})`);
 
         const currentViolations = (this.violationTracker.get(userId) || 0) + 1;
         this.violationTracker.set(userId, currentViolations);
@@ -427,8 +427,18 @@ class VoiceStateUpdateListener extends Listener {
             await this.lockUserAcrossCameraVCs(member.guild, userId, true);
             this.scheduleUnlock(userId, bannedUntil, true);
 
+            // Prepare ban notification embed
+            const banMinutes = Math.ceil(cameraVCBanDuration / 60000);
+            const banEmbed = new EmbedBuilder()
+                .setTitle('🚫 VC Ban Issued')
+                .setColor(Colors.Black)
+                .setDescription(
+                    `${member.user.tag}, you're banned from camera VCs for **${banMinutes} min**.\n\n🔒 VCs locked. Ban expires: <t:${Math.floor(bannedUntil / 1000)}:R>`
+                )
+                .setTimestamp();
+
+            // Attempt to send ban notification to text channel
             try {
-                // Use the stored channel before disconnect, then fallback to fetching
                 const voiceChannel =
                     preDisconnectChannel ||
                     (storedChannelId
@@ -438,45 +448,47 @@ class VoiceStateUpdateListener extends Listener {
                         : null);
 
                 const warningChannel = this.getLinkedTextChannel(voiceChannel);
-                const banMinutes = Math.ceil(cameraVCBanDuration / 60000);
-                const banEmbed = new EmbedBuilder()
-                    .setTitle('🚫 VC Ban Issued')
-                    .setColor(Colors.Black)
-                    .setDescription(
-                        `${member.user.tag}, you're banned from camera VCs for **${banMinutes} min**.\n\n🔒 VCs locked. Ban expires: <t:${Math.floor(bannedUntil / 1000)}:R>`
-                    )
-                    .setTimestamp();
 
                 if (warningMessage) {
+                    // Try to edit existing warning message
                     await warningMessage
                         .edit({ content: null, embeds: [banEmbed] })
-                        .catch(() => {});
+                        .catch((err) => {
+                            this.container.logger.warn(
+                                `[CAMERA KICK] Failed to edit warning message for ${member.user.tag} (${userId}) in channel ${warningMessage?.channelId || 'unknown'}: ${err?.message || 'Unknown error'}`
+                            );
+                        });
                 } else if (warningChannel) {
+                    // Try to send new ban message to text channel
                     await warningChannel
                         .send({ content: `${member.user}`, embeds: [banEmbed] })
                         .catch((err) => {
                             this.container.logger.error(
-                                '[CAMERA KICK] Ban message send failed:',
-                                err?.message || 'Unknown error'
+                                `[CAMERA KICK] Failed to send ban message to text channel ${warningChannel.id} (${warningChannel.name}) for user ${member.user.tag} (${userId}): ${err?.message || 'Unknown error'}`
                             );
                         });
                 } else {
-                    this.container.logger.warn(
-                        `[CAMERA KICK] Could not find text channel for voice channel ${storedChannelId}`
+                    this.container.logger.error(
+                        `[CAMERA KICK] Could not find text channel for voice channel ${storedChannelId || 'unknown'} when banning user ${member.user.tag} (${userId})`
                     );
                 }
+            } catch (err) {
+                this.container.logger.error(
+                    `[CAMERA KICK] Unexpected error in text channel notification for ${member.user.tag} (${userId}): ${err?.message || 'Unknown error'}`
+                );
+            }
 
-                // Send DM as well for direct notification
+            // Attempt to send DM notification (expect this to fail sometimes due to closed DMs)
+            try {
                 await member.send({ embeds: [banEmbed] }).catch((err) => {
+                    // Log as warn, not error, since closed DMs are expected
                     this.container.logger.warn(
-                        `[CAMERA KICK] Failed to send ban DM to ${member.user.tag}:`,
-                        err?.message || 'Unknown error'
+                        `[CAMERA KICK] Failed to send ban DM to ${member.user.tag} (${userId}) - this is expected if DMs are closed: ${err?.message || 'Unknown error'}`
                     );
                 });
             } catch (err) {
-                this.container.logger.error(
-                    '[CAMERA KICK] Ban notice failed:',
-                    err?.message || 'Unknown error'
+                this.container.logger.warn(
+                    `[CAMERA KICK] Unexpected error sending DM to ${member.user.tag} (${userId}): ${err?.message || 'Unknown error'}`
                 );
             }
         }
