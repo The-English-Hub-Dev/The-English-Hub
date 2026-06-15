@@ -1,11 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
 const { isNullOrUndefinedOrEmpty } = require('@sapphire/utilities');
-const {
-    Message,
-    EmbedBuilder,
-    Colors,
-    blockQuote,
-} = require('discord.js');
+const { Message, EmbedBuilder, Colors, blockQuote } = require('discord.js');
 const { prefix } = require('../../../config.json');
 
 class HelpCommand extends Command {
@@ -81,7 +76,9 @@ class HelpCommand extends Command {
                 if (cmdCategory) {
                     const categoryIndex = categories.indexOf(cmdCategory);
                     if (
-                        isNullOrUndefinedOrEmpty(categoryCommands[categoryIndex])
+                        isNullOrUndefinedOrEmpty(
+                            categoryCommands[categoryIndex]
+                        )
                     ) {
                         categoryCommands[categoryIndex] = [cmd.name];
                     } else {
