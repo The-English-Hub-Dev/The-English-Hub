@@ -22,7 +22,7 @@ class HelpCommand extends Command {
      */
     async canUserUseCommand(message, cmd) {
         // If command has no preconditions, user can use it
-        if (!cmd.preconditions || cmd.preconditions.length === 0) {
+        if (!cmd.preconditions || !Array.isArray(cmd.preconditions) || cmd.preconditions.length === 0) {
             return true;
         }
 
@@ -30,13 +30,18 @@ class HelpCommand extends Command {
         for (const precondition of cmd.preconditions) {
             // Handle array of preconditions (OR logic)
             if (Array.isArray(precondition)) {
+                let hasPermission = false;
                 for (const prec of precondition) {
                     const result = await this.container.stores
                         .get('preconditions')
                         .get(prec)
                         ?.messageRun(message);
-                    if (result?.isOk()) return true;
+                    if (result?.isOk()) {
+                        hasPermission = true;
+                        break;
+                    }
                 }
+                if (!hasPermission) return false;
             } else {
                 // Single precondition
                 const result = await this.container.stores
