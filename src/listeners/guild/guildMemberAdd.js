@@ -69,7 +69,10 @@ _ _`,
         const milestoneKey = `milestones:announced:${member.guild.id}`;
 
         // Check if this milestone has already been announced
-        const alreadyAnnounced = await this.container.redis.sismember(milestoneKey, milestone.toString());
+        const alreadyAnnounced = await this.container.redis.sismember(
+            milestoneKey,
+            milestone.toString()
+        );
         if (alreadyAnnounced) return;
 
         const milestoneEmbed = new EmbedBuilder()

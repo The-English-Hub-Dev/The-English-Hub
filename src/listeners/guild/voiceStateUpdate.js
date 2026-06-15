@@ -401,7 +401,9 @@ class VoiceStateUpdateListener extends Listener {
         const userId = member.id;
         const warningData = this.warnedUsers.get(userId);
         const storedChannelId = warningData?.channelId;
-        this.container.logger.info(`[CAMERA KICK] ${member.user.tag} (${userId})`);
+        this.container.logger.info(
+            `[CAMERA KICK] ${member.user.tag} (${userId})`
+        );
 
         const currentViolations = (this.violationTracker.get(userId) || 0) + 1;
         this.violationTracker.set(userId, currentViolations);
