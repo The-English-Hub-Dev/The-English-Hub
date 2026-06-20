@@ -1,8 +1,7 @@
 const { Precondition } = require('@sapphire/framework');
-const { Message } = require('discord.js');
-const { staffRoles, testingServerID } = require('../../config.json');
+const { Message, PermissionFlagsBits } = require('discord.js');
 
-class StaffPrecondition extends Precondition {
+class ManageRolesPermsPrecondition extends Precondition {
     /**
      *
      * @param { Message } message
@@ -19,9 +18,12 @@ class StaffPrecondition extends Precondition {
         )
             return this.ok();
 
-        return staffRoles.some((role) => message.member.roles.cache.has(role))
+        return message.member.permissions.has(PermissionFlagsBits.ManageRoles)
             ? this.ok()
-            : this.error();
+            : this.error({
+                  message:
+                      'You need the Manage Roles permission to use this command.',
+              });
     }
 }
-module.exports = { StaffPrecondition };
+module.exports = { ManageRolesPermsPrecondition };

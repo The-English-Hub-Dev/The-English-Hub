@@ -22,6 +22,7 @@ class Tasks {
             healthCheck: false,
             vcUnban: false,
             autoUnmute: false,
+            autoUnban: false,
             introAutopost: false,
         };
         this.statusNum = 1;
@@ -48,6 +49,7 @@ class Tasks {
         await this.initializeHealthcheck();
         await this.initializeVcUnbanTask();
         await this.initializeAutoUnmuteTask();
+        await this.initializeAutoUnbanTask();
         await this.initializeIntroductionAutpost();
     }
 
@@ -312,6 +314,112 @@ class Tasks {
 
         container.logger.info('Auto unmute task initialized.');
         this.intervals.autoUnmute = autoUnmuteInterval;
+    }
+    async initializeAutoUnbanTask() {
+        const autoUnbanInterval = setInterval(async () => {
+            await this.runWithLock('autoUnban', async () => {
+                const currentBannedMembers = Object.entries(
+                    (await container.redis.hgetall('banned')) ?? {}
+                );
+                const guild = container.client.guilds.cache.get(mainGuildID);
+                if (!guild) return;
+
+                for (let i = 0; i < currentBannedMembers.length; i++) {
+                    const key = currentBannedMembers[i][0];
+                    const expireTime = Number(currentBannedMembers[i][1]);
+                    const memberID = key.split(':')[0];
+                    const expiresAtMs = expireTime * 1000;
+
+                    if (Number.isNaN(expiresAtMs) || Date.now() < expiresAtMs) {
+                        continue;
+                    }
+
+                    const ban = await guild.bans
+                        .fetch(memberID)
+                        .catch(() => null);
+                    if (!ban) {
+                        // Already unbanned manually — just clean up
+                        await container.redis.hdel('banned', key);
+                        continue;
+                    }
+
+                    await guild.bans.remove(
+                        memberID,
+                        'Auto unbanning user after the specified tempban duration.'
+                    );
+
+                    const user = ban.user;
+
+                    const dmEmbed = new EmbedBuilder()
+                        .setColor(Colors.Green)
+                        .setTitle(`You were unbanned from ${guild.name}`)
+                        .setAuthor({
+                            name: guild.name,
+                            iconURL: guild.iconURL(),
+                        })
+                        .setDescription(
+                            'Your temporary ban has expired. You may rejoin the server. Make sure to follow the rules to prevent further action.'
+                        )
+                        .setFooter({
+                            text: guild.name,
+                            iconURL: guild.iconURL(),
+                        })
+                        .setTimestamp(Date.now());
+
+                    await user.send({ embeds: [dmEmbed] }).catch(() => {});
+
+                    await container.redis.hdel('banned', key);
+
+                    const logCh = guild.channels.cache.get(
+                        require('../../config.json').logChannelID
+                    );
+                    if (logCh) {
+                        const logEmbed = new EmbedBuilder()
+                            .setColor(Colors.DarkGreen)
+                            .setTitle('Auto Unban')
+                            .setAuthor({
+                                name: user.tag,
+                                iconURL: user.avatarURL(),
+                            })
+                            .addFields(
+                                {
+                                    name: 'User',
+                                    value: `${user.tag} (${user.id})`,
+                                },
+                                {
+                                    name: 'Moderator',
+                                    value: `${container.client.user.tag} (${container.client.user.id})`,
+                                },
+                                {
+                                    name: 'Reason',
+                                    value: 'Auto unban after tempban duration expired.',
+                                },
+                                {
+                                    name: 'Date',
+                                    value: time(
+                                        new Date(),
+                                        TimestampStyles.LongDateTime
+                                    ),
+                                }
+                            )
+                            .setFooter({
+                                text: 'Moderation Logs',
+                                iconURL: guild.iconURL(),
+                            })
+                            .setThumbnail(container.client.user.avatarURL());
+
+                        await logCh.send({ embeds: [logEmbed] });
+                    }
+
+                    container.logger.info(
+                        `Auto unban task: Unbanned ${user.tag} after their tempban expired.`
+                    );
+                }
+            });
+        }, Time.Minute);
+
+        container.logger.info('Auto unban task initialized.');
+        this.intervals.autoUnban = autoUnbanInterval;
     }
 }
 

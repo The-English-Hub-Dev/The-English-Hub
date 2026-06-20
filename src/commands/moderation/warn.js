@@ -140,10 +140,12 @@ class WarnCommand extends Command {
                 },
                 {
                     name: 'Expiration',
-                    value: time(
-                        Math.round(punishment.expiration / 1000),
-                        TimestampStyles.LongDateTime
-                    ),
+                    value: punishment.expiration
+                        ? time(
+                              Math.round(punishment.expiration / 1000),
+                              TimestampStyles.LongDateTime
+                          )
+                        : 'N/A',
                 }
             )
             .setFooter({
