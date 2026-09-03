@@ -99,7 +99,7 @@ class WhoisCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addMemberOption((option) =>
+            .addUserOption((option) =>
                 option
                     .setName('member')
                     .setDescription('Target')
