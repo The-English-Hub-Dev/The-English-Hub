@@ -106,10 +106,34 @@ class BotInfoCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const processMem = process.memoryUsage();
+        const redisInfo = await this.container.redis.info();
+        const redisMem = redisInfo.slice(
+            redisInfo.indexOf('used_memory_rss_human') + 22,
+            redisInfo.indexOf('used_memory_rss_human') + 26
+        );
+        if (!this.container.client.application.owner)
+            await this.container.client.application.fetch();
+        const dev = this.container.client.application.owner.members.first();
+        const info = new EmbedBuilder()
+            .setTitle('Bot Information')
+            .setFooter({
+                text: this.container.client.user.tag,
+                iconURL: this.container.client.user.displayAvatarURL(),
+            })
+            .setColor('Random')
+            .addFields(
+                { name: 'Bot Version', value: packageInfo.version, inline: true },
+                { name: 'Developer', value: dev.user.tag, inline: true },
+                { name: 'Container', value: (await import('os')).hostname() },
+                { name: 'Memory Usage(RSS)', value: `\`${(processMem.rss / 1024 / 1024).toFixed(3)} MiB\``, inline: true },
+                { name: 'Memory Usage(Heap)', value: `\`${(processMem.heapUsed / 1024 / 1024).toFixed(3)} MiB\``, inline: true },
+                { name: 'Redis Memory Usage', value: `\`${redisMem} MiB\``, inline: true },
+                { name: 'Postgres Driver Version', value: `\`${this.container.db.typeorm.driver.version}\``, inline: true },
+                { name: 'Current Cached Users', value: `${this.container.client.users.cache.size}`, inline: true },
+                { name: 'Bot Uptime', value: formatter.format(this.container.client.uptime), inline: true }
+            );
+        return interaction.reply({ embeds: [info] });
     }
 
     /**

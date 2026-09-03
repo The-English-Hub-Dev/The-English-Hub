@@ -56,10 +56,33 @@ class PatCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
+
+        if (!member) {
+            return interaction.reply({
+                content: 'You must mention a member.',
+                ephemeral: true,
+            });
+        }
+
+        if (member.id === interaction.user.id) {
+            return interaction.reply({
+                content: 'Pat someone else!',
+                ephemeral: true,
+            });
+        }
+
+        await interaction.reply({
+            content: `${interaction.user} pats ${member}`,
+            allowedMentions: {
+                users: [member.id, interaction.user.id],
+                roles: [],
+                parse: [],
+            },
         });
+
+        return interaction.channel?.send(
+            gifs[Math.floor(Math.random() * gifs.length)]
+        );
     }
 
     /**

@@ -119,10 +119,11 @@ class ServerUnmuteCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const reason = interaction.options.getString('reason');
+        if (!member || !reason) return interaction.reply({ content: 'Provide a member and reason to server mute.', ephemeral: true });
+        if (member.voice.serverMute || !member.voice.channel) return interaction.reply({ content: 'This member cannot be server muted in their current state.', ephemeral: true });
+        await member.voice.setMute(true, reason);
+        return interaction.reply({ embeds: [new EmbedBuilder().setDescription(`Successfully **server muted** ${member.user.tag} for ${reason}`).setColor(Colors.Green)] });
     }
 
     /**
@@ -137,7 +138,8 @@ class ServerUnmuteCommand extends Command {
                     .setName('member')
                     .setDescription('Target')
                     .setRequired(true)
-            );
+            )
+            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(true));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

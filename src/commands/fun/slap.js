@@ -53,9 +53,23 @@ class SlapCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
+
+        if (!member) {
+            return interaction.reply({
+                content: 'You must mention a member.',
+                ephemeral: true,
+            });
+        }
+
+        await interaction.reply(gifs[Math.floor(Math.random() * gifs.length)]);
+
+        return interaction.channel?.send({
+            content: `${interaction.user} slapped ${member} <:Joemad:1329355163034456074>`,
+            allowedMentions: {
+                users: [member.id, interaction.user.id],
+                roles: [],
+                parse: [],
+            },
         });
     }
 

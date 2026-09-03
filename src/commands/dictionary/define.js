@@ -188,9 +188,150 @@ class DefineCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
+        const word = interaction.options.getString('word');
+        if (!word) {
+            return interaction.reply({
+                content: 'You must provide a word to define.',
+                ephemeral: true,
+            });
+        }
+
+        await interaction.deferReply();
+
+        // Clean the input string of weird characters
+        let cleanWord = word
+            .trim()
+            .toLowerCase()
+            .replace(/[^\w\s-]/g, '');
+
+        // Encode it for the URL
+        const encodedWord = encodeURIComponent(cleanWord);
+
+        const defActionRow1 = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
+                .setCustomId(`define:examples_${cleanWord}`)
+                .setLabel('Examples')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId(`define:synonyms_${cleanWord}`)
+                .setLabel('Synonyms')
+                .setStyle(ButtonStyle.Success),
+            new ButtonBuilder()
+                .setCustomId(`define:antonyms_${cleanWord}`)
+                .setLabel('Antonyms')
+                .setStyle(ButtonStyle.Danger),
+        ]);
+
+        const defActionRow2 = new ActionRowBuilder().addComponents([
+            new ButtonBuilder()
+                .setCustomId(`define:similarwords_${cleanWord}`)
+                .setLabel('Similar Words')
+                .setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder()
+                .setCustomId(`define:pronunciation_${cleanWord}`)
+                .setLabel('Pronunciation')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId(`define:frequency_${cleanWord}`)
+                .setLabel('Frequency')
+                .setStyle(ButtonStyle.Secondary),
+        ]);
+
+        const overrideDef = overridenDefinitions[cleanWord];
+        if (overrideDef) {
+            const definitionEmbed = new EmbedBuilder()
+                .setTitle(`Word: ${cleanWord}`)
+                .setDescription(blockQuote(`**Definition:** ${overrideDef}`))
+                .setFooter({
+                    text: `Definition requested by ${interaction.user.tag}`,
+                })
+                .setColor('Random');
+            return interaction.editReply({
+                content: `${cleanWord == 'vivek' ? '<@1031266462272336003>' : ''}`,
+                embeds: [definitionEmbed],
+                components: [defActionRow1, defActionRow2],
+                allowedMentions: { repliedUser: false },
+            });
+        }
+
+        const res = await fetch(
+            `https://api.api-ninjas.com/v1/dictionary?word=${encodedWord}`,
+            {
+                headers: {
+                    'X-API-Key': process.env.API_NINJA_KEY,
+                },
+            }
+        );
+
+        if (res.status === 404) {
+            return interaction.editReply(
+                `:x: That word could not be found in the dictionary.`
+            );
+        }
+
+        if (!res.ok) {
+            return interaction.editReply(
+                `:warning: The dictionary service is currently unavailable (Status: ${res.status}). Please try again later.`
+            );
+        }
+
+        const resData = await res.json();
+        let description = 'No definitions listed.';
+        if (resData.definitions.length > 0) {
+            description = `**Definition${
+                resData.definitions.length > 1
+                    ? ` 1 (${resData.definitions[0].partOfSpeech})`
+                    : ` (${resData.definitions[0].partOfSpeech})`
+            }:** ${resData.definitions[0].definition}`;
+            if (resData.definitions.length > 1) {
+                description += `\n**Definition 2 (${resData.definitions[1].partOfSpeech}):** ${resData.definitions[1].definition}`;
+            }
+            if (resData.definitions.length > 2) {
+                description += `\n**Definition 3 (${resData.definitions[2].partOfSpeech}):** ${resData.definitions[2].definition}`;
+            }
+        }
+
+        let hasteBinLink = null;
+        if (resData.definitions.length > 2) {
+            try {
+                hasteBinLink = await this.container.utility.createHastebin(
+                    `Definitions of ${cleanWord}\n` +
+                        resData.definitions
+                            .slice(3)
+                            .map(
+                                (def, index) =>
+                                    `Definition ${index + 4} (${def.partOfSpeech}): ${
+                                        def.definition
+                                    }`
+                            )
+                            .join('\n'),
+                    'txt'
+                );
+            } catch (error) {
+                console.error('Failed to generate Hastebin:', error);
+            }
+        }
+
+        if (hasteBinLink) {
+            description += `\n\nOther definitions can be found [here](${hasteBinLink})`;
+        } else if (resData.definitions.length > 2) {
+            description += `\n\n*(More definitions exist, but the text dump service is temporarily unavailable. Try again later.)*`;
+        }
+
+        const definitionEmbed = new EmbedBuilder()
+            .setTitle(`Word: ${cleanWord}`)
+            .setDescription(blockQuote(description))
+            .setFooter({
+                text: `Definition requested by ${interaction.user.tag}`,
+            })
+            .setColor(
+                description == 'No definitions listed.' ? 'Red' : 'Random'
+            );
+
+        return interaction.editReply({
+            embeds: [definitionEmbed],
+            allowedMentions: { repliedUser: false },
+            components: [defActionRow1, defActionRow2],
         });
     }
 
@@ -200,7 +341,10 @@ class DefineCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) =>
+                option.setName('word').setDescription('Word to define').setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

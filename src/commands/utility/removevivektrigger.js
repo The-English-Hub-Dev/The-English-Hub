@@ -40,10 +40,18 @@ class RemoveVivekTriggerCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const trigger = interaction.options.getString('trigger');
+        if (!trigger) {
+            return interaction.reply({
+                content: 'You must provide a word to remove to the highlight triggers',
+                ephemeral: true,
+            });
+        }
+
+        await this.container.redis.lrem('hltriggers_vivek', 1, trigger);
+        return interaction.reply(
+            `Successfully removed \`${trigger}\` from the highlight triggers for Vivek`
+        );
     }
 
     /**
@@ -52,7 +60,10 @@ class RemoveVivekTriggerCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) =>
+                option.setName('trigger').setDescription('Word').setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

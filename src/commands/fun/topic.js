@@ -672,9 +672,25 @@ class TopicCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
+        const query = interaction.options.getString('query');
+        const queryResult = query
+            ? topics.find((topic) => topic.includes(query))
+            : undefined;
+
+        const topic =
+            queryResult ?? topics[Math.floor(Math.random() * topics.length)];
         return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
+            embeds: [
+                new EmbedBuilder()
+                    .setDescription(topic)
+                    .setTitle('Topic')
+                    .setFooter({
+                        text: `${interaction.guild.name} - Source: yagpdb topic command + other sources`,
+                        iconURL: interaction.guild.iconURL(),
+                    })
+                    .setColor('Random'),
+            ],
+            allowedMentions: { users: [], roles: [], parse: [] },
         });
     }
 
@@ -684,7 +700,8 @@ class TopicCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) => option.setName('query').setDescription('Topic search').setRequired(false));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

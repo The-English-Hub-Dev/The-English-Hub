@@ -44,10 +44,12 @@ class RestartCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const cooldownActive = await this.container.redis.get('restart-cooldown');
+        if (cooldownActive) return interaction.reply(`Please wait ${await this.container.redis.ttl('restart-cooldown')} seconds before restarting the bot again.`);
+        await this.container.redis.setex('restart-cooldown', 60, '1');
+        await this.container.redis.hset('tasks', 'restart', `${interaction.channel.id}:${Date.now()}`);
+        await interaction.reply('Restarting bot...');
+        process.exit(0);
     }
 
     /**

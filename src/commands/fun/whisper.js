@@ -61,9 +61,30 @@ class WhisperCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
+
+        if (!member) {
+            return interaction.reply({
+                content: 'You must mention a member.',
+                ephemeral: true,
+            });
+        }
+
+        if (member.id === interaction.user.id) {
+            return interaction.reply({
+                content: "You can't whisper to yourself :(",
+                ephemeral: true,
+            });
+        }
+
+        await interaction.reply(gifs[Math.floor(Math.random() * gifs.length)]);
+
+        return interaction.channel?.send({
+            content: `${interaction.user} whispered to ${member} 🤫`,
+            allowedMentions: {
+                users: [member.id, interaction.user.id],
+                roles: [],
+                parse: [],
+            },
         });
     }
 

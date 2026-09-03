@@ -62,10 +62,38 @@ class AddVivekTriggerCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const rawMessage = interaction.options.getString('trigger_response');
+        if (!rawMessage) {
+            return interaction.reply({
+                content: 'You must provide something to add to the message trigger list.',
+                ephemeral: true,
+            });
+        }
+        if (!rawMessage.includes('=')) {
+            return interaction.reply({
+                content: 'You must provide a valid trigger and response to set in the format <trigger> = <response>.',
+                ephemeral: true,
+            });
+        }
+
+        const [trigger, ...responseParts] = rawMessage.split('=');
+        const cleanTrigger = trigger.trim();
+        const response = responseParts.join('=').trim();
+        if (!cleanTrigger || !response) {
+            return interaction.reply({
+                content: 'You must provide a valid trigger and response to set.',
+                ephemeral: true,
+            });
+        }
+
+        await this.container.redis.hset(
+            `guildtriggers_${interaction.guild.id}`,
+            cleanTrigger,
+            response
+        );
+        return interaction.reply(
+            `Successfully added \`${response}\` as a response to the message trigger \`${cleanTrigger}\`.`
+        );
     }
 
     /**
@@ -74,7 +102,13 @@ class AddVivekTriggerCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) =>
+                option
+                    .setName('trigger_response')
+                    .setDescription('Trigger = response')
+                    .setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

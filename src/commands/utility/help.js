@@ -212,10 +212,21 @@ class HelpCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const commandName = interaction.options.getString('command');
+        const allCommands = this.container.stores.get('commands');
+        if (!commandName) {
+            const fields = [];
+            for (const category of allCommands.categories) {
+                const names = [...allCommands.values()]
+                    .filter((cmd) => cmd.enabled && cmd.category === category)
+                    .map((cmd) => cmd.name);
+                if (names.length) fields.push({ name: category, value: names.join(', ') });
+            }
+            return interaction.reply({ embeds: [new EmbedBuilder().setColor(Colors.Blue).setTitle('Help').addFields(fields)] });
+        }
+        const command = allCommands.get(commandName);
+        if (!command) return interaction.reply(`No help found for command \`${commandName}\``);
+        return interaction.reply({ embeds: [new EmbedBuilder().setColor(Colors.Blue).setTitle(`Help: ${command.name}`).setDescription(blockQuote(`**Name:** ${command.name}\n**Description:** ${command.description || 'No description.'}`))] });
     }
 
     /**
@@ -224,7 +235,10 @@ class HelpCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) =>
+                option.setName('command').setDescription('Command name').setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

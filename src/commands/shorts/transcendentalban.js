@@ -6,6 +6,7 @@ const {
 } = require('@sapphire/framework');
 const { Message, ChatInputCommandInteraction } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { runVcShortcut } = require('../../library/vcShortcut');
 
 class TranscendentalBanCommand extends Command {
     constructor(context, options) {
@@ -59,11 +60,7 @@ class TranscendentalBanCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        return runVcShortcut(interaction, this.container, '1236713261421035620');
     }
 
     /**
@@ -78,7 +75,8 @@ class TranscendentalBanCommand extends Command {
                     .setName('member')
                     .setDescription('Target')
                     .setRequired(true)
-            );
+            )
+            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

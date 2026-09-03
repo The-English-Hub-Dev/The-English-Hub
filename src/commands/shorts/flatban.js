@@ -6,6 +6,7 @@ const {
 } = require('@sapphire/framework');
 const { Message, ChatInputCommandInteraction } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
+const { runVcShortcut } = require('../../library/vcShortcut');
 
 class FlatBanCommand extends Command {
     constructor(context, options) {
@@ -59,7 +60,7 @@ class FlatBanCommand extends Command {
         if (args.getFlags('perm', 'p')) {
             await this.container.redis.hdel(
                 'vcban',
-                `${vChannel.id}:${member.id}`
+                `1149541570257883277:${member.id}`
             );
             await message.channel.send(
                 'Member permanently banned from the flat world guest room. This can only be undone with the `?vcunban` command.'
@@ -70,11 +71,7 @@ class FlatBanCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        return runVcShortcut(interaction, this.container, '1149541570257883277');
     }
 
     /**
@@ -89,7 +86,8 @@ class FlatBanCommand extends Command {
                     .setName('member')
                     .setDescription('Target')
                     .setRequired(true)
-            );
+            )
+            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

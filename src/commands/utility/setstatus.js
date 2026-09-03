@@ -62,10 +62,13 @@ class SetstatusCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const type = interaction.options.getString('type') || 'playing';
+        const status = interaction.options.getString('status');
+        if (!status) return interaction.reply({ content: 'Please provide a status to set.', ephemeral: true });
+        const actTypes = { playing: ActivityType.Playing, watching: ActivityType.Watching, listening: ActivityType.Listening, competing: ActivityType.Competing };
+        if (this.container.intervals?.status) clearInterval(this.container.intervals.status);
+        this.container.client.user.setActivity(status, { type: actTypes[type] || ActivityType.Playing });
+        return interaction.reply(`Successfully set the bots status to ${type}: ${status}`);
     }
 
     /**
@@ -74,7 +77,9 @@ class SetstatusCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) => option.setName('type').setDescription('Activity type').addChoices({ name: 'Playing', value: 'playing' }, { name: 'Watching', value: 'watching' }, { name: 'Listening', value: 'listening' }, { name: 'Competing', value: 'competing' }).setRequired(false))
+            .addStringOption((option) => option.setName('status').setDescription('Activity text').setRequired(true));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

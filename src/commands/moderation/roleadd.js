@@ -127,10 +127,13 @@ class RoleAddCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const role = interaction.options.getRole('role');
+        const reason = interaction.options.getString('reason') || 'No reason provided.';
+        if (!member || !role) return interaction.reply({ content: 'You must provide a valid member and role.', ephemeral: true });
+        if (interaction.member.roles.highest.position <= role.position || interaction.guild.members.me.roles.highest.position <= role.position) return interaction.reply({ content: 'That role cannot be managed.', ephemeral: true });
+        if (member.roles.cache.has(role.id)) return interaction.reply({ content: 'The member already has that role.', ephemeral: true });
+        await member.roles.add(role, reason);
+        return interaction.reply({ embeds: [new EmbedBuilder().setColor(Colors.Green).setDescription(`<:Hellos:1218430823229820968> Added ${role} to ${member.user}.`)] });
     }
 
     /**
@@ -145,7 +148,9 @@ class RoleAddCommand extends Command {
                     .setName('member')
                     .setDescription('Target')
                     .setRequired(true)
-            );
+            )
+            .addRoleOption((option) => option.setName('role').setDescription('Role').setRequired(true))
+            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

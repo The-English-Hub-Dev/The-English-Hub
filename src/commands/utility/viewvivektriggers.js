@@ -38,10 +38,18 @@ class ViewVivekTriggersCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const triggers = await this.container.redis.lrange(
+            'hltriggers_vivek',
+            0,
+            -1
+        );
+        if (triggers.length === 0) {
+            return interaction.reply("There are no triggers for Vivek's highlight");
+        }
+
+        return interaction.reply(
+            `The current triggers for Vivek's highlight are: ${triggers.join(', ')}`
+        );
     }
 
     /**

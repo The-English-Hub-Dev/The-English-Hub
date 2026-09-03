@@ -110,9 +110,84 @@ class ShipCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
+
+        if (!member) {
+            return interaction.reply({
+                content: 'You must mention a member to ship with.',
+                ephemeral: true,
+            });
+        }
+
+        if (member.id === interaction.user.id) {
+            return interaction.reply({
+                content: 'You cannot ship yourself with yourself!',
+                ephemeral: true,
+            });
+        }
+
+        const percentage = Math.floor(Math.random() * 100) + 1;
+
+        registerFont('src/fonts/ComicSansMS.ttf', {
+            family: 'Comic Sans',
+        });
+        const canvas = createCanvas(600, 320);
+        const ctx = canvas.getContext('2d');
+        ctx.fillStyle = '#2C2F33';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const curUser = await loadImage(
+            interaction.user.displayAvatarURL({ size: 256, extension: 'png' })
+        );
+        const mentionedUser = await loadImage(
+            member.user.displayAvatarURL({ size: 256, extension: 'png' })
+        );
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(128, 150, 100, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(curUser, 28, 50, 200, 200);
+        ctx.restore();
+
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(472, 150, 100, 0, Math.PI * 2);
+        ctx.closePath();
+        ctx.clip();
+        ctx.drawImage(mentionedUser, 372, 50, 200, 200);
+        ctx.restore();
+
+        ctx.fillStyle = '#FF6B6B';
+
+        // Heart
+        ctx.beginPath();
+        ctx.moveTo(300, 150);
+        ctx.bezierCurveTo(300, 120, 270, 100, 240, 120);
+        ctx.bezierCurveTo(220, 140, 220, 170, 300, 220);
+        ctx.bezierCurveTo(380, 170, 380, 140, 360, 120);
+        ctx.bezierCurveTo(330, 100, 300, 120, 300, 150);
+        ctx.fill();
+
+        ctx.font = 'bold 20px "Comic Sans"';
+        ctx.fillStyle = 'white';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${percentage}% compatibility`, 300, 280);
+
+        const img = canvas.toBuffer('image/png');
+
+        const attachment = new AttachmentBuilder(img, { name: 'ship.png' });
+
+        await interaction.deferReply();
+
+        return interaction.editReply({
+            files: [attachment],
+            content: `${interaction.user} and ${member} - ${percentage}% match!`,
+            allowedMentions: {
+                users: [interaction.user.id, member.id],
+                roles: [],
+                parse: [],
+            },
         });
     }
 

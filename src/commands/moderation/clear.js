@@ -119,11 +119,15 @@ class ClearCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const amount = interaction.options.getInteger('amount');
+        const reason = interaction.options.getString('reason') || 'No reason provided.';
+        if (!amount || amount < 1 || amount > 100) return interaction.reply({ content: 'You can only clear between 1 and 100 messages at a time.', ephemeral: true });
+        const deleted = await interaction.channel.bulkDelete(amount, true);
+        const punishment = await Punishment.create(interaction.user.id, interaction.channel.id, reason, 'clear');
+        const confirmEmbed = new EmbedBuilder()
+            .setColor(Colors.Green)
+            .setDescription(`<:Hellos:1218430823229820968> Cleared ${deleted.size} messages with ID \`${punishment.punishment_id}\`.`);
+        return interaction.reply({ embeds: [confirmEmbed] });
     }
 
     /**
@@ -133,12 +137,8 @@ class ClearCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addUserOption((option) =>
-                option
-                    .setName('member')
-                    .setDescription('Target')
-                    .setRequired(true)
-            );
+            .addIntegerOption((option) => option.setName('amount').setDescription('Messages').setMinValue(1).setMaxValue(100).setRequired(true))
+            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

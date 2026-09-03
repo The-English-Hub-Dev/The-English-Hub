@@ -39,9 +39,17 @@ class AFKCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
+        const reason = interaction.options.getString('reason') || 'No reason provided.';
+
+        await this.container.redis.hset(
+            'afk',
+            interaction.user.id,
+            `${Date.now()}:${reason}`
+        );
+
         return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
+            content: `You are AFK: ${reason}`,
+            allowedMentions: { users: [], roles: [], repliedUser: false },
         });
     }
 
@@ -51,7 +59,13 @@ class AFKCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason for being AFK')
+                    .setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

@@ -163,11 +163,12 @@ class VcUnbanCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
+        const channel = interaction.options.getChannel('channel');
         const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        if (!channel || !member) return interaction.reply({ content: 'Provide a voice channel and member.', ephemeral: true });
+        await channel.permissionOverwrites.delete(member, 'VC unban');
+        await this.container.redis.hdel('vcban', `${channel.id}:${member.id}`);
+        return interaction.reply(`${member} has been unbanned from ${channel}.`);
     }
 
     /**
@@ -177,6 +178,7 @@ class VcUnbanCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
+            .addChannelOption((option) => option.setName('channel').setDescription('Voice channel').setRequired(true))
             .addUserOption((option) =>
                 option
                     .setName('member')

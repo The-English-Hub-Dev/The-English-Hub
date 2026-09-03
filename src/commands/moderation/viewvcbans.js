@@ -71,11 +71,14 @@ class ViewVcbanCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const entries = Object.entries(await this.container.redis.hgetall('vcban'));
+        const lines = await Promise.all(entries.map(async ([key, value]) => {
+            const [channelID, memberID] = key.split(':');
+            const user = await this.container.client.users.fetch(memberID).catch(() => null);
+            return `Members banned from <#${channelID}>: <@${memberID}> (${user?.tag || memberID}) Expires: ${time(new Date(Number(value) + Time.Day), TimestampStyles.RelativeTime)}`;
+        }));
+        const embed = new EmbedBuilder().setColor(Colors.Orange).setTitle('Current active VC Bans').setDescription(lines.join('\n') || 'No current vc bans.').setFooter({ text: `Requested by ${interaction.user.tag}` }).setTimestamp();
+        return interaction.reply({ embeds: [embed] });
     }
 
     /**
@@ -85,12 +88,7 @@ class ViewVcbanCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addUserOption((option) =>
-                option
-                    .setName('member')
-                    .setDescription('Target')
-                    .setRequired(true)
-            );
+            ;
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

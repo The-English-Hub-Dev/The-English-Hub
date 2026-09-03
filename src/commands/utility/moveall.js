@@ -53,10 +53,13 @@ class MoveAllCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const from = interaction.options.getChannel('from');
+        const to = interaction.options.getChannel('to');
+        if (!from || !to) return interaction.reply({ content: 'You must provide both voice channels.', ephemeral: true });
+        const members = [...from.members.values()];
+        for (let i = 0; i < members.length; i += 5)
+            await Promise.allSettled(members.slice(i, i + 5).map((member) => member.voice.setChannel(to)));
+        return interaction.reply(`Moved ${members.length} members from ${from} to ${to}.`);
     }
 
     /**
@@ -65,7 +68,9 @@ class MoveAllCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addChannelOption((option) => option.setName('from').setDescription('Source voice channel').setRequired(true))
+            .addChannelOption((option) => option.setName('to').setDescription('Destination voice channel').setRequired(true));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

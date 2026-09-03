@@ -39,10 +39,18 @@ class AddVivekTriggerCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const trigger = interaction.options.getString('trigger');
+        if (!trigger) {
+            return interaction.reply({
+                content: 'You must provide a word to add to the highlight triggers',
+                ephemeral: true,
+            });
+        }
+
+        await this.container.redis.lpush('hltriggers_vivek', trigger);
+        return interaction.reply(
+            `Successfully added \`${trigger}\` to the highlight triggers for Vivek`
+        );
     }
 
     /**
@@ -51,7 +59,10 @@ class AddVivekTriggerCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) =>
+                option.setName('trigger').setDescription('Word').setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

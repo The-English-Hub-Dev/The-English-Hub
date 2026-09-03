@@ -195,10 +195,16 @@ class TempbanCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const duration = interaction.options.getString('duration');
+        const reason = interaction.options.getString('reason') || 'No reason provided.';
+        if (!member || !duration) return interaction.reply({ content: 'Provide a member and duration.', ephemeral: true });
+        const rawTime = new Duration(duration);
+        if (isNaN(rawTime.offset)) return interaction.reply({ content: 'Invalid duration specified.', ephemeral: true });
+        const expiry = Math.round((Date.now() + rawTime.offset) / 1000);
+        const punishment = await Punishment.create(interaction.user.id, member.id, reason, 'tempban', expiry);
+        await member.ban({ reason });
+        await this.container.redis.hset('tempbans', `${member.id}:${Date.now()}`, expiry);
+        return interaction.reply(`<:Hellos:1218430823229820968> ${member.user} has been **banned** with ID \`${punishment.punishment_id}\`.`);
     }
 
     /**
@@ -213,7 +219,9 @@ class TempbanCommand extends Command {
                     .setName('member')
                     .setDescription('Target')
                     .setRequired(true)
-            );
+            )
+            .addStringOption((option) => option.setName('duration').setDescription('Duration').setRequired(true))
+            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

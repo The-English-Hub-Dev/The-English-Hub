@@ -108,10 +108,15 @@ class QueueCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const queueID = interaction.options.getString('id');
+        const queueSnowflake = queueID || DiscordSnowflake.generate();
+        const queueEmbed = new EmbedBuilder().setColor('Random').setTitle('Queue').setDescription(`Queue ID: ${queueSnowflake}\n\n**Users:** None`).setFooter({ text: `Queue created by ${interaction.user.tag}` });
+        const queueActionRow = new ActionRowBuilder().addComponents([
+            new ButtonBuilder().setCustomId(`queue:join_${queueSnowflake}`).setLabel('Join').setStyle(ButtonStyle.Success),
+            new ButtonBuilder().setCustomId(`queue:leave_${queueSnowflake}`).setLabel('Leave').setStyle(ButtonStyle.Danger),
+            new ButtonBuilder().setCustomId(`queue:clear_${queueSnowflake}`).setLabel('Clear').setStyle(ButtonStyle.Secondary),
+        ]);
+        await interaction.reply({ embeds: [queueEmbed], components: [queueActionRow] });
     }
 
     /**
@@ -120,7 +125,8 @@ class QueueCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) => option.setName('id').setDescription('Queue ID to restore').setRequired(false));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

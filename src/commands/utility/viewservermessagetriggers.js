@@ -52,10 +52,27 @@ class ViewServerTriggersCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const guildTriggers = Object.entries(
+            await this.container.redis.hgetall(
+                `guildtriggers_${interaction.guild.id}`
+            )
+        );
+        if (guildTriggers.length === 0) {
+            return interaction.reply(
+                'There are no message triggers set up in this server'
+            );
+        }
+
+        const triggerListEmbed = new EmbedBuilder()
+            .setTitle('Server Message Triggers')
+            .setColor(Colors.LuminousVividPink)
+            .setFooter({ text: `Message Triggers for ${interaction.guild.name}` })
+            .setDescription(
+                `**Trigger** → *Response*\n${guildTriggers
+                    .map((tr) => `${tr[0]} → *${tr[1]}*`)
+                    .join('\n')}`
+            );
+        return interaction.reply({ embeds: [triggerListEmbed] });
     }
 
     /**

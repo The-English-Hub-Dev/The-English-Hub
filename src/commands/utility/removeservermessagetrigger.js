@@ -55,10 +55,11 @@ class RemoveVivekTriggerCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const trigger = interaction.options.getString('trigger');
+        const key = `guildtriggers_${interaction.guild.id}`;
+        if (!trigger || !(await this.container.redis.hget(key, trigger))) return interaction.reply({ content: 'That trigger does not exist in this server.', ephemeral: true });
+        await this.container.redis.hdel(key, trigger);
+        return interaction.reply(`Successfully removed \`${trigger}\` from the list of message triggers.`);
     }
 
     /**
@@ -67,7 +68,8 @@ class RemoveVivekTriggerCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) => option.setName('trigger').setDescription('Trigger').setRequired(true));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

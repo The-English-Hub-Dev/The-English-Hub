@@ -38,8 +38,21 @@ class JoinMeCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
+        const channel = interaction.member?.voice.channel;
+        if (!channel)
+            return interaction.reply({
+                content: 'You must be in a VC for the bot to join you.',
+                ephemeral: true,
+            });
+
+        const connection = joinVoiceChannel({
+            channelId: channel.id,
+            guildId: channel.guild.id,
+            adapterCreator: channel.guild.voiceAdapterCreator,
+        });
+
         return interaction.reply({
-            content: 'TODO: Implement',
+            content: 'Joined you in VC!',
             ephemeral: true,
         });
     }

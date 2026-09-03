@@ -176,10 +176,134 @@ class BanCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
+        const reason = interaction.options.getString('reason') || 'No reason provided.';
+        const deleteDays = interaction.options.getNumber('deletedays') || 1;
+
+        if (!member) {
+            return interaction.reply({
+                content: 'You must provide a valid user to ban.',
+                ephemeral: true,
+            });
+        }
+
+        if (
+            interaction.member.roles.highest.position <=
+            member.roles.highest.position
+        ) {
+            return interaction.reply({
+                content:
+                    'You may not ban members with equal or higher roles than you.',
+                ephemeral: true,
+            });
+        }
+
+        if (!member.bannable)
+            return interaction.reply({
+                content: 'That member is unbannable.',
+                ephemeral: true,
+            });
+
+        const punishment = await Punishment.create(
+            interaction.user.id,
+            member.user.id,
+            reason,
+            'ban'
+        );
+
+        await this.sendMemberDMInteraction(interaction, member, reason, punishment);
+
+        await member.ban({ days: deleteDays, reason: reason });
+
+        const confirmEmbed = new EmbedBuilder()
+            .setColor(Colors.DarkRed)
+            .setDescription(
+                `<:Hellos:1218430823229820968> ${member.user} has been **banned** with ID \`${punishment.punishment_id}\`.`
+            );
+
+        await interaction.reply({
+            embeds: [confirmEmbed],
         });
+
+        await this.logBanInteraction(interaction, member, reason, punishment);
+    }
+
+    /**
+     *
+     * @param { ChatInputCommandInteraction } interaction
+     * @param { GuildMember} member
+     * @param { String} reason
+     * @param { Punishment } punishment
+     */
+    async sendMemberDMInteraction(interaction, member, reason, punishment) {
+        const dmEmbed = new EmbedBuilder()
+            .setColor(Colors.Red)
+            .setTitle(`You were banned from ${interaction.guild.name}`)
+            .setAuthor({
+                name: interaction.guild.name,
+                iconURL: interaction.guild.iconURL(),
+            })
+            .addFields(
+                { name: 'Reason', value: reason },
+                { name: 'Punishment ID', value: punishment.punishment_id },
+                {
+                    name: 'Appeal',
+                    value: 'To appeal this ban, click [here](https://discord.com/invite/Yp26QSPnRT).',
+                }
+            )
+            .setFooter({
+                text: 'If you believe this ban was unjustified, you may submit an appeal',
+                iconURL: member.user.avatarURL(),
+            })
+            .setTimestamp();
+
+        return member.send({ embeds: [dmEmbed] }).catch(() => {});
+    }
+
+    /**
+     *
+     * @param { ChatInputCommandInteraction } interaction
+     * @param { GuildMember } member
+     * @param { String } reason
+     * @param { Punishment } punishment
+     * @returns
+     */
+    async logBanInteraction(interaction, member, reason, punishment) {
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.DarkRed)
+            .setTitle('Ban')
+            .setAuthor({
+                name: member.user.tag,
+                iconURL: member.user.avatarURL(),
+            })
+            .addFields(
+                {
+                    name: 'Punishment ID',
+                    value: `\`${punishment.punishment_id}\``,
+                },
+                {
+                    name: 'User',
+                    value: `${member.user.tag} (${member.user.id})`,
+                },
+                {
+                    name: 'Moderator',
+                    value: `${interaction.user.tag} (${interaction.user.id})`,
+                },
+                { name: 'Reason', value: reason },
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                }
+            )
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: interaction.guild.iconURL(),
+            })
+            .setThumbnail(this.container.client.user.avatarURL());
+
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (!logCh) return;
+
+        return logCh.send({ embeds: [logEmbed] });
     }
 
     /**
@@ -194,7 +318,9 @@ class BanCommand extends Command {
                     .setName('member')
                     .setDescription('Target')
                     .setRequired(true)
-            );
+            )
+            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false))
+            .addIntegerOption((option) => option.setName('deletedays').setDescription('Days of messages to delete').setMinValue(0).setMaxValue(7).setRequired(false));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

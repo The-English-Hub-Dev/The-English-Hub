@@ -219,11 +219,12 @@ class RemovepunishmentCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const punishmentID = interaction.options.getString('punishment_id');
+        if (!punishmentID) return interaction.reply({ content: 'Provide a punishment ID.', ephemeral: true });
+        const punishment = await this.container.db.punishments.findOneBy({ punishment_id: punishmentID });
+        if (!punishment) return interaction.reply({ content: 'A punishment with that ID does not exist.', ephemeral: true });
+        await this.container.db.punishments.delete({ punishment_id: punishmentID });
+        return interaction.reply(`Removed punishment \`${punishmentID}\`.`);
     }
 
     /**
@@ -233,12 +234,7 @@ class RemovepunishmentCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addUserOption((option) =>
-                option
-                    .setName('member')
-                    .setDescription('Target')
-                    .setRequired(true)
-            );
+            .addStringOption((option) => option.setName('punishment_id').setDescription('Punishment ID').setRequired(true));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

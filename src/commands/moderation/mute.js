@@ -217,10 +217,16 @@ class MuteCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const duration = interaction.options.getString('duration');
+        const reason = interaction.options.getString('reason') || 'No reason given.';
+        if (!member || !duration) return interaction.reply({ content: 'Provide a member and duration.', ephemeral: true });
+        const rawTime = new Duration(duration);
+        if (isNaN(rawTime.offset) || !mutedRoleID) return interaction.reply({ content: 'Invalid duration or mute role configuration.', ephemeral: true });
+        const expiry = Math.round((Date.now() + rawTime.offset) / 1000);
+        await member.roles.add(mutedRoleID, `Mute command executed by ${interaction.user.tag}`);
+        await this.container.redis.hset('muted', `${member.id}:${Date.now()}`, expiry);
+        const punishment = await Punishment.create(interaction.user.id, member.id, reason, 'mute', expiry);
+        await interaction.reply(`<:Hellos:1218430823229820968> ${member.user} was muted with ID \`${punishment.punishment_id}\`.`);
     }
 
     /**
@@ -235,7 +241,9 @@ class MuteCommand extends Command {
                     .setName('member')
                     .setDescription('Target')
                     .setRequired(true)
-            );
+            )
+            .addStringOption((option) => option.setName('duration').setDescription('Duration').setRequired(true))
+            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

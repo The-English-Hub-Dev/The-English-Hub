@@ -112,10 +112,68 @@ class EvalCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const code = interaction.options.getString('code');
+        if (!code) {
+            return interaction.reply({
+                content: 'Provide code to evaluate.',
+                ephemeral: true,
+            });
+        }
+
+        const hiddenItems = [
+            process.env.DISCORD_TOKEN,
+            process.env.DATABASE_URL,
+            process.env.REDIS_URL,
+        ];
+        let output, type;
+        const evalTime = new Stopwatch();
+        let error = false;
+
+        await interaction.deferReply({ ephemeral: true });
+        try {
+            evalTime.start();
+            output = await eval(code);
+            evalTime.stop();
+            type = typeof output;
+        } catch (err) {
+            output = `An error occured during evaluation: ${err}`;
+            type = typeof err;
+            error = true;
+        }
+
+        if (typeof output !== 'string')
+            output = util.inspect(output, {
+                depth: 0,
+                showHidden: false,
+                showProxy: false,
+                compact: true,
+                sorted: false,
+                breakLength: 80,
+                maxArrayLength: 100,
+                maxStringLength: 10000,
+            });
+        if (output.length >= 2000) {
+            let hastebinOutput = await this.container.utility.createHastebin(
+                output,
+                'js'
+            );
+            return interaction.editReply(
+                `Output was too long to be sent on discord: ${hastebinOutput}`
+            );
+        }
+
+        for (const item of hiddenItems) {
+            if (output.includes(item)) {
+                output = output.replace(new RegExp(item, 'g'), 'HIDDEN');
+            }
+        }
+
+        return interaction.editReply(
+            `Output: ${codeBlock(
+                'js',
+                output
+            )} \nType: \`${type}\` Time Taken: \`${evalTime}\``
+        );
     }
 
     /**
@@ -124,7 +182,10 @@ class EvalCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription(this.description)
+            .addStringOption((option) =>
+                option.setName('code').setDescription('JavaScript code').setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

@@ -161,11 +161,12 @@ class ModlogsCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const user = interaction.options.getUser('member') || interaction.user;
+        const punishments = await this.container.db.punishments.findBy({ user_id: user.id });
+        if (!punishments.length) return interaction.reply(user.id === interaction.user.id ? 'You have no punishments.' : `\`${user.tag}\` has no punishments.`);
+        const embed = new EmbedBuilder().setTitle(`Punishments for ${user.tag}`).setDescription(`${punishments.length} punishments found for ${user}.`).setAuthor({ name: user.tag, iconURL: user.avatarURL() }).setColor(Colors.LuminousVividPink);
+        embed.addFields(punishments.slice(0, 25).map((punishment) => ({ name: punishment.punishment_id, value: `**Type:** ${punishment.type}\n**Reason:** ${punishment.reason}\n**Date:** ${time(punishment.timestamp, TimestampStyles.LongDateTime)}` })));
+        return interaction.reply({ embeds: [embed] });
     }
 
     /**
@@ -179,7 +180,7 @@ class ModlogsCommand extends Command {
                 option
                     .setName('member')
                     .setDescription('Target')
-                    .setRequired(true)
+                    .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,

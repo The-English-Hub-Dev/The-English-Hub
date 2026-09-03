@@ -123,11 +123,12 @@ class SlowmodeCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const member = interaction.options.getMember('member');
-        return interaction.reply({
-            content: 'TODO: Implement',
-            ephemeral: true,
-        });
+        const duration = interaction.options.getInteger('duration');
+        const channel = interaction.options.getChannel('channel') || interaction.channel;
+        const reason = interaction.options.getString('reason') || 'No reason provided.';
+        if (duration == null || duration < 0 || duration > 21600) return interaction.reply({ content: 'Slowmode must be between 0 and 21600 seconds.', ephemeral: true });
+        await channel.setRateLimitPerUser(duration, reason);
+        return interaction.reply(`Slowmode for ${channel} set to **${duration} seconds**.`);
     }
 
     /**
@@ -142,7 +143,10 @@ class SlowmodeCommand extends Command {
                     .setName('member')
                     .setDescription('Target')
                     .setRequired(true)
-            );
+            )
+            .addIntegerOption((option) => option.setName('duration').setDescription('Seconds').setMinValue(0).setMaxValue(21600).setRequired(true))
+            .addChannelOption((option) => option.setName('channel').setDescription('Text channel').setRequired(false))
+            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });
