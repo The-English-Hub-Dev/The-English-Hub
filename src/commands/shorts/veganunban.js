@@ -4,11 +4,7 @@ const {
     Events,
     MessageCommandContext,
 } = require('@sapphire/framework');
-const {
-    Message,
-    ChatInputCommandInteraction,
-    ChatInputCommandInteraction,
-} = require('discord.js');
+const { Message, ChatInputCommandInteraction } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class VeganUnBanCommand extends Command {

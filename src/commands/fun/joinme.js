@@ -1,9 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
-const {
-    Message,
-    ChatInputCommandInteraction,
-    ChatInputCommandInteraction,
-} = require('discord.js');
+const { Message, ChatInputCommandInteraction } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel } = require('@discordjs/voice');
 

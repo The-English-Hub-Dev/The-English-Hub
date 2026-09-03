@@ -1,9 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
-const {
-    Message,
-    ChatInputCommandInteraction,
-    ChatInputCommandInteraction,
-} = require('discord.js');
+const { Message, ChatInputCommandInteraction } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 const gifs = [
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTF0ZWNqeDJucTlnbTQyeXI2OWpycm56cDdmcDFneDZkdTVkbHZhYSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/kUwcg45mftfCD5XXy2/giphy.gif',
