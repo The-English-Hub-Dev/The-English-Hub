@@ -178,7 +178,7 @@ class DmCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription(this.description);
+            .setDescription("DMs a specific user.");
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });
