@@ -4,7 +4,12 @@ const {
     Events,
     MessageCommandContext,
 } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    ChatInputCommandInteraction,
+} = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class FlatBanCommand extends Command {
     constructor(context, options) {
@@ -64,6 +69,34 @@ class FlatBanCommand extends Command {
                 'Member permanently banned from the flat world guest room. This can only be undone with the `?vcunban` command.'
             );
         }
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('Target')
+                    .setRequired(true)
+            );
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

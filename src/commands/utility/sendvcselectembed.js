@@ -6,6 +6,7 @@ const {
     ButtonBuilder,
     ButtonStyle,
 } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class SendVcEmbedCommand extends Command {
     constructor(context, options) {
@@ -58,6 +59,27 @@ class SendVcEmbedCommand extends Command {
         return message.channel.send({
             embeds: [vcSelectEmbed],
             components: [vcSelectButtonActionRow],
+        });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
         });
     }
 }

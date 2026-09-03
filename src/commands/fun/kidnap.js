@@ -1,5 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const { Message, ChatInputCommandInteraction } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const gifs = [
     'https://tenor.com/view/thom-gif-gif-22589646',
     'https://tenor.com/view/kidnap-cat-kidnap-aaaaah-fear-horror-film-gif-21768777',
@@ -7,7 +8,7 @@ const gifs = [
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExem03Nmhpamttc2U2bWl4enNxNnczZjZuOXd3ZXpwd21uMDFhYzc3NiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/ViIh8qu8Y08swHV7dX/giphy.gif',
     'https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3aTQyYXZ5MjB5NGdvbTduYm5yZjdoM28zaTNlcGwxbTBuaTMxdHBwNSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/wAbvOebK8lVm4sz2Fy/giphy.gif',
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTBxa2NmNjJjYmNtNjVmNGV2a2JlcGswZ3VtZjlycTFvNTVleGhhYSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/PAbP0kXq6qDmCFWjHp/giphy.gif',
-    'httpss.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTBxa2NmNjJjYmNtNjVmNGV2a2JlcGswZ3VtZjlycTFvNTVleGhhYSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/CvCrwWi55IiXpdwNa5/giphy.gif',
+    'https.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTBxa2NmNjJjYmNtNjVmNGV2a2JlcGswZ3VtZjlycTFvNTVleGhhYSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/CvCrwWi55IiXpdwNa5/giphy.gif',
 ];
 
 class KidnapCommand extends Command {
@@ -49,6 +50,50 @@ class KidnapCommand extends Command {
                 roles: [],
                 parse: [],
             },
+        });
+    }
+
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+
+        if (!member) {
+            return interaction.reply({
+                content: 'You must mention a member.',
+                ephemeral: true,
+            });
+        }
+
+        await interaction.reply(gifs[Math.floor(Math.random() * gifs.length)]);
+
+        return interaction.channel?.send({
+            content: `${member} has been kidnapped by ${interaction.user} for 1 hour`,
+            allowedMentions: {
+                users: [member.id, interaction.user.id],
+                roles: [],
+                parse: [],
+            },
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('The member to kidnap')
+                    .setRequired(true)
+            );
+
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
         });
     }
 }

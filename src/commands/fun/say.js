@@ -1,5 +1,10 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, PermissionFlagsBits } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    PermissionFlagsBits,
+} = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class SayCommand extends Command {
     constructor(context, options) {
@@ -50,6 +55,71 @@ class SayCommand extends Command {
         return channel.send({
             content: text.unwrap(),
             allowedMentions: { users: [], roles: [], parse: [] },
+        });
+    }
+
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const channel =
+            interaction.options.getChannel('channel') || interaction.channel;
+        const text = interaction.options.getString('text');
+
+        if (!channel) {
+            return interaction.reply({
+                content: 'Could not find the channel.',
+                ephemeral: true,
+            });
+        }
+
+        if (
+            !channel
+                .permissionsFor(interaction.guild.members.me)
+                .has(PermissionFlagsBits.ViewChannel) ||
+            !channel
+                .permissionsFor(interaction.guild.members.me)
+                .has(PermissionFlagsBits.SendMessages)
+        ) {
+            return interaction.reply({
+                content:
+                    'I do not have permission to view or send messages in that channel.',
+                ephemeral: true,
+            });
+        }
+
+        await interaction.deferReply({ ephemeral: true });
+
+        await channel.send({
+            content: text,
+            allowedMentions: { users: [], roles: [], parse: [] },
+        });
+
+        return interaction.editReply('Message sent!');
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addChannelOption((option) =>
+                option
+                    .setName('channel')
+                    .setDescription('Channel to send to (defaults to current)')
+                    .setRequired(false)
+            )
+            .addStringOption((option) =>
+                option
+                    .setName('text')
+                    .setDescription('Text to say')
+                    .setRequired(true)
+            );
+
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
         });
     }
 }

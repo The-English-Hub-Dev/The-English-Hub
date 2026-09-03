@@ -1,5 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const { Message, ChatInputCommandInteraction } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const gifs = [
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHplMTR3dDk4aTh5NWQ0cHFzdTBuaWFmZDNsYmdld3F1cWZkazJsOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/fQPSEmdUgDjwQOh7Gf/giphy.gif',
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHplMTR3dDk4aTh5NWQ0cHFzdTBuaWFmZDNsYmdld3F1cWZkazJsOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/H2GX5Ik1ILy5q/giphy.gif',
@@ -49,6 +50,34 @@ class TickleCommand extends Command {
         await message.channel.send(
             gifs[Math.floor(Math.random() * gifs.length)]
         );
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('Target')
+                    .setRequired(true)
+            );
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 module.exports = { TickleCommand };

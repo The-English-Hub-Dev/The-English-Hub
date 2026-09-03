@@ -1,4 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class RemoveVivekTriggerCommand extends Command {
     constructor(context, options) {
@@ -49,6 +50,27 @@ class RemoveVivekTriggerCommand extends Command {
         return message.reply(
             `Successfully removed \`${trigger.unwrap()}\` from the list of message triggers.`
         );
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

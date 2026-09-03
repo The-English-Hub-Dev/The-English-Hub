@@ -1,5 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const { Message, ChatInputCommandInteraction } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const gifs = [
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExYmgxNXhqaGxsa2ducnd1aWx4cGphNmkyaGh3Mmpyazl5ZWVqczd1ZSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/jeagYTY1lJYrIoOPel/giphy.gif',
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcGRyZ3gyY3JmZGFndXo3N2xwOXlleDhiZHRiZXNwZ21kY3RkeDB1eiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/bwBYKgvEsKt4rsI1jJ/giphy.gif',
@@ -54,6 +55,59 @@ class GiveCommand extends Command {
         await message.channel.send(
             gifs[Math.floor(Math.random() * gifs.length)]
         );
+    }
+
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+
+        if (!member) {
+            return interaction.reply({
+                content: 'You must mention a member.',
+                ephemeral: true,
+            });
+        }
+
+        if (member.id === interaction.user.id) {
+            return interaction.reply({
+                content: "You can't give something to yourself :(",
+                ephemeral: true,
+            });
+        }
+
+        await interaction.reply({
+            content: `${member} got a gift from ${interaction.user}`,
+            allowedMentions: {
+                users: [member.id, interaction.user.id],
+                roles: [],
+                parse: [],
+            },
+        });
+
+        return interaction.channel?.send(
+            gifs[Math.floor(Math.random() * gifs.length)]
+        );
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('The member to give to')
+                    .setRequired(true)
+            );
+
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 module.exports = { GiveCommand };

@@ -8,6 +8,7 @@ const {
 } = require('discord.js');
 const { logChannelID } = require('../../../config.json');
 const { Duration } = require('@sapphire/time-utilities');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class SlowmodeCommand extends Command {
     constructor(context, options) {
@@ -117,6 +118,34 @@ class SlowmodeCommand extends Command {
         if (!logCh) return;
 
         return logCh.send({ embeds: [logEmbed] });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('Target')
+                    .setRequired(true)
+            );
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 module.exports = { SlowmodeCommand };

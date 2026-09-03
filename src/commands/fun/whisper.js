@@ -1,5 +1,10 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    ChatInputCommandInteraction,
+} = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const gifs = [
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTF0ZWNqeDJucTlnbTQyeXI2OWpycm56cDdmcDFneDZkdTVkbHZhYSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/kUwcg45mftfCD5XXy2/giphy.gif',
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExeTF0ZWNqeDJucTlnbTQyeXI2OWpycm56cDdmcDFneDZkdTVkbHZhYSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3oz8xZJLhFMmwvdMWI/giphy.gif',
@@ -53,6 +58,34 @@ class WhisperCommand extends Command {
                 roles: [],
                 parse: [],
             },
+        });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('Target')
+                    .setRequired(true)
+            );
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
         });
     }
 }

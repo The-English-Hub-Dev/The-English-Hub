@@ -7,6 +7,7 @@ const {
     ChannelType,
 } = require('discord.js');
 const { logChannelID } = require('../../../config.json');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class DmCommand extends Command {
     constructor(context, options) {
@@ -160,6 +161,27 @@ class DmCommand extends Command {
             .setTimestamp();
 
         return logCh.send({ embeds: [dmSentEmbed] });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

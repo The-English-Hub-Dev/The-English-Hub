@@ -1,5 +1,6 @@
 const { Command } = require('@sapphire/framework');
 const { EmbedBuilder, Colors } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class ViewServerTriggersCommand extends Command {
     constructor(context, options) {
@@ -46,6 +47,27 @@ class ViewServerTriggersCommand extends Command {
             );
 
         return message.reply({ embeds: [triggerListEmbed] });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

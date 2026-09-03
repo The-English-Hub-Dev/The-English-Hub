@@ -1,6 +1,8 @@
 const { Command } = require('@sapphire/framework');
 const { Stopwatch } = require('@sapphire/stopwatch');
-const { Message } = require('discord.js');
+const { Message, ChatInputCommandInteraction } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 class PingCommand extends Command {
     constructor(context, options) {
         super(context, {
@@ -26,6 +28,33 @@ class PingCommand extends Command {
         return pong.edit(
             `Pong! Websocket: \`${this.container.client.ws.ping}ms\` Bot Latency: \`${stopwatch}\``
         );
+    }
+
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const stopwatch = new Stopwatch(0).start();
+
+        await interaction.deferReply();
+        stopwatch.stop();
+
+        return interaction.editReply(
+            `Pong! Websocket: \`${this.container.client.ws.ping}ms\` Bot Latency: \`${stopwatch}\``
+        );
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

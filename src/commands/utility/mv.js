@@ -1,6 +1,11 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, PermissionFlagsBits } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    PermissionFlagsBits,
+} = require('discord.js');
 const { mvChannelsAllowed } = require('../../../config.json');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class MvCommand extends Command {
     constructor(context, options) {
@@ -68,6 +73,27 @@ class MvCommand extends Command {
         return message.reply(
             `You have been successfully moved to ${vc.unwrap()}`
         );
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

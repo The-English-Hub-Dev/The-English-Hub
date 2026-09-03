@@ -7,6 +7,7 @@ const {
     ButtonStyle,
 } = require('discord.js');
 const { DiscordSnowflake } = require('@sapphire/snowflake');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 class QueueCommand extends Command {
     constructor(context, options) {
         super(context, {
@@ -102,6 +103,27 @@ class QueueCommand extends Command {
             .then((m) => setTimeout(() => m.delete().catch(() => {}), 5000));
 
         return true;
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

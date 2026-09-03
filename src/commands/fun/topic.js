@@ -1,5 +1,10 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, EmbedBuilder } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    EmbedBuilder,
+} = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 const topics = [
     'What was the last funny video you saw?',
@@ -661,6 +666,27 @@ class TopicCommand extends Command {
                     .setColor('Random'),
             ],
             allowedMentions: { users: [], roles: [], parse: [] },
+        });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
         });
     }
 }

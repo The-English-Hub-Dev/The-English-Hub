@@ -1,7 +1,14 @@
 const { Command, Args } = require('@sapphire/framework');
 const { isNullOrUndefinedOrEmpty } = require('@sapphire/utilities');
-const { Message, EmbedBuilder, Colors, blockQuote } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    EmbedBuilder,
+    Colors,
+    blockQuote,
+} = require('discord.js');
 const { prefix } = require('../../../config.json');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class HelpCommand extends Command {
     constructor(context, options) {
@@ -200,6 +207,27 @@ class HelpCommand extends Command {
             .setDescription(blockQuote(commandsDataString));
 
         return message.reply({ embeds: [commandHelpEmbed] });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

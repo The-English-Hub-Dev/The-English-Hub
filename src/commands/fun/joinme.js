@@ -1,5 +1,10 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    ChatInputCommandInteraction,
+} = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const { joinVoiceChannel } = require('@discordjs/voice');
 
 class JoinMeCommand extends Command {
@@ -32,6 +37,27 @@ class JoinMeCommand extends Command {
         });
 
         return message.reply('Joined you in VC!');
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 module.exports = { JoinMeCommand };

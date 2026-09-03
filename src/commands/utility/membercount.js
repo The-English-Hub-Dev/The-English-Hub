@@ -7,6 +7,7 @@ const {
     Colors,
     PermissionFlagsBits,
 } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class MembercountCommand extends Command {
     constructor(context, options) {
@@ -363,6 +364,27 @@ class MembercountCommand extends Command {
             content: `Membercount details fetched in ${sw}`,
             embeds: [embed],
             allowedMentions: { users: [], roles: [], parse: [] },
+        });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
         });
     }
 }

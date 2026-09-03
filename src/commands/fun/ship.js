@@ -1,6 +1,11 @@
 const { Command, Args } = require('@sapphire/framework');
 const { createCanvas, loadImage, registerFont } = require('canvas');
-const { Message, AttachmentBuilder } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    AttachmentBuilder,
+} = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class ShipCommand extends Command {
     constructor(context, options) {
@@ -98,6 +103,34 @@ class ShipCommand extends Command {
                 roles: [],
                 parse: [],
             },
+        });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('Target')
+                    .setRequired(true)
+            );
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
         });
     }
 }

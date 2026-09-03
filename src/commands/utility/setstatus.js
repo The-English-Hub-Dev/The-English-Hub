@@ -1,6 +1,12 @@
 const { Command, Args } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Message, EmbedBuilder, ActivityType } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    EmbedBuilder,
+    ActivityType,
+} = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class SetstatusCommand extends Command {
     constructor(context, options) {
@@ -51,6 +57,27 @@ class SetstatusCommand extends Command {
         return message.reply(
             `Successfully set the bots status to ${type.toLowerCase()}: ${status.unwrap()}`
         );
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

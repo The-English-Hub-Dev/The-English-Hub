@@ -1,5 +1,10 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    ChatInputCommandInteraction,
+} = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class AFKCommand extends Command {
     constructor(context, options) {
@@ -32,6 +37,27 @@ class AFKCommand extends Command {
         return message.reply({
             content: `You are AFK: ${reason}`,
             allowedMentions: { users: [], roles: [], repliedUser: false },
+        });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
         });
     }
 }

@@ -9,6 +9,7 @@ const {
     VoiceChannel,
 } = require('discord.js');
 const { Time } = require('@sapphire/time-utilities');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class ViewVcbanCommand extends Command {
     constructor(context, options) {
@@ -65,6 +66,34 @@ class ViewVcbanCommand extends Command {
             .setTimestamp();
 
         return message.reply({ embeds: [vcbanEmbed] });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('Target')
+                    .setRequired(true)
+            );
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

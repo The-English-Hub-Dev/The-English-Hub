@@ -7,6 +7,7 @@ const {
     ButtonStyle,
     blockQuote,
 } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const overridenDefinitions = {
     'bow tie':
         'That guy in the server with some abnormal fascination of all things related to bow ties. Chatterbox, biscuit lover and drinker of tea.',
@@ -181,6 +182,27 @@ class DefineCommand extends Command {
             embeds: [definitionEmbed],
             allowedMentions: { repliedUser: false },
             components: [defActionRow1, defActionRow2],
+        });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
         });
     }
 }

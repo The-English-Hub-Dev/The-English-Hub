@@ -4,7 +4,12 @@ const {
     Events,
     MessageCommandContext,
 } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    ChatInputCommandInteraction,
+} = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class LBanCommand extends Command {
     constructor(context, options) {
@@ -53,6 +58,34 @@ class LBanCommand extends Command {
         message.content = `${ctx.prefix}vcban 1353551552945590272 ${member.id} ${reason}`;
 
         this.container.client.emit(Events.PreMessageParsed, message);
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('Target')
+                    .setRequired(true)
+            );
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

@@ -1,7 +1,14 @@
 const { Command } = require('@sapphire/framework');
 const { DurationFormatter } = require('@sapphire/time-utilities');
-const { Message, EmbedBuilder, time, TimestampStyles } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    EmbedBuilder,
+    time,
+    TimestampStyles,
+} = require('discord.js');
 const packageInfo = require(`${process.cwd()}/package.json`);
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const formatter = new DurationFormatter();
 
 class BotInfoCommand extends Command {
@@ -94,6 +101,27 @@ class BotInfoCommand extends Command {
                 }
             );
         return message.reply({ embeds: [info] });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

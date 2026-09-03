@@ -13,6 +13,7 @@ const {
     vcBanUnbanManagedCategories,
 } = require('../../../config.json');
 const { Time } = require('@sapphire/time-utilities');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class VcBanCommand extends Command {
     constructor(context, options) {
@@ -178,6 +179,34 @@ class VcBanCommand extends Command {
         if (!logCh) return;
 
         return logCh.send({ embeds: [logEmbed] });
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('Target')
+                    .setRequired(true)
+            );
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

@@ -3,6 +3,7 @@ const { Stopwatch } = require('@sapphire/stopwatch');
 const { EmbedBuilder, Message } = require('discord.js');
 const { codeBlock } = require('@discordjs/builders');
 const util = require('util');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 class EvalCommand extends Command {
     constructor(context, options) {
         super(context, {
@@ -106,6 +107,27 @@ class EvalCommand extends Command {
                 output
             )} \nType: \`${type}\` Time Taken: \`${evalTime}\``
         );
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 

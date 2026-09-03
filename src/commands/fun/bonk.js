@@ -1,5 +1,7 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const { Message, ChatInputCommandInteraction } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
+
 const gifs = [
     'https://tenor.com/view/spongebob-meme-bonk-gif-24279189',
     'https://tenor.com/view/bonk-gif-13392138837084579216',
@@ -48,6 +50,57 @@ class BonkCommand extends Command {
                 roles: [],
                 parse: [],
             },
+        });
+    }
+
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+
+        if (!member) {
+            return interaction.reply({
+                content: 'You must mention a member.',
+                ephemeral: true,
+            });
+        }
+
+        if (member.id === interaction.user.id) {
+            return interaction.reply({
+                content: 'Bonk someone else :(',
+                ephemeral: true,
+            });
+        }
+
+        await interaction.reply(gifs[Math.floor(Math.random() * gifs.length)]);
+
+        return interaction.channel?.send({
+            content: `${interaction.user} bonked ${member} 🫂`,
+            allowedMentions: {
+                users: [member.id, interaction.user.id],
+                roles: [],
+                parse: [],
+            },
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('The member to bonk')
+                    .setRequired(true)
+            );
+
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
         });
     }
 }

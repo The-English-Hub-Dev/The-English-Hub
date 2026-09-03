@@ -1,5 +1,6 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message } = require('discord.js');
+const { Message, ChatInputCommandInteraction } = require('discord.js');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 const gifs = [
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExczQ4eDl1dzRoaWI0am9idW80empieHo1eW8zOGRodm55ZmduanFxNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/VRnt1pl7eseuqia7f6/giphy.gif',
     'https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExczQ4eDl1dzRoaWI0am9idW80empieHo1eW8zOGRodm55ZmduanFxNCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/gkONMypx1LOzcQq2D8/giphy.gif',
@@ -50,6 +51,34 @@ class YeetCommand extends Command {
         await message.channel.send(
             gifs[Math.floor(Math.random() * gifs.length)]
         );
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        const member = interaction.options.getMember('member');
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description)
+            .addMemberOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('Target')
+                    .setRequired(true)
+            );
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 module.exports = { YeetCommand };

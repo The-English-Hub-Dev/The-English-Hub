@@ -1,4 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
+const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class AddVivekTriggerCommand extends Command {
     constructor(context, options) {
@@ -56,6 +57,27 @@ class AddVivekTriggerCommand extends Command {
         return message.reply(
             `Successfully added \`${response}\` as a response to the message trigger \`${trigger}\`.`
         );
+    }
+    /**
+     * @param { ChatInputCommandInteraction } interaction
+     */
+    async chatInputRun(interaction) {
+        return interaction.reply({
+            content: 'TODO: Implement',
+            ephemeral: true,
+        });
+    }
+
+    /**
+     * @param { Command.Registry } registry
+     */
+    registerApplicationCommands(registry) {
+        const builder = new SlashCommandBuilder()
+            .setName(this.name)
+            .setDescription(this.description);
+        registry.registerChatInputCommand(builder, {
+            preconditions: this.preconditions,
+        });
     }
 }
 
