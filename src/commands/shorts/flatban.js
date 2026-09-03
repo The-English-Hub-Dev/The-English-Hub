@@ -71,7 +71,11 @@ class FlatBanCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return runVcShortcut(interaction, this.container, '1149541570257883277');
+        return runVcShortcut(
+            interaction,
+            this.container,
+            '1149541570257883277'
+        );
     }
 
     /**
@@ -87,7 +91,12 @@ class FlatBanCommand extends Command {
                     .setDescription('Target')
                     .setRequired(true)
             )
-            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason')
+                    .setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

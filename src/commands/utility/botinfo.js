@@ -123,15 +123,43 @@ class BotInfoCommand extends Command {
             })
             .setColor('Random')
             .addFields(
-                { name: 'Bot Version', value: packageInfo.version, inline: true },
+                {
+                    name: 'Bot Version',
+                    value: packageInfo.version,
+                    inline: true,
+                },
                 { name: 'Developer', value: dev.user.tag, inline: true },
                 { name: 'Container', value: (await import('os')).hostname() },
-                { name: 'Memory Usage(RSS)', value: `\`${(processMem.rss / 1024 / 1024).toFixed(3)} MiB\``, inline: true },
-                { name: 'Memory Usage(Heap)', value: `\`${(processMem.heapUsed / 1024 / 1024).toFixed(3)} MiB\``, inline: true },
-                { name: 'Redis Memory Usage', value: `\`${redisMem} MiB\``, inline: true },
-                { name: 'Postgres Driver Version', value: `\`${this.container.db.typeorm.driver.version}\``, inline: true },
-                { name: 'Current Cached Users', value: `${this.container.client.users.cache.size}`, inline: true },
-                { name: 'Bot Uptime', value: formatter.format(this.container.client.uptime), inline: true }
+                {
+                    name: 'Memory Usage(RSS)',
+                    value: `\`${(processMem.rss / 1024 / 1024).toFixed(3)} MiB\``,
+                    inline: true,
+                },
+                {
+                    name: 'Memory Usage(Heap)',
+                    value: `\`${(processMem.heapUsed / 1024 / 1024).toFixed(3)} MiB\``,
+                    inline: true,
+                },
+                {
+                    name: 'Redis Memory Usage',
+                    value: `\`${redisMem} MiB\``,
+                    inline: true,
+                },
+                {
+                    name: 'Postgres Driver Version',
+                    value: `\`${this.container.db.typeorm.driver.version}\``,
+                    inline: true,
+                },
+                {
+                    name: 'Current Cached Users',
+                    value: `${this.container.client.users.cache.size}`,
+                    inline: true,
+                },
+                {
+                    name: 'Bot Uptime',
+                    value: formatter.format(this.container.client.uptime),
+                    inline: true,
+                }
             );
         return interaction.reply({ embeds: [info] });
     }

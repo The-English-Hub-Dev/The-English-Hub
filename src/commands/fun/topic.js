@@ -701,7 +701,12 @@ class TopicCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption((option) => option.setName('query').setDescription('Topic search').setRequired(false));
+            .addStringOption((option) =>
+                option
+                    .setName('query')
+                    .setDescription('Topic search')
+                    .setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

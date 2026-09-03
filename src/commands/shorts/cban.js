@@ -59,7 +59,11 @@ class CBanCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return runVcShortcut(interaction, this.container, '1275177183064752128');
+        return runVcShortcut(
+            interaction,
+            this.container,
+            '1275177183064752128'
+        );
     }
 
     /**
@@ -74,8 +78,13 @@ class CBanCommand extends Command {
                     .setName('member')
                     .setDescription('Target')
                     .setRequired(true)
-                    )
-                    .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
+            )
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason')
+                    .setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

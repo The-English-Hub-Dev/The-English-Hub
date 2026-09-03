@@ -93,18 +93,41 @@ class WhoisCommand extends Command {
             .setThumbnail(user.avatarURL({ size: 256 }))
             .addFields(
                 { name: 'ID', value: user.id },
-                { name: 'Account Created', value: time(user.createdAt, TimestampStyles.RelativeTime), inline: true },
+                {
+                    name: 'Account Created',
+                    value: time(user.createdAt, TimestampStyles.RelativeTime),
+                    inline: true,
+                },
                 { name: 'Bot', value: user.bot ? 'Yes' : 'No', inline: true }
             );
         if (member) {
-            const roles = member.roles.cache.sort((a, b) => b.position - a.position).map((role) => role.toString()).slice(0, -1);
+            const roles = member.roles.cache
+                .sort((a, b) => b.position - a.position)
+                .map((role) => role.toString())
+                .slice(0, -1);
             embed.addFields(
-                { name: 'Joined Server', value: time(member.joinedAt, TimestampStyles.RelativeTime), inline: true },
-                { name: `Roles [${roles.length}]`, value: roles.join(', ') || 'None' },
-                { name: 'Nickname', value: member.nickname || 'None', inline: true }
+                {
+                    name: 'Joined Server',
+                    value: time(member.joinedAt, TimestampStyles.RelativeTime),
+                    inline: true,
+                },
+                {
+                    name: `Roles [${roles.length}]`,
+                    value: roles.join(', ') || 'None',
+                },
+                {
+                    name: 'Nickname',
+                    value: member.nickname || 'None',
+                    inline: true,
+                }
             );
         }
-        embed.setFooter({ text: `Requested by ${interaction.user.tag}`, iconURL: interaction.user.avatarURL() }).setTimestamp();
+        embed
+            .setFooter({
+                text: `Requested by ${interaction.user.tag}`,
+                iconURL: interaction.user.avatarURL(),
+            })
+            .setTimestamp();
         return interaction.reply({ embeds: [embed] });
     }
 

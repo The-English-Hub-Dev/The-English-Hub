@@ -60,7 +60,11 @@ class LBanCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return runVcShortcut(interaction, this.container, '1353551552945590272');
+        return runVcShortcut(
+            interaction,
+            this.container,
+            '1353551552945590272'
+        );
     }
 
     /**
@@ -76,7 +80,12 @@ class LBanCommand extends Command {
                     .setDescription('Target')
                     .setRequired(true)
             )
-            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason')
+                    .setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

@@ -162,10 +162,30 @@ class ModlogsCommand extends Command {
      */
     async chatInputRun(interaction) {
         const user = interaction.options.getUser('member') || interaction.user;
-        const punishments = await this.container.db.punishments.findBy({ user_id: user.id });
-        if (!punishments.length) return interaction.reply(user.id === interaction.user.id ? 'You have no punishments.' : `\`${user.tag}\` has no punishments.`);
-        const embed = new EmbedBuilder().setTitle(`Punishments for ${user.tag}`).setDescription(`${punishments.length} punishments found for ${user}.`).setAuthor({ name: user.tag, iconURL: user.avatarURL() }).setColor(Colors.LuminousVividPink);
-        embed.addFields(punishments.slice(0, 25).map((punishment) => ({ name: punishment.punishment_id, value: `**Type:** ${punishment.type}\n**Reason:** ${punishment.reason}\n**Date:** ${time(punishment.timestamp, TimestampStyles.LongDateTime)}` })));
+        const punishments = await this.container.db.punishments.findBy({
+            user_id: user.id,
+        });
+        if (!punishments.length)
+            return interaction.reply(
+                user.id === interaction.user.id
+                    ? 'You have no punishments.'
+                    : `\`${user.tag}\` has no punishments.`
+            );
+        const embed = new EmbedBuilder()
+            .setTitle(`Punishments for ${user.tag}`)
+            .setDescription(
+                `${punishments.length} punishments found for ${user}.`
+            )
+            .setAuthor({ name: user.tag, iconURL: user.avatarURL() })
+            .setColor(Colors.LuminousVividPink);
+        embed.addFields(
+            punishments
+                .slice(0, 25)
+                .map((punishment) => ({
+                    name: punishment.punishment_id,
+                    value: `**Type:** ${punishment.type}\n**Reason:** ${punishment.reason}\n**Date:** ${time(punishment.timestamp, TimestampStyles.LongDateTime)}`,
+                }))
+        );
         return interaction.reply({ embeds: [embed] });
     }
 

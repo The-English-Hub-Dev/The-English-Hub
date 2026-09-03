@@ -119,10 +119,26 @@ class ServerUnmuteCommand extends Command {
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
         const reason = interaction.options.getString('reason');
-        if (!member || !reason) return interaction.reply({ content: 'Provide a member and reason to server unmute.', ephemeral: true });
-        if (!member.voice.channel || !member.voice.serverMute) return interaction.reply({ content: 'This member is not server muted in a voice channel.', ephemeral: true });
+        if (!member || !reason)
+            return interaction.reply({
+                content: 'Provide a member and reason to server unmute.',
+                ephemeral: true,
+            });
+        if (!member.voice.channel || !member.voice.serverMute)
+            return interaction.reply({
+                content: 'This member is not server muted in a voice channel.',
+                ephemeral: true,
+            });
         await member.voice.setMute(false, reason);
-        return interaction.reply({ embeds: [new EmbedBuilder().setDescription(`Successfully **server unmuted** ${member.user.tag} for ${reason}`).setColor(Colors.DarkOrange)] });
+        return interaction.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setDescription(
+                        `Successfully **server unmuted** ${member.user.tag} for ${reason}`
+                    )
+                    .setColor(Colors.DarkOrange),
+            ],
+        });
     }
 
     /**
@@ -138,7 +154,12 @@ class ServerUnmuteCommand extends Command {
                     .setDescription('Target')
                     .setRequired(true)
             )
-            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(true));
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason')
+                    .setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

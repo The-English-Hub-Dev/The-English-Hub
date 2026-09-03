@@ -220,10 +220,22 @@ class RemovepunishmentCommand extends Command {
      */
     async chatInputRun(interaction) {
         const punishmentID = interaction.options.getString('punishment_id');
-        if (!punishmentID) return interaction.reply({ content: 'Provide a punishment ID.', ephemeral: true });
-        const punishment = await this.container.db.punishments.findOneBy({ punishment_id: punishmentID });
-        if (!punishment) return interaction.reply({ content: 'A punishment with that ID does not exist.', ephemeral: true });
-        await this.container.db.punishments.delete({ punishment_id: punishmentID });
+        if (!punishmentID)
+            return interaction.reply({
+                content: 'Provide a punishment ID.',
+                ephemeral: true,
+            });
+        const punishment = await this.container.db.punishments.findOneBy({
+            punishment_id: punishmentID,
+        });
+        if (!punishment)
+            return interaction.reply({
+                content: 'A punishment with that ID does not exist.',
+                ephemeral: true,
+            });
+        await this.container.db.punishments.delete({
+            punishment_id: punishmentID,
+        });
         return interaction.reply(`Removed punishment \`${punishmentID}\`.`);
     }
 
@@ -234,7 +246,12 @@ class RemovepunishmentCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption((option) => option.setName('punishment_id').setDescription('Punishment ID').setRequired(true));
+            .addStringOption((option) =>
+                option
+                    .setName('punishment_id')
+                    .setDescription('Punishment ID')
+                    .setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

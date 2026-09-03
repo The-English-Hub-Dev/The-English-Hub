@@ -57,9 +57,15 @@ class RemoveVivekTriggerCommand extends Command {
     async chatInputRun(interaction) {
         const trigger = interaction.options.getString('trigger');
         const key = `guildtriggers_${interaction.guild.id}`;
-        if (!trigger || !(await this.container.redis.hget(key, trigger))) return interaction.reply({ content: 'That trigger does not exist in this server.', ephemeral: true });
+        if (!trigger || !(await this.container.redis.hget(key, trigger)))
+            return interaction.reply({
+                content: 'That trigger does not exist in this server.',
+                ephemeral: true,
+            });
         await this.container.redis.hdel(key, trigger);
-        return interaction.reply(`Successfully removed \`${trigger}\` from the list of message triggers.`);
+        return interaction.reply(
+            `Successfully removed \`${trigger}\` from the list of message triggers.`
+        );
     }
 
     /**
@@ -69,7 +75,12 @@ class RemoveVivekTriggerCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption((option) => option.setName('trigger').setDescription('Trigger').setRequired(true));
+            .addStringOption((option) =>
+                option
+                    .setName('trigger')
+                    .setDescription('Trigger')
+                    .setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

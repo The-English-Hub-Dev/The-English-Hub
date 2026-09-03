@@ -66,7 +66,9 @@ class ViewServerTriggersCommand extends Command {
         const triggerListEmbed = new EmbedBuilder()
             .setTitle('Server Message Triggers')
             .setColor(Colors.LuminousVividPink)
-            .setFooter({ text: `Message Triggers for ${interaction.guild.name}` })
+            .setFooter({
+                text: `Message Triggers for ${interaction.guild.name}`,
+            })
             .setDescription(
                 `**Trigger** → *Response*\n${guildTriggers
                     .map((tr) => `${tr[0]} → *${tr[1]}*`)

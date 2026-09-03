@@ -39,7 +39,8 @@ class AFKCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const reason = interaction.options.getString('reason') || 'No reason provided.';
+        const reason =
+            interaction.options.getString('reason') || 'No reason provided.';
 
         await this.container.redis.hset(
             'afk',

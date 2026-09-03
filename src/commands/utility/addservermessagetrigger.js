@@ -65,13 +65,15 @@ class AddVivekTriggerCommand extends Command {
         const rawMessage = interaction.options.getString('trigger_response');
         if (!rawMessage) {
             return interaction.reply({
-                content: 'You must provide something to add to the message trigger list.',
+                content:
+                    'You must provide something to add to the message trigger list.',
                 ephemeral: true,
             });
         }
         if (!rawMessage.includes('=')) {
             return interaction.reply({
-                content: 'You must provide a valid trigger and response to set in the format <trigger> = <response>.',
+                content:
+                    'You must provide a valid trigger and response to set in the format <trigger> = <response>.',
                 ephemeral: true,
             });
         }
@@ -81,7 +83,8 @@ class AddVivekTriggerCommand extends Command {
         const response = responseParts.join('=').trim();
         if (!cleanTrigger || !response) {
             return interaction.reply({
-                content: 'You must provide a valid trigger and response to set.',
+                content:
+                    'You must provide a valid trigger and response to set.',
                 ephemeral: true,
             });
         }

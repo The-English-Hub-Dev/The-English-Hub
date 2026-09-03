@@ -120,12 +120,33 @@ class LockdownCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const channel = interaction.options.getChannel('channel') || interaction.channel;
-        const reason = interaction.options.getString('reason') || 'No reason provided.';
-        if (channel.permissionOverwrites.cache.get(interaction.guild.roles.everyone.id)?.deny.has('SendMessages')) return interaction.reply({ content: 'That channel is already locked down.', ephemeral: true });
-        await channel.permissionOverwrites.edit(interaction.guild.roles.everyone, { SendMessages: false }, { reason });
-        const punishment = await Punishment.create(interaction.user.id, channel.id, reason, 'lockdown');
-        return interaction.reply(`<:Hellos:1218430823229820968> Locked down ${channel} with ID \`${punishment.punishment_id}\`.`);
+        const channel =
+            interaction.options.getChannel('channel') || interaction.channel;
+        const reason =
+            interaction.options.getString('reason') || 'No reason provided.';
+        if (
+            channel.permissionOverwrites.cache
+                .get(interaction.guild.roles.everyone.id)
+                ?.deny.has('SendMessages')
+        )
+            return interaction.reply({
+                content: 'That channel is already locked down.',
+                ephemeral: true,
+            });
+        await channel.permissionOverwrites.edit(
+            interaction.guild.roles.everyone,
+            { SendMessages: false },
+            { reason }
+        );
+        const punishment = await Punishment.create(
+            interaction.user.id,
+            channel.id,
+            reason,
+            'lockdown'
+        );
+        return interaction.reply(
+            `<:Hellos:1218430823229820968> Locked down ${channel} with ID \`${punishment.punishment_id}\`.`
+        );
     }
 
     /**
@@ -135,8 +156,18 @@ class LockdownCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addChannelOption((option) => option.setName('channel').setDescription('Channel').setRequired(false))
-            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
+            .addChannelOption((option) =>
+                option
+                    .setName('channel')
+                    .setDescription('Channel')
+                    .setRequired(false)
+            )
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason')
+                    .setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

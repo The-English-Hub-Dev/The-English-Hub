@@ -79,12 +79,43 @@ class MvCommand extends Command {
      */
     async chatInputRun(interaction) {
         const channel = interaction.options.getChannel('channel');
-        if (!channel) return interaction.reply({ content: 'You must provide a valid voice channel.', ephemeral: true });
-        if (!interaction.member.voice.channel) return interaction.reply({ content: 'You must be in a voice channel to use this command.', ephemeral: true });
-        if (!mvChannelsAllowed.includes(channel.parent.id)) return interaction.reply({ content: 'That channel is not in the allowed list.', ephemeral: true });
-        if (!interaction.member.permissionsIn(channel).has(PermissionFlagsBits.ViewChannel)) return interaction.reply({ content: 'You are not allowed to move to that channel.', ephemeral: true });
-        try { await interaction.member.voice.setChannel(channel, `${interaction.user.tag} requested to be moved.`); } catch (error) { return interaction.reply(`I could not move you to that channel. Error: ${error}`); }
-        return interaction.reply(`You have been successfully moved to ${channel}`);
+        if (!channel)
+            return interaction.reply({
+                content: 'You must provide a valid voice channel.',
+                ephemeral: true,
+            });
+        if (!interaction.member.voice.channel)
+            return interaction.reply({
+                content: 'You must be in a voice channel to use this command.',
+                ephemeral: true,
+            });
+        if (!mvChannelsAllowed.includes(channel.parent.id))
+            return interaction.reply({
+                content: 'That channel is not in the allowed list.',
+                ephemeral: true,
+            });
+        if (
+            !interaction.member
+                .permissionsIn(channel)
+                .has(PermissionFlagsBits.ViewChannel)
+        )
+            return interaction.reply({
+                content: 'You are not allowed to move to that channel.',
+                ephemeral: true,
+            });
+        try {
+            await interaction.member.voice.setChannel(
+                channel,
+                `${interaction.user.tag} requested to be moved.`
+            );
+        } catch (error) {
+            return interaction.reply(
+                `I could not move you to that channel. Error: ${error}`
+            );
+        }
+        return interaction.reply(
+            `You have been successfully moved to ${channel}`
+        );
     }
 
     /**
@@ -94,7 +125,12 @@ class MvCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addChannelOption((option) => option.setName('channel').setDescription('Voice channel').setRequired(true));
+            .addChannelOption((option) =>
+                option
+                    .setName('channel')
+                    .setDescription('Voice channel')
+                    .setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

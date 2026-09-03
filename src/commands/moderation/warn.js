@@ -172,10 +172,44 @@ class WarnCommand extends Command {
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
         const reason = interaction.options.getString('reason');
-        if (!member || !reason) return interaction.reply({ content: 'Provide a member and reason.', ephemeral: true });
-        const punishment = await Punishment.create(interaction.user.id, member.id, reason, 'warn');
-        await member.send({ embeds: [new EmbedBuilder().setColor(Colors.Yellow).setTitle(`You were warned in ${interaction.guild.name}`).addFields({ name: 'Reason', value: reason }, { name: 'Punishment ID', value: punishment.punishment_id })] }).catch(() => {});
-        return interaction.reply({ embeds: [new EmbedBuilder().setColor(Colors.Yellow).setDescription(`${member} has been warned with ID \`${punishment.punishment_id}\`.`)] });
+        if (!member || !reason)
+            return interaction.reply({
+                content: 'Provide a member and reason.',
+                ephemeral: true,
+            });
+        const punishment = await Punishment.create(
+            interaction.user.id,
+            member.id,
+            reason,
+            'warn'
+        );
+        await member
+            .send({
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor(Colors.Yellow)
+                        .setTitle(
+                            `You were warned in ${interaction.guild.name}`
+                        )
+                        .addFields(
+                            { name: 'Reason', value: reason },
+                            {
+                                name: 'Punishment ID',
+                                value: punishment.punishment_id,
+                            }
+                        ),
+                ],
+            })
+            .catch(() => {});
+        return interaction.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setColor(Colors.Yellow)
+                    .setDescription(
+                        `${member} has been warned with ID \`${punishment.punishment_id}\`.`
+                    ),
+            ],
+        });
     }
 
     /**
@@ -191,7 +225,12 @@ class WarnCommand extends Command {
                     .setDescription('Target')
                     .setRequired(true)
             )
-            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(true));
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason')
+                    .setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

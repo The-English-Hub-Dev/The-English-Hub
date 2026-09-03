@@ -64,11 +64,25 @@ class SetstatusCommand extends Command {
     async chatInputRun(interaction) {
         const type = interaction.options.getString('type') || 'playing';
         const status = interaction.options.getString('status');
-        if (!status) return interaction.reply({ content: 'Please provide a status to set.', ephemeral: true });
-        const actTypes = { playing: ActivityType.Playing, watching: ActivityType.Watching, listening: ActivityType.Listening, competing: ActivityType.Competing };
-        if (this.container.intervals?.status) clearInterval(this.container.intervals.status);
-        this.container.client.user.setActivity(status, { type: actTypes[type] || ActivityType.Playing });
-        return interaction.reply(`Successfully set the bots status to ${type}: ${status}`);
+        if (!status)
+            return interaction.reply({
+                content: 'Please provide a status to set.',
+                ephemeral: true,
+            });
+        const actTypes = {
+            playing: ActivityType.Playing,
+            watching: ActivityType.Watching,
+            listening: ActivityType.Listening,
+            competing: ActivityType.Competing,
+        };
+        if (this.container.intervals?.status)
+            clearInterval(this.container.intervals.status);
+        this.container.client.user.setActivity(status, {
+            type: actTypes[type] || ActivityType.Playing,
+        });
+        return interaction.reply(
+            `Successfully set the bots status to ${type}: ${status}`
+        );
     }
 
     /**
@@ -78,8 +92,24 @@ class SetstatusCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addStringOption((option) => option.setName('type').setDescription('Activity type').addChoices({ name: 'Playing', value: 'playing' }, { name: 'Watching', value: 'watching' }, { name: 'Listening', value: 'listening' }, { name: 'Competing', value: 'competing' }).setRequired(false))
-            .addStringOption((option) => option.setName('status').setDescription('Activity text').setRequired(true));
+            .addStringOption((option) =>
+                option
+                    .setName('type')
+                    .setDescription('Activity type')
+                    .addChoices(
+                        { name: 'Playing', value: 'playing' },
+                        { name: 'Watching', value: 'watching' },
+                        { name: 'Listening', value: 'listening' },
+                        { name: 'Competing', value: 'competing' }
+                    )
+                    .setRequired(false)
+            )
+            .addStringOption((option) =>
+                option
+                    .setName('status')
+                    .setDescription('Activity text')
+                    .setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

@@ -43,7 +43,8 @@ class RemoveVivekTriggerCommand extends Command {
         const trigger = interaction.options.getString('trigger');
         if (!trigger) {
             return interaction.reply({
-                content: 'You must provide a word to remove to the highlight triggers',
+                content:
+                    'You must provide a word to remove to the highlight triggers',
                 ephemeral: true,
             });
         }
@@ -62,7 +63,10 @@ class RemoveVivekTriggerCommand extends Command {
             .setName(this.name)
             .setDescription(this.description)
             .addStringOption((option) =>
-                option.setName('trigger').setDescription('Word').setRequired(true)
+                option
+                    .setName('trigger')
+                    .setDescription('Word')
+                    .setRequired(true)
             );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,

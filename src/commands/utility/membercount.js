@@ -375,15 +375,48 @@ class MembercountCommand extends Command {
             .setTitle(`${guild.name} Member Details`)
             .setColor(Colors.LuminousVividPink)
             .addFields(
-                { name: 'Total Members', value: guild.memberCount.toLocaleString(), inline: true },
-                { name: 'Approx Members', value: (guild.approximateMemberCount ?? guild.memberCount).toLocaleString(), inline: true },
-                { name: 'Approx Online', value: (guild.approximatePresenceCount ?? 0).toLocaleString(), inline: true },
-                { name: 'Boosts', value: (guild.premiumSubscriptionCount ?? 0).toLocaleString(), inline: true },
-                { name: 'Roles', value: guild.roles.cache.size.toLocaleString(), inline: true },
-                { name: 'Channels', value: guild.channels.cache.size.toLocaleString(), inline: true }
+                {
+                    name: 'Total Members',
+                    value: guild.memberCount.toLocaleString(),
+                    inline: true,
+                },
+                {
+                    name: 'Approx Members',
+                    value: (
+                        guild.approximateMemberCount ?? guild.memberCount
+                    ).toLocaleString(),
+                    inline: true,
+                },
+                {
+                    name: 'Approx Online',
+                    value: (
+                        guild.approximatePresenceCount ?? 0
+                    ).toLocaleString(),
+                    inline: true,
+                },
+                {
+                    name: 'Boosts',
+                    value: (
+                        guild.premiumSubscriptionCount ?? 0
+                    ).toLocaleString(),
+                    inline: true,
+                },
+                {
+                    name: 'Roles',
+                    value: guild.roles.cache.size.toLocaleString(),
+                    inline: true,
+                },
+                {
+                    name: 'Channels',
+                    value: guild.channels.cache.size.toLocaleString(),
+                    inline: true,
+                }
             )
             .setTimestamp();
-        return interaction.reply({ content: 'Membercount details fetched.', embeds: [embed] });
+        return interaction.reply({
+            content: 'Membercount details fetched.',
+            embeds: [embed],
+        });
     }
 
     /**

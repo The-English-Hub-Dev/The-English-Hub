@@ -59,7 +59,12 @@ class CUnbanCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return runVcShortcut(interaction, this.container, '1275177183064752128', true);
+        return runVcShortcut(
+            interaction,
+            this.container,
+            '1275177183064752128',
+            true
+        );
     }
 
     /**
@@ -75,7 +80,12 @@ class CUnbanCommand extends Command {
                     .setDescription('Target')
                     .setRequired(true)
             )
-            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason')
+                    .setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

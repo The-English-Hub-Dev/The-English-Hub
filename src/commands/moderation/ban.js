@@ -176,7 +176,8 @@ class BanCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        const reason = interaction.options.getString('reason') || 'No reason provided.';
+        const reason =
+            interaction.options.getString('reason') || 'No reason provided.';
         const deleteDays = interaction.options.getNumber('deletedays') || 1;
 
         if (!member) {
@@ -210,7 +211,12 @@ class BanCommand extends Command {
             'ban'
         );
 
-        await this.sendMemberDMInteraction(interaction, member, reason, punishment);
+        await this.sendMemberDMInteraction(
+            interaction,
+            member,
+            reason,
+            punishment
+        );
 
         await member.ban({ days: deleteDays, reason: reason });
 
@@ -319,8 +325,20 @@ class BanCommand extends Command {
                     .setDescription('Target')
                     .setRequired(true)
             )
-            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false))
-            .addIntegerOption((option) => option.setName('deletedays').setDescription('Days of messages to delete').setMinValue(0).setMaxValue(7).setRequired(false));
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason')
+                    .setRequired(false)
+            )
+            .addIntegerOption((option) =>
+                option
+                    .setName('deletedays')
+                    .setDescription('Days of messages to delete')
+                    .setMinValue(0)
+                    .setMaxValue(7)
+                    .setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

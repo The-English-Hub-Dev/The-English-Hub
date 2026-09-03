@@ -60,7 +60,12 @@ class QUnBanCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        return runVcShortcut(interaction, this.container, '1233499573482291251', true);
+        return runVcShortcut(
+            interaction,
+            this.container,
+            '1233499573482291251',
+            true
+        );
     }
 
     /**
@@ -76,7 +81,12 @@ class QUnBanCommand extends Command {
                     .setDescription('Target')
                     .setRequired(true)
             )
-            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason')
+                    .setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

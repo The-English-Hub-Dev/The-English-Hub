@@ -186,12 +186,28 @@ class VcBanCommand extends Command {
     async chatInputRun(interaction) {
         const channel = interaction.options.getChannel('channel');
         const member = interaction.options.getMember('member');
-        const reason = interaction.options.getString('reason') || 'No reason provided.';
-        if (!channel || !member) return interaction.reply({ content: 'Provide a voice channel and member.', ephemeral: true });
-        await channel.permissionOverwrites.edit(member, { Connect: false, SendMessages: false }, { reason });
-        if (member.voice.channel === channel) await member.voice.disconnect(reason);
-        await this.container.redis.hset('vcban', `${channel.id}:${member.id}`, Date.now());
-        return interaction.reply(`${member} has been banned from ${channel} for 24 hours.`);
+        const reason =
+            interaction.options.getString('reason') || 'No reason provided.';
+        if (!channel || !member)
+            return interaction.reply({
+                content: 'Provide a voice channel and member.',
+                ephemeral: true,
+            });
+        await channel.permissionOverwrites.edit(
+            member,
+            { Connect: false, SendMessages: false },
+            { reason }
+        );
+        if (member.voice.channel === channel)
+            await member.voice.disconnect(reason);
+        await this.container.redis.hset(
+            'vcban',
+            `${channel.id}:${member.id}`,
+            Date.now()
+        );
+        return interaction.reply(
+            `${member} has been banned from ${channel} for 24 hours.`
+        );
     }
 
     /**
@@ -201,14 +217,24 @@ class VcBanCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addChannelOption((option) => option.setName('channel').setDescription('Voice channel').setRequired(true))
+            .addChannelOption((option) =>
+                option
+                    .setName('channel')
+                    .setDescription('Voice channel')
+                    .setRequired(true)
+            )
             .addUserOption((option) =>
                 option
                     .setName('member')
                     .setDescription('Target')
                     .setRequired(true)
             )
-            .addStringOption((option) => option.setName('reason').setDescription('Reason').setRequired(false));
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason')
+                    .setRequired(false)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

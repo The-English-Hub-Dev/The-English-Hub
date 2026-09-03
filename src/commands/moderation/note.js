@@ -167,9 +167,20 @@ class NoteCommand extends Command {
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
         const reason = interaction.options.getString('reason');
-        if (!member || !reason) return interaction.reply({ content: 'Provide a member and note.', ephemeral: true });
-        const punishment = await Punishment.create(interaction.user.id, member.id, reason, 'note');
-        return interaction.reply(`Added note to ${member} with ID \`${punishment.punishment_id}\`.`);
+        if (!member || !reason)
+            return interaction.reply({
+                content: 'Provide a member and note.',
+                ephemeral: true,
+            });
+        const punishment = await Punishment.create(
+            interaction.user.id,
+            member.id,
+            reason,
+            'note'
+        );
+        return interaction.reply(
+            `Added note to ${member} with ID \`${punishment.punishment_id}\`.`
+        );
     }
 
     /**
@@ -185,7 +196,12 @@ class NoteCommand extends Command {
                     .setDescription('Target')
                     .setRequired(true)
             )
-            .addStringOption((option) => option.setName('reason').setDescription('Note').setRequired(true));
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Note')
+                    .setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

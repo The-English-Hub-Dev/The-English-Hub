@@ -184,7 +184,10 @@ class EvalCommand extends Command {
             .setName(this.name)
             .setDescription(this.description)
             .addStringOption((option) =>
-                option.setName('code').setDescription('JavaScript code').setRequired(true)
+                option
+                    .setName('code')
+                    .setDescription('JavaScript code')
+                    .setRequired(true)
             );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,

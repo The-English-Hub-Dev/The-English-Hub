@@ -168,12 +168,31 @@ class DmCommand extends Command {
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
         const message = interaction.options.getString('message');
-        if (!member || !message) return interaction.reply({ content: 'Provide a member and message.', ephemeral: true });
-        if (message.length > 1000) return interaction.reply({ content: 'The message length may not be greater than 1000 characters.', ephemeral: true });
-        const embed = new EmbedBuilder().setTitle("You've received a new message!").setDescription(`**Message:** ${message}`).setFooter({ text: `Sent by ${interaction.guild.name} Staff` }).setColor(Colors.Blue);
-        if (!(await member.send({ embeds: [embed] }).catch(() => null))) return interaction.reply({ content: "Couldn't send the message to that user.", ephemeral: true });
+        if (!member || !message)
+            return interaction.reply({
+                content: 'Provide a member and message.',
+                ephemeral: true,
+            });
+        if (message.length > 1000)
+            return interaction.reply({
+                content:
+                    'The message length may not be greater than 1000 characters.',
+                ephemeral: true,
+            });
+        const embed = new EmbedBuilder()
+            .setTitle("You've received a new message!")
+            .setDescription(`**Message:** ${message}`)
+            .setFooter({ text: `Sent by ${interaction.guild.name} Staff` })
+            .setColor(Colors.Blue);
+        if (!(await member.send({ embeds: [embed] }).catch(() => null)))
+            return interaction.reply({
+                content: "Couldn't send the message to that user.",
+                ephemeral: true,
+            });
         await this.logDMSent(interaction, member, message);
-        return interaction.reply(`Successfully sent DM to ${member} (${member.user.tag}).`);
+        return interaction.reply(
+            `Successfully sent DM to ${member} (${member.user.tag}).`
+        );
     }
 
     /**
@@ -182,9 +201,19 @@ class DmCommand extends Command {
     registerApplicationCommands(registry) {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
-            .setDescription("DMs a specific user.")
-            .addUserOption((option) => option.setName('member').setDescription('Member').setRequired(true))
-            .addStringOption((option) => option.setName('message').setDescription('Message').setRequired(true));
+            .setDescription('DMs a specific user.')
+            .addUserOption((option) =>
+                option
+                    .setName('member')
+                    .setDescription('Member')
+                    .setRequired(true)
+            )
+            .addStringOption((option) =>
+                option
+                    .setName('message')
+                    .setDescription('Message')
+                    .setRequired(true)
+            );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
         });

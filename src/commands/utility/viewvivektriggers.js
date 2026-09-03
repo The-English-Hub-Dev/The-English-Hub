@@ -44,7 +44,9 @@ class ViewVivekTriggersCommand extends Command {
             -1
         );
         if (triggers.length === 0) {
-            return interaction.reply("There are no triggers for Vivek's highlight");
+            return interaction.reply(
+                "There are no triggers for Vivek's highlight"
+            );
         }
 
         return interaction.reply(

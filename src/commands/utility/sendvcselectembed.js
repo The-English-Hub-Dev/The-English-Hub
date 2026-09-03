@@ -65,11 +65,29 @@ class SendVcEmbedCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const embed = new EmbedBuilder().setTitle('Join a trending voice channel').setDescription('Join a random or a currently trending voice channel in this server!').setColor('LuminousVividPink').setFooter({ text: interaction.guild.name, iconURL: interaction.guild.iconURL() });
+        const embed = new EmbedBuilder()
+            .setTitle('Join a trending voice channel')
+            .setDescription(
+                'Join a random or a currently trending voice channel in this server!'
+            )
+            .setColor('LuminousVividPink')
+            .setFooter({
+                text: interaction.guild.name,
+                iconURL: interaction.guild.iconURL(),
+            });
         const row = new ActionRowBuilder().addComponents([
-            new ButtonBuilder().setCustomId('vcselect:largest').setLabel('Join the largest active VC').setStyle(ButtonStyle.Success),
-            new ButtonBuilder().setCustomId('vcselect:random').setLabel('Join a random VC').setStyle(ButtonStyle.Primary),
-            new ButtonBuilder().setCustomId('vcselect:popular').setLabel('Join a popular VC').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder()
+                .setCustomId('vcselect:largest')
+                .setLabel('Join the largest active VC')
+                .setStyle(ButtonStyle.Success),
+            new ButtonBuilder()
+                .setCustomId('vcselect:random')
+                .setLabel('Join a random VC')
+                .setStyle(ButtonStyle.Primary),
+            new ButtonBuilder()
+                .setCustomId('vcselect:popular')
+                .setLabel('Join a popular VC')
+                .setStyle(ButtonStyle.Secondary),
         ]);
         return interaction.reply({ embeds: [embed], components: [row] });
     }

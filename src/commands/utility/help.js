@@ -220,13 +220,35 @@ class HelpCommand extends Command {
                 const names = [...allCommands.values()]
                     .filter((cmd) => cmd.enabled && cmd.category === category)
                     .map((cmd) => cmd.name);
-                if (names.length) fields.push({ name: category, value: names.join(', ') });
+                if (names.length)
+                    fields.push({ name: category, value: names.join(', ') });
             }
-            return interaction.reply({ embeds: [new EmbedBuilder().setColor(Colors.Blue).setTitle('Help').addFields(fields)] });
+            return interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor(Colors.Blue)
+                        .setTitle('Help')
+                        .addFields(fields),
+                ],
+            });
         }
         const command = allCommands.get(commandName);
-        if (!command) return interaction.reply(`No help found for command \`${commandName}\``);
-        return interaction.reply({ embeds: [new EmbedBuilder().setColor(Colors.Blue).setTitle(`Help: ${command.name}`).setDescription(blockQuote(`**Name:** ${command.name}\n**Description:** ${command.description || 'No description.'}`))] });
+        if (!command)
+            return interaction.reply(
+                `No help found for command \`${commandName}\``
+            );
+        return interaction.reply({
+            embeds: [
+                new EmbedBuilder()
+                    .setColor(Colors.Blue)
+                    .setTitle(`Help: ${command.name}`)
+                    .setDescription(
+                        blockQuote(
+                            `**Name:** ${command.name}\n**Description:** ${command.description || 'No description.'}`
+                        )
+                    ),
+            ],
+        });
     }
 
     /**
@@ -237,7 +259,10 @@ class HelpCommand extends Command {
             .setName(this.name)
             .setDescription(this.description)
             .addStringOption((option) =>
-                option.setName('command').setDescription('Command name').setRequired(false)
+                option
+                    .setName('command')
+                    .setDescription('Command name')
+                    .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,

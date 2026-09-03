@@ -343,7 +343,10 @@ class DefineCommand extends Command {
             .setName(this.name)
             .setDescription(this.description)
             .addStringOption((option) =>
-                option.setName('word').setDescription('Word to define').setRequired(true)
+                option
+                    .setName('word')
+                    .setDescription('Word to define')
+                    .setRequired(true)
             );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
