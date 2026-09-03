@@ -105,17 +105,17 @@ class SayCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addChannelOption((option) =>
-                option
-                    .setName('channel')
-                    .setDescription('Channel to send to (defaults to current)')
-                    .setRequired(false)
-            )
             .addStringOption((option) =>
                 option
                     .setName('text')
                     .setDescription('Text to say')
                     .setRequired(true)
+            )
+            .addChannelOption((option) =>
+                option
+                    .setName('channel')
+                    .setDescription('Channel to send to (defaults to current)')
+                    .setRequired(false)
             );
 
         registry.registerChatInputCommand(builder, {
