@@ -94,6 +94,12 @@ class SetstatusCommand extends Command {
             .setDescription(this.description)
             .addStringOption((option) =>
                 option
+                    .setName('status')
+                    .setDescription('Activity text')
+                    .setRequired(true)
+            )
+            .addStringOption((option) =>
+                option
                     .setName('type')
                     .setDescription('Activity type')
                     .addChoices(
@@ -103,12 +109,6 @@ class SetstatusCommand extends Command {
                         { name: 'Competing', value: 'competing' }
                     )
                     .setRequired(false)
-            )
-            .addStringOption((option) =>
-                option
-                    .setName('status')
-                    .setDescription('Activity text')
-                    .setRequired(true)
             );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,
