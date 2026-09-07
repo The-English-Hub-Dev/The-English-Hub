@@ -32,5 +32,30 @@ class MoveMePrecondition extends Precondition {
             ? this.ok()
             : this.error();
     }
+
+    async chatInputRun(interaction) {
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Admin')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('PremiumMember')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+
+        return moveMeRoles.some((role) => interaction.member.roles.cache.has(role))
+            ? this.ok()
+            : this.error();
+    }
 }
 module.exports = { MoveMePrecondition };

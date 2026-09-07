@@ -24,5 +24,22 @@ class EventManagerPrecondition extends Precondition {
 
         return this.error();
     }
+
+    async chatInputRun(interaction) {
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Staff')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+
+        if (eventManagerRoles.some((r) => interaction.member.roles.cache.has(r)))
+            return this.ok();
+
+        return this.error();
+    }
 }
 module.exports = { EventManagerPrecondition };

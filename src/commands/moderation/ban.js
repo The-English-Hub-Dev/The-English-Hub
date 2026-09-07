@@ -179,6 +179,7 @@ class BanCommand extends Command {
         const reason =
             interaction.options.getString('reason') || 'No reason provided.';
         const deleteDays = interaction.options.getNumber('deletedays') || 1;
+        const hide = interaction.options.getBoolean('hide') || false;
 
         if (!member) {
             return interaction.reply({
@@ -220,15 +221,22 @@ class BanCommand extends Command {
 
         await member.ban({ days: deleteDays, reason: reason });
 
-        const confirmEmbed = new EmbedBuilder()
-            .setColor(Colors.DarkRed)
-            .setDescription(
-                `<:Hellos:1218430823229820968> ${member.user} has been **banned** with ID \`${punishment.punishment_id}\`.`
-            );
+        if (!hide) {
+            const confirmEmbed = new EmbedBuilder()
+                .setColor(Colors.DarkRed)
+                .setDescription(
+                    `<:Hellos:1218430823229820968> ${member.user} has been **banned** with ID \`${punishment.punishment_id}\`.`
+                );
 
-        await interaction.reply({
-            embeds: [confirmEmbed],
-        });
+            await interaction.reply({
+                embeds: [confirmEmbed],
+            });
+        } else {
+            await interaction.reply({
+                content: `Successfully banned ${member.user.tag}.`,
+                ephemeral: true,
+            });
+        }
 
         await this.logBanInteraction(interaction, member, reason, punishment);
     }
@@ -337,6 +345,12 @@ class BanCommand extends Command {
                     .setDescription('Days of messages to delete')
                     .setMinValue(0)
                     .setMaxValue(7)
+                    .setRequired(false)
+            )
+            .addBooleanOption((option) =>
+                option
+                    .setName('hide')
+                    .setDescription('Hide the ban confirmation message')
                     .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {

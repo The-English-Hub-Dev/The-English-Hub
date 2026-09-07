@@ -22,5 +22,21 @@ class AdminPrecondition extends Precondition {
             return this.ok();
         return this.error();
     }
+
+    async chatInputRun(interaction) {
+        if (interaction.member.permissions.has(PermissionFlagsBits.Administrator))
+            return this.ok();
+
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Developer')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+        return this.error();
+    }
 }
 module.exports = { AdminPrecondition };

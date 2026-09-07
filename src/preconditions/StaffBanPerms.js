@@ -23,5 +23,21 @@ class StaffBanPermsPrecondition extends Precondition {
             ? this.ok()
             : this.error(); // crew mate role OR ADMIN
     }
+
+    async chatInputRun(interaction) {
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Admin')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+
+        return interaction.member.roles.cache.has('1040897095055458344')
+            ? this.ok()
+            : this.error(); // crew mate role OR ADMIN
+    }
 }
 module.exports = { StaffBanPermsPrecondition };

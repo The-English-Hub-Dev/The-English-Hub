@@ -177,39 +177,79 @@ class WarnCommand extends Command {
                 content: 'Provide a member and reason.',
                 ephemeral: true,
             });
+
+        if (
+            interaction.member.roles.highest.position <=
+            member.roles.highest.position
+        )
+            return interaction.reply({
+                content: 'You cannot warn members with equal or higher roles than you.',
+                ephemeral: true,
+            });
+
         const punishment = await Punishment.create(
             interaction.user.id,
             member.id,
             reason,
-            'warn'
+            'warn',
+            null
         );
-        await member
-            .send({
-                embeds: [
-                    new EmbedBuilder()
-                        .setColor(Colors.Yellow)
-                        .setTitle(
-                            `You were warned in ${interaction.guild.name}`
-                        )
-                        .addFields(
-                            { name: 'Reason', value: reason },
-                            {
-                                name: 'Punishment ID',
-                                value: punishment.punishment_id,
-                            }
-                        ),
-                ],
+
+        // DM the warned member
+        const dmEmbed = new EmbedBuilder()
+            .setColor(Colors.Yellow)
+            .setTitle(`You were warned in ${interaction.guild.name}`)
+            .setAuthor({
+                name: interaction.guild.name,
+                iconURL: interaction.guild.iconURL(),
             })
-            .catch(() => {});
-        return interaction.reply({
-            embeds: [
-                new EmbedBuilder()
-                    .setColor(Colors.Yellow)
-                    .setDescription(
-                        `${member} has been warned with ID \`${punishment.punishment_id}\`.`
-                    ),
-            ],
-        });
+            .addFields(
+                { name: 'Reason', value: reason },
+                { name: 'Punishment ID', value: punishment.punishment_id }
+            )
+            .setFooter({
+                text: 'You may appeal this warn by opening a ticket in the Report Help channel',
+                iconURL: member.user.avatarURL(),
+            })
+            .setTimestamp(Date.now());
+        await member.send({ embeds: [dmEmbed] }).catch(() => {});
+
+        // Log to mod log
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.Yellow)
+            .setTitle('Warn')
+            .setAuthor({
+                name: member.user.tag,
+                iconURL: member.user.avatarURL(),
+            })
+            .addFields(
+                { name: 'Punishment ID', value: `\`${punishment.punishment_id}\`` },
+                { name: 'User', value: `${member.user.tag} (${member.user.id})` },
+                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                { name: 'Reason', value: reason },
+                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) },
+                { name: 'Expiration', value: 'N/A' }
+            )
+            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setThumbnail(this.container.client.user.avatarURL());
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});
+
+        const hide = interaction.options.getBoolean('hide') || false;
+
+        if (!hide) {
+            const confirmEmbed = new EmbedBuilder()
+                .setColor(Colors.Yellow)
+                .setDescription(
+                    `<:Hellos:1218430823229820968> ${member.user} was warned with ID \`${punishment.punishment_id}\`.`
+                );
+            return interaction.reply({ embeds: [confirmEmbed] });
+        } else {
+            return interaction.reply({
+                content: `Successfully warned ${member.user.tag} with ID \`${punishment.punishment_id}\`.`,
+                ephemeral: true,
+            });
+        }
     }
 
     /**
@@ -230,6 +270,12 @@ class WarnCommand extends Command {
                     .setName('reason')
                     .setDescription('Reason')
                     .setRequired(true)
+            )
+            .addBooleanOption((option) =>
+                option
+                    .setName('hide')
+                    .setDescription('Hide the warn confirmation message')
+                    .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,

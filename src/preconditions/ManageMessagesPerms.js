@@ -27,5 +27,26 @@ class ManageMessagesPermsPrecondition extends Precondition {
                       'You need the Manage Messages permission to use this command.',
               });
     }
+
+    async chatInputRun(interaction) {
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Admin')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+
+        return interaction.member.permissions.has(
+            PermissionFlagsBits.ManageMessages
+        )
+            ? this.ok()
+            : this.error({
+                  message:
+                      'You need the Manage Messages permission to use this command.',
+              });
+    }
 }
 module.exports = { ManageMessagesPermsPrecondition };

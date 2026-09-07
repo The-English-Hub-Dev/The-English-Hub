@@ -7,6 +7,7 @@ const {
     EmbedBuilder,
     GuildMember,
     VoiceChannel,
+    ChannelType,
 } = require('discord.js');
 const {
     vcbanlogChannelID,
@@ -188,26 +189,80 @@ class VcBanCommand extends Command {
         const member = interaction.options.getMember('member');
         const reason =
             interaction.options.getString('reason') || 'No reason provided.';
+
         if (!channel || !member)
             return interaction.reply({
                 content: 'Provide a voice channel and member.',
                 ephemeral: true,
             });
+
+        if (!vcBanUnbanManagedCategories.includes(channel.parentId))
+            return interaction.reply({
+                content: 'You may only vc ban members from channels in the `Guest Rooms` category.',
+                ephemeral: true,
+            });
+
+        if (
+            interaction.member.roles.highest.position <=
+            member.roles.highest.position
+        )
+            return interaction.reply({
+                content: 'You may not vc ban members with equal or higher roles than you.',
+                ephemeral: true,
+            });
+
+        // DM the member
+        const dmEmbed = new EmbedBuilder()
+            .setColor(Colors.Red)
+            .setTitle(`You were banned from the vc ${channel}`)
+            .setAuthor({
+                name: interaction.guild.name,
+                iconURL: interaction.guild.iconURL(),
+            })
+            .addFields({ name: 'Reason', value: reason })
+            .setDescription('This ban will automatically expire in 24 hours. You will receive a DM when you are unbanned.')
+            .setTimestamp();
+        await member.send({ embeds: [dmEmbed] }).catch(() => {});
+
         await channel.permissionOverwrites.edit(
             member,
             { Connect: false, SendMessages: false },
-            { reason }
+            { reason: `VC ban by ${interaction.user.tag} (${interaction.user.id}): ${reason}` }
         );
-        if (member.voice.channel === channel)
-            await member.voice.disconnect(reason);
+
+        if (member.voice.channel?.id === channel.id)
+            await member.voice.disconnect('VC ban').catch(() => {});
+
         await this.container.redis.hset(
             'vcban',
             `${channel.id}:${member.id}`,
             Date.now()
         );
-        return interaction.reply(
-            `${member} has been banned from ${channel} for 24 hours.`
-        );
+
+        // Log to vcban log channel
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.DarkRed)
+            .setTitle('VC Ban')
+            .setAuthor({
+                name: member.user.tag,
+                iconURL: member.user.avatarURL(),
+            })
+            .addFields(
+                { name: 'User', value: `${member.user.tag} (${member.user.id})` },
+                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                { name: 'Reason', value: reason },
+                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) },
+                { name: 'Expires', value: time(new Date(Date.now() + Time.Day), TimestampStyles.LongDateTime) }
+            )
+            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setThumbnail(this.container.client.user.avatarURL());
+        const logCh = interaction.guild.channels.cache.get(vcbanlogChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});
+
+        const vcBanEmbed = new EmbedBuilder()
+            .setDescription(`${member} has been banned from the vc ${channel} for 24 hours.`)
+            .setColor(Colors.Red);
+        return interaction.reply({ embeds: [vcBanEmbed] });
     }
 
     /**
@@ -221,6 +276,7 @@ class VcBanCommand extends Command {
                 option
                     .setName('channel')
                     .setDescription('Voice channel')
+                    .addChannelTypes(ChannelType.GuildVoice)
                     .setRequired(true)
             )
             .addUserOption((option) =>

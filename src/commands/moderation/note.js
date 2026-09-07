@@ -144,10 +144,12 @@ class NoteCommand extends Command {
                 },
                 {
                     name: 'Expiration',
-                    value: time(
-                        Math.round(punishment.expiration / 1000),
-                        TimestampStyles.LongDateTime
-                    ),
+                    value: punishment.expiration
+                        ? time(
+                              Math.round(punishment.expiration / 1000),
+                              TimestampStyles.LongDateTime
+                          )
+                        : 'N/A',
                 }
             )
             .setFooter({
@@ -172,15 +174,60 @@ class NoteCommand extends Command {
                 content: 'Provide a member and note.',
                 ephemeral: true,
             });
+
+        if (
+            interaction.member.roles.highest.position <=
+            member.roles.highest.position
+        )
+            return interaction.reply({
+                content: 'You cannot take a note for members with equal or higher roles than you.',
+                ephemeral: true,
+            });
+
         const punishment = await Punishment.create(
             interaction.user.id,
             member.id,
             reason,
-            'note'
+            'note',
+            null
         );
-        return interaction.reply(
-            `Added note to ${member} with ID \`${punishment.punishment_id}\`.`
-        );
+
+        // Log the note
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.Aqua)
+            .setTitle('Note added')
+            .setAuthor({
+                name: member.user.tag,
+                iconURL: member.user.avatarURL(),
+            })
+            .addFields(
+                { name: 'Punishment ID', value: `\`${punishment.punishment_id}\`` },
+                { name: 'User', value: `${member.user.tag} (${member.user.id})` },
+                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                { name: 'Reason', value: reason },
+                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) },
+                { name: 'Expiration', value: 'N/A' }
+            )
+            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setThumbnail(this.container.client.user.avatarURL());
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});
+
+        const hide = interaction.options.getBoolean('hide') || false;
+
+        if (!hide) {
+            const confirmEmbed = new EmbedBuilder()
+                .setColor(Colors.Grey)
+                .setDescription(
+                    `${member.user} had a note added to their profile. \`${punishment.punishment_id}\`.`
+                );
+            return interaction.reply({ embeds: [confirmEmbed] });
+        } else {
+            return interaction.reply({
+                content: `Added a note for ${member.user.tag} with ID \`${punishment.punishment_id}\`.`,
+                ephemeral: true,
+            });
+        }
     }
 
     /**
@@ -201,6 +248,12 @@ class NoteCommand extends Command {
                     .setName('reason')
                     .setDescription('Note')
                     .setRequired(true)
+            )
+            .addBooleanOption((option) =>
+                option
+                    .setName('hide')
+                    .setDescription('Hide the note confirmation message')
+                    .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,

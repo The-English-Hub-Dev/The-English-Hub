@@ -148,16 +148,57 @@ class RoleRemoveCommand extends Command {
                 content: 'The member does not have that role.',
                 ephemeral: true,
             });
+        const hide = interaction.options.getBoolean('hide') || false;
         await member.roles.remove(role, reason);
-        return interaction.reply({
-            embeds: [
-                new EmbedBuilder()
-                    .setColor(Colors.Green)
-                    .setDescription(
-                        `<:Hellos:1218430823229820968> Removed ${role} from ${member.user}.`
-                    ),
-            ],
-        });
+
+        if (!hide) {
+            await interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor(Colors.Green)
+                        .setDescription(
+                            `<:Hellos:1218430823229820968> Removed ${role} from ${member.user}.`
+                        ),
+                ],
+            });
+        } else {
+            await interaction.reply({
+                content: `Removed ${role.name} from ${member.user.tag}.`,
+                ephemeral: true,
+            });
+        }
+
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.Red)
+            .setTitle('Role Removed')
+            .setAuthor({
+                name: member.user.tag,
+                iconURL: member.user.avatarURL(),
+            })
+            .addFields(
+                {
+                    name: 'User',
+                    value: `${member.user.tag} (${member.user.id})`,
+                },
+                { name: 'Role', value: `${role} (${role.id})` },
+                {
+                    name: 'Moderator',
+                    value: `${interaction.user.tag} (${interaction.user.id})`,
+                },
+                { name: 'Reason', value: reason },
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                }
+            )
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: interaction.guild.iconURL(),
+            })
+            .setThumbnail(this.container.client.user.avatarURL());
+
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] });
     }
 
     /**
@@ -180,6 +221,12 @@ class RoleRemoveCommand extends Command {
                 option
                     .setName('reason')
                     .setDescription('Reason')
+                    .setRequired(false)
+            )
+            .addBooleanOption((option) =>
+                option
+                    .setName('hide')
+                    .setDescription('Hide the role removal confirmation message')
                     .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {

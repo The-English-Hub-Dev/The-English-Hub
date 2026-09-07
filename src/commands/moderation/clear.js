@@ -122,12 +122,16 @@ class ClearCommand extends Command {
         const amount = interaction.options.getInteger('amount');
         const reason =
             interaction.options.getString('reason') || 'No reason provided.';
+        const hide = interaction.options.getBoolean('hide') || false;
+
         if (!amount || amount < 1 || amount > 100)
             return interaction.reply({
                 content:
                     'You can only clear between 1 and 100 messages at a time.',
                 ephemeral: true,
             });
+
+        await interaction.deferReply({ ephemeral: hide });
         const deleted = await interaction.channel.bulkDelete(amount, true);
         const punishment = await Punishment.create(
             interaction.user.id,
@@ -135,12 +139,56 @@ class ClearCommand extends Command {
             reason,
             'clear'
         );
+
         const confirmEmbed = new EmbedBuilder()
             .setColor(Colors.Green)
             .setDescription(
                 `<:Hellos:1218430823229820968> Cleared ${deleted.size} messages with ID \`${punishment.punishment_id}\`.`
             );
-        return interaction.reply({ embeds: [confirmEmbed] });
+
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.DarkRed)
+            .setTitle('Clear')
+            .setAuthor({
+                name: interaction.user.tag,
+                iconURL: interaction.user.avatarURL(),
+            })
+            .addFields(
+                {
+                    name: 'Punishment ID',
+                    value: `\`${punishment.punishment_id}\``,
+                },
+                {
+                    name: 'Channel',
+                    value: `${interaction.channel} (${interaction.channel.id})`,
+                },
+                {
+                    name: 'Moderator',
+                    value: `${interaction.user.tag} (${interaction.user.id})`,
+                },
+                { name: 'Messages Cleared', value: `${deleted.size}` },
+                { name: 'Reason', value: reason },
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                }
+            )
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: interaction.guild.iconURL(),
+            })
+            .setThumbnail(this.container.client.user.avatarURL());
+
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] });
+
+        if (!hide) {
+            return interaction.editReply({ embeds: [confirmEmbed] });
+        } else {
+            return interaction.editReply({
+                content: `Cleared ${deleted.size} messages with ID \`${punishment.punishment_id}\`.`,
+            });
+        }
     }
 
     /**
@@ -162,6 +210,12 @@ class ClearCommand extends Command {
                 option
                     .setName('reason')
                     .setDescription('Reason')
+                    .setRequired(false)
+            )
+            .addBooleanOption((option) =>
+                option
+                    .setName('hide')
+                    .setDescription('Hide the clear confirmation message')
                     .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {

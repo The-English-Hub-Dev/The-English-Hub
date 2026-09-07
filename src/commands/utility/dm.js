@@ -167,13 +167,13 @@ class DmCommand extends Command {
      */
     async chatInputRun(interaction) {
         const member = interaction.options.getMember('member');
-        const message = interaction.options.getString('message');
-        if (!member || !message)
+        const dmContent = interaction.options.getString('message');
+        if (!member || !dmContent)
             return interaction.reply({
                 content: 'Provide a member and message.',
                 ephemeral: true,
             });
-        if (message.length > 1000)
+        if (dmContent.length > 1000)
             return interaction.reply({
                 content:
                     'The message length may not be greater than 1000 characters.',
@@ -181,7 +181,7 @@ class DmCommand extends Command {
             });
         const embed = new EmbedBuilder()
             .setTitle("You've received a new message!")
-            .setDescription(`**Message:** ${message}`)
+            .setDescription(`**Message:** ${dmContent}`)
             .setFooter({ text: `Sent by ${interaction.guild.name} Staff` })
             .setColor(Colors.Blue);
         if (!(await member.send({ embeds: [embed] }).catch(() => null)))
@@ -189,7 +189,30 @@ class DmCommand extends Command {
                 content: "Couldn't send the message to that user.",
                 ephemeral: true,
             });
-        await this.logDMSent(interaction, member, message);
+
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (logCh && logCh.type === ChannelType.GuildText) {
+            const dmSentEmbed = new EmbedBuilder()
+                .setTitle('DM Sent')
+                .setColor(Colors.Blurple)
+                .setFields(
+                    {
+                        name: 'User sent to',
+                        value: `${member} (${member.id})`,
+                        inline: true,
+                    },
+                    {
+                        name: 'Sending staff',
+                        value: `${interaction.member} (${interaction.member.id})`,
+                        inline: true,
+                    },
+                    { name: 'Message Content', value: dmContent }
+                )
+                .setFooter({ text: `Sent at` })
+                .setTimestamp();
+            await logCh.send({ embeds: [dmSentEmbed] });
+        }
+
         return interaction.reply(
             `Successfully sent DM to ${member} (${member.user.tag}).`
         );

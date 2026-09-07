@@ -25,5 +25,24 @@ class ManageRolesPermsPrecondition extends Precondition {
                       'You need the Manage Roles permission to use this command.',
               });
     }
+
+    async chatInputRun(interaction) {
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Admin')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+
+        return interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)
+            ? this.ok()
+            : this.error({
+                  message:
+                      'You need the Manage Roles permission to use this command.',
+              });
+    }
 }
 module.exports = { ManageRolesPermsPrecondition };

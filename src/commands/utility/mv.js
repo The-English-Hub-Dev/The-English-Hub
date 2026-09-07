@@ -3,6 +3,7 @@ const {
     Message,
     ChatInputCommandInteraction,
     PermissionFlagsBits,
+    ChannelType,
 } = require('discord.js');
 const { mvChannelsAllowed } = require('../../../config.json');
 const { SlashCommandBuilder } = require('@discordjs/builders');
@@ -129,6 +130,7 @@ class MvCommand extends Command {
                 option
                     .setName('channel')
                     .setDescription('Voice channel')
+                    .addChannelTypes(ChannelType.GuildVoice)
                     .setRequired(true)
             );
         registry.registerChatInputCommand(builder, {

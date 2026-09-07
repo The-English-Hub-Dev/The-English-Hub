@@ -48,7 +48,7 @@ class WhisperCommand extends Command {
         );
 
         return message.channel.send({
-            content: `${message.author} hugged ${member} 🫂`,
+            content: `${message.author} whispered to ${member} 🤫`,
             allowedMentions: {
                 users: [member.id, message.author.id],
                 roles: [],

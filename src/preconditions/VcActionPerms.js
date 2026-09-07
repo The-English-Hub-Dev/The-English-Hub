@@ -35,5 +35,33 @@ class VcActionPermsPrecondition extends Precondition {
             ? this.ok()
             : this.error();
     }
+
+    async chatInputRun(interaction) {
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Admin')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Staff')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+
+        return vcActionPerms.some((role) =>
+            interaction.member.roles.cache.has(role)
+        )
+            ? this.ok()
+            : this.error();
+    }
 }
 module.exports = { VcActionPermsPrecondition };

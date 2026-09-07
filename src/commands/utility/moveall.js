@@ -1,5 +1,5 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, ChatInputCommandInteraction } = require('discord.js');
+const { Message, ChatInputCommandInteraction, ChannelType } = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class MoveAllCommand extends Command {
@@ -83,12 +83,14 @@ class MoveAllCommand extends Command {
                 option
                     .setName('from')
                     .setDescription('Source voice channel')
+                    .addChannelTypes(ChannelType.GuildVoice)
                     .setRequired(true)
             )
             .addChannelOption((option) =>
                 option
                     .setName('to')
                     .setDescription('Destination voice channel')
+                    .addChannelTypes(ChannelType.GuildVoice)
                     .setRequired(true)
             );
         registry.registerChatInputCommand(builder, {

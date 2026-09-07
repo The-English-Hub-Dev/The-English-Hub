@@ -14,5 +14,12 @@ class PremiumMemberPrecondition extends Precondition {
 
         return this.error();
     }
+
+    async chatInputRun(interaction) {
+        if (interaction.member.roles.cache.has(premiumMemberRoleID))
+            return this.ok();
+
+        return this.error();
+    }
 }
 module.exports = { PremiumMemberPrecondition };

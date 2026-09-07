@@ -71,25 +71,45 @@ class ViewVcbanCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const entries = Object.entries(
+        await interaction.deferReply();
+        const allvcbans = Object.entries(
             await this.container.redis.hgetall('vcban')
         );
-        const lines = await Promise.all(
-            entries.map(async ([key, value]) => {
-                const [channelID, memberID] = key.split(':');
-                const user = await this.container.client.users
-                    .fetch(memberID)
-                    .catch(() => null);
-                return `Members banned from <#${channelID}>: <@${memberID}> (${user?.tag || memberID}) Expires: ${time(new Date(Number(value) + Time.Day), TimestampStyles.RelativeTime)}`;
-            })
-        );
-        const embed = new EmbedBuilder()
+
+        const vcs = {};
+        for (let i = 0; i < allvcbans.length; i++) {
+            const [vChannelID, memberID] = allvcbans[i][0].split(':');
+            let user = await this.container.client.users.fetch(memberID).catch(() => null);
+            let userTag = user ? user.tag : 'Unknown';
+            const text = `<@${memberID}> (${memberID} - ${userTag}) Expires: ${time(new Date(Number(allvcbans[i][1]) + Time.Day), TimestampStyles.RelativeTime)}`;
+            if (vChannelID in vcs) {
+                vcs[vChannelID].push(text);
+            } else {
+                vcs[vChannelID] = [text];
+            }
+        }
+
+        const vcString = Object.entries(vcs)
+            .map(
+                (vc) =>
+                    `Members banned from <#${vc[0]}>:\n${vc[1].join('\n')}\n`
+            )
+            .join('\n');
+
+        const vcbanEmbed = new EmbedBuilder()
             .setColor(Colors.Orange)
-            .setTitle('Current active VC Bans')
-            .setDescription(lines.join('\n') || 'No current vc bans.')
+            .setTitle(`Current active VC Bans`)
+            .setDescription(
+                vcString.length
+                    ? vcString +
+                          '\n\nYou can also view this online at https://enghub-dashboard.vercel.app/.'
+                    : 'No current vc bans.'
+            )
             .setFooter({ text: `Requested by ${interaction.user.tag}` })
+            .setURL('https://enghub-dashboard.vercel.app/')
             .setTimestamp();
-        return interaction.reply({ embeds: [embed] });
+
+        return interaction.editReply({ embeds: [vcbanEmbed] });
     }
 
     /**

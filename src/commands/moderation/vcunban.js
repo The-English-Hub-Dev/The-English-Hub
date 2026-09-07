@@ -7,6 +7,7 @@ const {
     EmbedBuilder,
     GuildMember,
     VoiceChannel,
+    ChannelType,
 } = require('discord.js');
 const {
     vcbanlogChannelID,
@@ -165,16 +166,70 @@ class VcUnbanCommand extends Command {
     async chatInputRun(interaction) {
         const channel = interaction.options.getChannel('channel');
         const member = interaction.options.getMember('member');
+        const reason = 'No reason provided.';
+
         if (!channel || !member)
             return interaction.reply({
                 content: 'Provide a voice channel and member.',
                 ephemeral: true,
             });
-        await channel.permissionOverwrites.delete(member, 'VC unban');
-        await this.container.redis.hdel('vcban', `${channel.id}:${member.id}`);
-        return interaction.reply(
-            `${member} has been unbanned from ${channel}.`
+
+        if (!vcBanUnbanManagedCategories.includes(channel.parentId))
+            return interaction.reply({
+                content: 'You may only vc unban members from channels in the `Guest Rooms` category.',
+                ephemeral: true,
+            });
+
+        if (
+            interaction.member.roles.highest.position <=
+            member.roles.highest.position
+        )
+            return interaction.reply({
+                content: 'You may not vc unban members with equal or higher roles than you.',
+                ephemeral: true,
+            });
+
+        // DM the member
+        const dmEmbed = new EmbedBuilder()
+            .setColor(Colors.Green)
+            .setTitle(`You were unbanned from the vc ${channel}`)
+            .setAuthor({
+                name: interaction.guild.name,
+                iconURL: interaction.guild.iconURL(),
+            })
+            .addFields({ name: 'Reason', value: reason })
+            .setTimestamp();
+        await member.send({ embeds: [dmEmbed] }).catch(() => {});
+
+        await channel.permissionOverwrites.delete(
+            member,
+            `VC unban by ${interaction.user.tag} (${interaction.user.id})`
         );
+        await this.container.redis.hdel('vcban', `${channel.id}:${member.id}`);
+
+        // Log to vcban log channel
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.DarkGreen)
+            .setTitle('VC Unban')
+            .setAuthor({
+                name: member.user.tag,
+                iconURL: member.user.avatarURL(),
+            })
+            .addFields(
+                { name: 'User', value: `${member.user.tag} (${member.user.id})` },
+                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                { name: 'Reason', value: reason },
+                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) }
+            )
+            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setThumbnail(this.container.client.user.avatarURL());
+        const logCh = interaction.guild.channels.cache.get(vcbanlogChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});
+
+        const vcUnbanEmbed = new EmbedBuilder()
+            .setDescription(`${member} has been unbanned from the vc ${channel}.`)
+            .setColor(Colors.DarkGreen);
+        return interaction.reply({ embeds: [vcUnbanEmbed] });
     }
 
     /**
@@ -188,6 +243,7 @@ class VcUnbanCommand extends Command {
                 option
                     .setName('channel')
                     .setDescription('Voice channel')
+                    .addChannelTypes(ChannelType.GuildVoice)
                     .setRequired(true)
             )
             .addUserOption((option) =>

@@ -138,15 +138,60 @@ class LockdownCommand extends Command {
             { SendMessages: false },
             { reason }
         );
+        const hide = interaction.options.getBoolean('hide') || false;
+
         const punishment = await Punishment.create(
             interaction.user.id,
             channel.id,
             reason,
             'lockdown'
         );
-        return interaction.reply(
-            `<:Hellos:1218430823229820968> Locked down ${channel} with ID \`${punishment.punishment_id}\`.`
-        );
+
+        if (!hide) {
+            const confirmEmbed = new EmbedBuilder()
+                .setColor(Colors.Green)
+                .setDescription(
+                    `<:Hellos:1218430823229820968> Locked down ${channel} with ID \`${punishment.punishment_id}\`.`
+                );
+            await interaction.reply({ embeds: [confirmEmbed] });
+        } else {
+            await interaction.reply({
+                content: `Locked down ${channel} with ID \`${punishment.punishment_id}\`.`,
+                ephemeral: true,
+            });
+        }
+
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.DarkRed)
+            .setTitle('Channel Lockdown')
+            .setAuthor({
+                name: interaction.user.tag,
+                iconURL: interaction.user.avatarURL(),
+            })
+            .addFields(
+                {
+                    name: 'Punishment ID',
+                    value: `\`${punishment.punishment_id}\``,
+                },
+                { name: 'Channel', value: `${channel} (${channel.id})` },
+                {
+                    name: 'Moderator',
+                    value: `${interaction.user.tag} (${interaction.user.id})`,
+                },
+                { name: 'Reason', value: reason },
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                }
+            )
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: interaction.guild.iconURL(),
+            })
+            .setThumbnail(this.container.client.user.avatarURL());
+
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] });
     }
 
     /**
@@ -166,6 +211,12 @@ class LockdownCommand extends Command {
                 option
                     .setName('reason')
                     .setDescription('Reason')
+                    .setRequired(false)
+            )
+            .addBooleanOption((option) =>
+                option
+                    .setName('hide')
+                    .setDescription('Hide the lockdown confirmation message')
                     .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {

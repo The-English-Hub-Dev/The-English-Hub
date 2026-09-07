@@ -148,16 +148,57 @@ class RoleAddCommand extends Command {
                 content: 'The member already has that role.',
                 ephemeral: true,
             });
+        const hide = interaction.options.getBoolean('hide') || false;
         await member.roles.add(role, reason);
-        return interaction.reply({
-            embeds: [
-                new EmbedBuilder()
-                    .setColor(Colors.Green)
-                    .setDescription(
-                        `<:Hellos:1218430823229820968> Added ${role} to ${member.user}.`
-                    ),
-            ],
-        });
+
+        if (!hide) {
+            await interaction.reply({
+                embeds: [
+                    new EmbedBuilder()
+                        .setColor(Colors.Green)
+                        .setDescription(
+                            `<:Hellos:1218430823229820968> Added ${role} to ${member.user}.`
+                        ),
+                ],
+            });
+        } else {
+            await interaction.reply({
+                content: `Added ${role.name} to ${member.user.tag}.`,
+                ephemeral: true,
+            });
+        }
+
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.Green)
+            .setTitle('Role Added')
+            .setAuthor({
+                name: member.user.tag,
+                iconURL: member.user.avatarURL(),
+            })
+            .addFields(
+                {
+                    name: 'User',
+                    value: `${member.user.tag} (${member.user.id})`,
+                },
+                { name: 'Role', value: `${role} (${role.id})` },
+                {
+                    name: 'Moderator',
+                    value: `${interaction.user.tag} (${interaction.user.id})`,
+                },
+                { name: 'Reason', value: reason },
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                }
+            )
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: interaction.guild.iconURL(),
+            })
+            .setThumbnail(this.container.client.user.avatarURL());
+
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] });
     }
 
     /**
@@ -180,6 +221,12 @@ class RoleAddCommand extends Command {
                 option
                     .setName('reason')
                     .setDescription('Reason')
+                    .setRequired(false)
+            )
+            .addBooleanOption((option) =>
+                option
+                    .setName('hide')
+                    .setDescription('Hide the role addition confirmation message')
                     .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {

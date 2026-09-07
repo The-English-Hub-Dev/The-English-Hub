@@ -198,34 +198,110 @@ class TempbanCommand extends Command {
         const duration = interaction.options.getString('duration');
         const reason =
             interaction.options.getString('reason') || 'No reason provided.';
+
         if (!member || !duration)
             return interaction.reply({
                 content: 'Provide a member and duration.',
                 ephemeral: true,
             });
+
+        if (
+            interaction.member.roles.highest.position <=
+            member.roles.highest.position
+        )
+            return interaction.reply({
+                content: 'You may not ban members with equal or higher roles than you.',
+                ephemeral: true,
+            });
+
+        if (!member.bannable)
+            return interaction.reply({
+                content: 'That member is unbannable.',
+                ephemeral: true,
+            });
+
         const rawTime = new Duration(duration);
         if (isNaN(rawTime.offset))
             return interaction.reply({
                 content: 'Invalid duration specified.',
                 ephemeral: true,
             });
+
         const expiry = Math.round((Date.now() + rawTime.offset) / 1000);
+
         const punishment = await Punishment.create(
             interaction.user.id,
-            member.id,
+            member.user.id,
             reason,
             'tempban',
             expiry
         );
+
+        // DM the member before banning
+        const dmEmbed = new EmbedBuilder()
+            .setColor(Colors.Red)
+            .setTitle(`You were temporarily banned from ${interaction.guild.name}`)
+            .setAuthor({
+                name: interaction.guild.name,
+                iconURL: interaction.guild.iconURL(),
+            })
+            .addFields(
+                { name: 'Expires', value: time(expiry, TimestampStyles.LongDateTime) },
+                { name: 'Reason', value: reason },
+                { name: 'Punishment ID', value: punishment.punishment_id },
+                { name: 'Appeal', value: 'To appeal this ban, click [here](https://discord.com/invite/Yp26QSPnRT).' }
+            )
+            .setFooter({
+                text: 'If you believe this ban was unjustified, you may submit an appeal',
+                iconURL: member.user.avatarURL(),
+            })
+            .setTimestamp();
+        await member.send({ embeds: [dmEmbed] }).catch(() => {});
+
         await member.ban({ reason });
+
         await this.container.redis.hset(
-            'tempbans',
-            `${member.id}:${Date.now()}`,
+            'banned',
+            `${member.user.id}:${Date.now()}`,
             expiry
         );
-        return interaction.reply(
-            `<:Hellos:1218430823229820968> ${member.user} has been **banned** with ID \`${punishment.punishment_id}\`.`
-        );
+
+        // Log to mod log
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.DarkRed)
+            .setTitle('Tempban')
+            .setAuthor({
+                name: member.user.tag,
+                iconURL: member.user.avatarURL(),
+            })
+            .addFields(
+                { name: 'Punishment ID', value: `\`${punishment.punishment_id}\`` },
+                { name: 'User', value: `${member.user.tag} (${member.user.id})` },
+                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                { name: 'Reason', value: reason },
+                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) },
+                { name: 'Expires', value: time(expiry, TimestampStyles.LongDateTime) }
+            )
+            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setThumbnail(this.container.client.user.avatarURL());
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});
+
+        const hide = interaction.options.getBoolean('hide') || false;
+
+        if (!hide) {
+            const confirmEmbed = new EmbedBuilder()
+                .setColor(Colors.DarkRed)
+                .setDescription(
+                    `<:Hellos:1218430823229820968> ${member.user} has been **temporarily banned** with ID \`${punishment.punishment_id}\`.`
+                );
+            return interaction.reply({ embeds: [confirmEmbed] });
+        } else {
+            return interaction.reply({
+                content: `Temporarily banned ${member.user.tag} with ID \`${punishment.punishment_id}\`.`,
+                ephemeral: true,
+            });
+        }
     }
 
     /**
@@ -251,6 +327,12 @@ class TempbanCommand extends Command {
                 option
                     .setName('reason')
                     .setDescription('Reason')
+                    .setRequired(false)
+            )
+            .addBooleanOption((option) =>
+                option
+                    .setName('hide')
+                    .setDescription('Hide the tempban confirmation message')
                     .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {

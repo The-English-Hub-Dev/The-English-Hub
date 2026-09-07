@@ -110,11 +110,12 @@ class QueueCommand extends Command {
     async chatInputRun(interaction) {
         const queueID = interaction.options.getString('id');
         const queueSnowflake = queueID || DiscordSnowflake.generate();
-        const queueEmbed = new EmbedBuilder()
+        let queueEmbed = new EmbedBuilder()
             .setColor('Random')
             .setTitle('Queue')
             .setDescription(`Queue ID: ${queueSnowflake}\n\n**Users:** None`)
             .setFooter({ text: `Queue created by ${interaction.user.tag}` });
+            
         const queueActionRow = new ActionRowBuilder().addComponents([
             new ButtonBuilder()
                 .setCustomId(`queue:join_${queueSnowflake}`)
@@ -129,6 +130,42 @@ class QueueCommand extends Command {
                 .setLabel('Clear')
                 .setStyle(ButtonStyle.Secondary),
         ]);
+
+        if (queueID) {
+            const currentQueueUsersIDs = await this.container.redis.lrange(
+                `queue_${queueID}`,
+                0,
+                -1
+            );
+            const currentQueueUsers = currentQueueUsersIDs
+                .map(
+                    (id, index) =>
+                        `${currentQueueUsersIDs.length - index}: <@${id}>`
+                )
+                .reverse()
+                .join('\n');
+
+            queueEmbed = new EmbedBuilder()
+                .setColor('Random')
+                .setTitle(queueEmbed.data.title)
+                .setDescription(
+                    `Queue ID: ${queueSnowflake}\n\n**${currentQueueUsersIDs.length} User${
+                        currentQueueUsersIDs.length === 1 ? '' : 's'
+                    } in queue:**\n ${
+                        currentQueueUsers.length > 0
+                            ? currentQueueUsers
+                            : 'None'
+                    }`
+                )
+                .setFooter(queueEmbed.data.footer);
+                
+            await interaction.reply({
+                embeds: [queueEmbed],
+                components: [queueActionRow],
+            });
+            return interaction.followUp({ content: 'Queue restored from ID!', ephemeral: true });
+        }
+
         await interaction.reply({
             embeds: [queueEmbed],
             components: [queueActionRow],

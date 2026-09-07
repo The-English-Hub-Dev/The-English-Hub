@@ -161,7 +161,21 @@ class ModlogsCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const user = interaction.options.getUser('member') || interaction.user;
+        const isStaff = staffRoles.some((r) =>
+            interaction.member.roles.cache.has(r)
+        ) || interaction.member.permissions.has(8n); // Administrator flag
+
+        const requestedUser = interaction.options.getUser('member');
+
+        // Non-staff can only view their own punishments
+        if (!isStaff && requestedUser && requestedUser.id !== interaction.user.id)
+            return interaction.reply({
+                content: 'You can only view your own punishments.',
+                ephemeral: true,
+            });
+
+        const user = isStaff ? (requestedUser || interaction.user) : interaction.user;
+
         const punishments = await this.container.db.punishments.findBy({
             user_id: user.id,
         });
@@ -171,6 +185,7 @@ class ModlogsCommand extends Command {
                     ? 'You have no punishments.'
                     : `\`${user.tag}\` has no punishments.`
             );
+
         const embed = new EmbedBuilder()
             .setTitle(`Punishments for ${user.tag}`)
             .setDescription(
@@ -178,14 +193,40 @@ class ModlogsCommand extends Command {
             )
             .setAuthor({ name: user.tag, iconURL: user.avatarURL() })
             .setColor(Colors.LuminousVividPink);
-        embed.addFields(
-            punishments
-                .slice(0, 25)
-                .map((punishment) => ({
-                    name: punishment.punishment_id,
-                    value: `**Type:** ${punishment.type}\n**Reason:** ${punishment.reason}\n**Date:** ${time(punishment.timestamp, TimestampStyles.LongDateTime)}`,
-                }))
+
+        const uniqueModeratorIds = [
+            ...new Set(punishments.map((p) => p.moderator_id)),
+        ];
+        const moderatorCache = new Map(
+            await Promise.all(
+                uniqueModeratorIds.map(async (id) => {
+                    const moderator = await this.container.client.users
+                        .fetch(id)
+                        .catch(() => null);
+                    return [id, moderator];
+                })
+            )
         );
+
+        embed.addFields(
+            punishments.slice(0, 25).map((punishment) => {
+                const moderator = moderatorCache.get(punishment.moderator_id);
+                const moderatorTag = moderator?.tag || punishment.moderator_id;
+                return {
+                    name: `Punishment ID: ${punishment.punishment_id} | Moderator: ${moderatorTag}`,
+                    value: blockQuote(
+                        `**Type:** ${punishment.type}\n**Reason:** ${punishment.reason}\n**Date:** ${time(punishment.timestamp, TimestampStyles.LongDateTime)}\n**Expiration:** ${
+                            punishment.expiration
+                                ? time(punishment.expiration, TimestampStyles.LongDateTime)
+                                : 'Never'
+                        }`
+                    ),
+                };
+            })
+        );
+        if (punishments.length > 25)
+            embed.addFields({ name: 'Results truncated', value: `Showing first 25 of ${punishments.length} punishments.` });
+
         return interaction.reply({ embeds: [embed] });
     }
 

@@ -220,18 +220,50 @@ class MuteCommand extends Command {
         const duration = interaction.options.getString('duration');
         const reason =
             interaction.options.getString('reason') || 'No reason given.';
+
         if (!member || !duration)
             return interaction.reply({
                 content: 'Provide a member and duration.',
                 ephemeral: true,
             });
-        const rawTime = new Duration(duration);
-        if (isNaN(rawTime.offset) || !mutedRoleID)
+
+        if (
+            interaction.member.roles.highest.position <=
+            member.roles.highest.position
+        )
             return interaction.reply({
-                content: 'Invalid duration or mute role configuration.',
+                content: 'You cannot mute members with equal or higher roles than you.',
                 ephemeral: true,
             });
-        const expiry = Math.round((Date.now() + rawTime.offset) / 1000);
+
+        if (!member.manageable)
+            return interaction.reply({
+                content: 'I cannot manage this member and therefore cannot mute them.',
+                ephemeral: true,
+            });
+
+        const rawTime = new Duration(duration);
+        if (isNaN(rawTime.offset))
+            return interaction.reply({
+                content: 'Invalid duration specified for mute.',
+                ephemeral: true,
+            });
+
+        if (!mutedRoleID)
+            return interaction.reply({
+                content: 'The muted role is not configured.',
+                ephemeral: true,
+            });
+
+        if (member.roles.cache.has(mutedRoleID))
+            return interaction.reply({
+                content: 'This member is already muted.',
+                ephemeral: true,
+            });
+
+        const timeInMs = rawTime.offset;
+        const expiry = Math.round((Date.now() + timeInMs) / 1000);
+
         await member.roles.add(
             mutedRoleID,
             `Mute command executed by ${interaction.user.tag}`
@@ -241,6 +273,7 @@ class MuteCommand extends Command {
             `${member.id}:${Date.now()}`,
             expiry
         );
+
         const punishment = await Punishment.create(
             interaction.user.id,
             member.id,
@@ -248,9 +281,63 @@ class MuteCommand extends Command {
             'mute',
             expiry
         );
-        await interaction.reply(
-            `<:Hellos:1218430823229820968> ${member.user} was muted with ID \`${punishment.punishment_id}\`.`
-        );
+
+        // DM the muted member
+        const dmEmbed = new EmbedBuilder()
+            .setColor(Colors.Red)
+            .setTitle(`You were muted in ${interaction.guild.name}`)
+            .setAuthor({
+                name: interaction.guild.name,
+                iconURL: interaction.guild.iconURL(),
+            })
+            .addFields(
+                { name: 'Expires', value: time(expiry, TimestampStyles.LongDateTime) },
+                { name: 'Reason', value: reason },
+                { name: 'Punishment ID', value: punishment.punishment_id }
+            )
+            .setFooter({
+                text: 'You may appeal this mute by opening a ticket or sending a message in the muted channel',
+                iconURL: member.user.avatarURL(),
+            })
+            .setTimestamp(Date.now());
+        await member.send({ embeds: [dmEmbed] }).catch(() => {});
+
+        // Log to mod log
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.Orange)
+            .setTitle('Mute')
+            .setAuthor({
+                name: member.user.tag,
+                iconURL: member.user.avatarURL(),
+            })
+            .addFields(
+                { name: 'Punishment ID', value: `\`${punishment.punishment_id}\`` },
+                { name: 'User', value: `${member.user.tag} (${member.user.id})` },
+                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                { name: 'Reason', value: reason },
+                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) },
+                { name: 'Expires', value: time(expiry, TimestampStyles.LongDateTime) }
+            )
+            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setThumbnail(this.container.client.user.avatarURL());
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});
+
+        const hide = interaction.options.getBoolean('hide') || false;
+
+        if (!hide) {
+            const confirmEmbed = new EmbedBuilder()
+                .setColor(Colors.Orange)
+                .setDescription(
+                    `<:Hellos:1218430823229820968> ${member.user} was muted with ID \`${punishment.punishment_id}\`.`
+                );
+            return interaction.reply({ embeds: [confirmEmbed] });
+        } else {
+            return interaction.reply({
+                content: `Successfully muted ${member.user.tag} with ID \`${punishment.punishment_id}\`.`,
+                ephemeral: true,
+            });
+        }
     }
 
     /**
@@ -276,6 +363,12 @@ class MuteCommand extends Command {
                 option
                     .setName('reason')
                     .setDescription('Reason')
+                    .setRequired(false)
+            )
+            .addBooleanOption((option) =>
+                option
+                    .setName('hide')
+                    .setDescription('Hide the mute confirmation message')
                     .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {

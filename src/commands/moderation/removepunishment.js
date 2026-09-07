@@ -220,11 +220,14 @@ class RemovepunishmentCommand extends Command {
      */
     async chatInputRun(interaction) {
         const punishmentID = interaction.options.getString('punishment_id');
+        const reason = interaction.options.getString('reason') || 'No reason provided for punishment removal.';
+
         if (!punishmentID)
             return interaction.reply({
                 content: 'Provide a punishment ID.',
                 ephemeral: true,
             });
+
         const punishment = await this.container.db.punishments.findOneBy({
             punishment_id: punishmentID,
         });
@@ -233,11 +236,136 @@ class RemovepunishmentCommand extends Command {
                 content: 'A punishment with that ID does not exist.',
                 ephemeral: true,
             });
-        await this.container.db.punishments.delete({
-            punishment_id: punishmentID,
+
+        if (
+            punishment.moderator_id !== interaction.user.id &&
+            !interaction.member.permissions.has(PermissionFlagsBits.Administrator)
+        )
+            return interaction.reply({
+                content: 'You cannot remove a punishment that you did not give. You need to ask an admin to remove it.',
+                ephemeral: true,
+            });
+
+        const confirmationEmbed = new EmbedBuilder()
+            .setTitle('Are you sure?')
+            .setDescription(
+                `Please confirm you would like to remove punishment \`${punishmentID}\`. Once confirmed, you cannot revert this action.`
+            )
+            .setColor(Colors.Red);
+
+        const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+                .setCustomId('rmpunish_confirm_slash')
+                .setLabel('Confirm')
+                .setStyle(ButtonStyle.Success),
+            new ButtonBuilder()
+                .setCustomId('rmpunish_cancel_slash')
+                .setLabel('Cancel')
+                .setStyle(ButtonStyle.Danger)
+        );
+
+        await interaction.reply({
+            embeds: [confirmationEmbed],
+            components: [row],
+            ephemeral: true,
         });
-        return interaction.reply(`Removed punishment \`${punishmentID}\`.`);
+
+        const confirmationMessage = await interaction.fetchReply();
+
+        const filter = (i) => i.user.id === interaction.user.id;
+
+        const collector = confirmationMessage.createMessageComponentCollector({
+            filter,
+            max: 1,
+            time: 60_000,
+        });
+
+        collector.on('collect', async (ButtonInteraction) => {
+            const id = ButtonInteraction.customId;
+
+            if (id === 'rmpunish_confirm_slash') {
+                await this.container.db.punishments.delete({
+                    punishment_id: punishmentID,
+                });
+
+                const confirmedEmbed = new EmbedBuilder()
+                    .setTitle('Action Confirmed')
+                    .setDescription(
+                        `Punishment \`${punishmentID}\` was removed.`
+                    )
+                    .setColor(Colors.DarkRed);
+
+                await ButtonInteraction.update({
+                    embeds: [confirmedEmbed],
+                    components: [],
+                });
+
+                const punishedUser = await this.container.client.users
+                    .fetch(punishment.user_id)
+                    .catch(() => null);
+                const moderator = await this.container.client.users
+                    .fetch(punishment.moderator_id)
+                    .catch(() => null);
+
+                const logEmbed = new EmbedBuilder()
+                    .setColor(Colors.DarkVividPink)
+                    .setTitle('Punishment Removed')
+                    .setAuthor({
+                        name: punishedUser?.tag || punishment.user_id,
+                        iconURL: punishedUser?.avatarURL() || undefined,
+                    })
+                    .addFields(
+                        { name: 'Punishment ID', value: `\`${punishment.punishment_id}\`` },
+                        { name: 'User', value: `${punishedUser?.tag || punishment.user_id} (${punishment.user_id})` },
+                        { name: 'Punishment Moderator', value: `${moderator?.tag || punishment.moderator_id} (${punishment.moderator_id})` },
+                        { name: 'Action Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                        { name: 'Punishment Reason', value: punishment.reason },
+                        { name: 'Removal Reason', value: reason },
+                        { name: 'Punishment Date', value: time(punishment.timestamp, TimestampStyles.LongDateTime) },
+                        { name: 'Removal Date', value: time(new Date(), TimestampStyles.LongDateTime) }
+                    )
+                    .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+                    .setThumbnail(this.container.client.user.avatarURL());
+
+                const logChannelFetched = interaction.guild.channels.cache.get(logChannelID);
+                if (logChannelFetched)
+                    await logChannelFetched.send({ embeds: [logEmbed] });
+
+                return collector.stop();
+            } else if (id === 'rmpunish_cancel_slash') {
+                const cancelledEmbed = new EmbedBuilder()
+                    .setTitle('Cancelled')
+                    .setDescription('You cancelled this action. No punishments were affected.')
+                    .setColor(Colors.Green);
+
+                await ButtonInteraction.update({
+                    embeds: [cancelledEmbed],
+                    components: [],
+                });
+
+                return collector.stop();
+            }
+        });
+
+        collector.on('end', async (_, endReason) => {
+            if (endReason === 'time') {
+                await interaction
+                    .editReply({
+                        embeds: [
+                            new EmbedBuilder()
+                                .setTitle('Timed Out')
+                                .setDescription(
+                                    'This punishment removal confirmation expired.'
+                                )
+                                .setColor(Colors.Grey),
+                        ],
+                        components: [],
+                    })
+                    .catch(() => {});
+            }
+        });
     }
+
 
     /**
      * @param { Command.Registry } registry
@@ -251,6 +379,12 @@ class RemovepunishmentCommand extends Command {
                     .setName('punishment_id')
                     .setDescription('Punishment ID')
                     .setRequired(true)
+            )
+            .addStringOption((option) =>
+                option
+                    .setName('reason')
+                    .setDescription('Reason for removal')
+                    .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {
             preconditions: this.preconditions,

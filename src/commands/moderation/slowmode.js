@@ -134,9 +134,44 @@ class SlowmodeCommand extends Command {
                 ephemeral: true,
             });
         await channel.setRateLimitPerUser(duration, reason);
-        return interaction.reply(
-            `Slowmode for ${channel} set to **${duration} seconds**.`
-        );
+
+        // Log to mod log
+        const logEmbed = new EmbedBuilder()
+            .setColor(Colors.Blue)
+            .setTitle('Slowmode Changed')
+            .setAuthor({
+                name: interaction.user.tag,
+                iconURL: interaction.user.avatarURL(),
+            })
+            .addFields(
+                { name: 'Channel', value: `${channel} (${channel.id})` },
+                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                { name: 'Duration', value: `${duration} seconds` },
+                { name: 'Reason', value: reason },
+                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) }
+            )
+            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setThumbnail(this.container.client.user.avatarURL());
+        const logCh = interaction.guild.channels.cache.get(logChannelID);
+        if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});
+
+        const hide = interaction.options.getBoolean('hide') || false;
+
+        if (!hide) {
+            const confirmEmbed = new EmbedBuilder()
+                .setColor(Colors.Green)
+                .setDescription(
+                    `<:Hellos:1218430823229820968> Slowmode for ${channel} set to **${duration} seconds**.`
+                );
+
+            await interaction.reply({ embeds: [confirmEmbed] });
+            setTimeout(() => interaction.deleteReply().catch(() => {}), 5000);
+        } else {
+            return interaction.reply({
+                content: `Slowmode for ${channel} set to **${duration} seconds**.`,
+                ephemeral: true,
+            });
+        }
     }
 
     /**
@@ -146,16 +181,10 @@ class SlowmodeCommand extends Command {
         const builder = new SlashCommandBuilder()
             .setName(this.name)
             .setDescription(this.description)
-            .addUserOption((option) =>
-                option
-                    .setName('member')
-                    .setDescription('Target')
-                    .setRequired(true)
-            )
             .addIntegerOption((option) =>
                 option
                     .setName('duration')
-                    .setDescription('Seconds')
+                    .setDescription('Duration in seconds (0 to disable)')
                     .setMinValue(0)
                     .setMaxValue(21600)
                     .setRequired(true)
@@ -163,13 +192,19 @@ class SlowmodeCommand extends Command {
             .addChannelOption((option) =>
                 option
                     .setName('channel')
-                    .setDescription('Text channel')
+                    .setDescription('Text channel (defaults to current channel)')
                     .setRequired(false)
             )
             .addStringOption((option) =>
                 option
                     .setName('reason')
                     .setDescription('Reason')
+                    .setRequired(false)
+            )
+            .addBooleanOption((option) =>
+                option
+                    .setName('hide')
+                    .setDescription('Hide the slowmode confirmation message')
                     .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {

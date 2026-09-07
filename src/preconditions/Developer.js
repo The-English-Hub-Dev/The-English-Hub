@@ -30,6 +30,16 @@ class DeveloperPrecondition extends Precondition {
             ? this.ok()
             : this.error('User is not a developer');
     }
+
+    async chatInputRun(interaction) {
+        if (!this.container.client.application.owner)
+            await this.fetchApplicationWithTimeout();
+        return this.container.client.application.owner.members.has(
+            interaction.user.id
+        )
+            ? this.ok()
+            : this.error('User is not a developer');
+    }
 }
 
 module.exports = { DeveloperPrecondition };

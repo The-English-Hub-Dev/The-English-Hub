@@ -38,5 +38,36 @@ class CommandChPrecondition extends Precondition {
                           '>.',
                   });
     }
+
+    async chatInputRun(interaction) {
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Staff')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+
+        if (
+            (
+                await this.container.stores
+                    .get('preconditions')
+                    .get('Developer')
+                    .chatInputRun(interaction)
+            ).isOk()
+        )
+            return this.ok();
+        else
+            return cmdChannels.includes(interaction.channelId)
+                ? this.ok()
+                : this.error({
+                      message:
+                          'This command can only be used in the following channels: <#' +
+                          cmdChannels.join('>, <#') +
+                          '>.',
+                  });
+    }
 }
 module.exports = { CommandChPrecondition };

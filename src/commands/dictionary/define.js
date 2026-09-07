@@ -255,10 +255,12 @@ class DefineCommand extends Command {
         }
 
         const res = await fetch(
-            `https://api.api-ninjas.com/v1/dictionary?word=${encodedWord}`,
+            `https://wordsapiv1.p.rapidapi.com/words/${encodedWord}/definitions`,
             {
+                method: 'GET',
                 headers: {
-                    'X-API-Key': process.env.API_NINJA_KEY,
+                    'X-RapidAPI-Key': process.env.WORDSAPI_KEY,
+                    'X-RapidAPI-Host': 'wordsapiv1.p.rapidapi.com',
                 },
             }
         );
