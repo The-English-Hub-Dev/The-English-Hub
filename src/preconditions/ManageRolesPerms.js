@@ -37,7 +37,9 @@ class ManageRolesPermsPrecondition extends Precondition {
         )
             return this.ok();
 
-        return interaction.member.permissions.has(PermissionFlagsBits.ManageRoles)
+        return interaction.member.permissions.has(
+            PermissionFlagsBits.ManageRoles
+        )
             ? this.ok()
             : this.error({
                   message:

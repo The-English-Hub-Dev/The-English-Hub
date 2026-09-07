@@ -232,13 +232,15 @@ class MuteCommand extends Command {
             member.roles.highest.position
         )
             return interaction.reply({
-                content: 'You cannot mute members with equal or higher roles than you.',
+                content:
+                    'You cannot mute members with equal or higher roles than you.',
                 ephemeral: true,
             });
 
         if (!member.manageable)
             return interaction.reply({
-                content: 'I cannot manage this member and therefore cannot mute them.',
+                content:
+                    'I cannot manage this member and therefore cannot mute them.',
                 ephemeral: true,
             });
 
@@ -291,7 +293,10 @@ class MuteCommand extends Command {
                 iconURL: interaction.guild.iconURL(),
             })
             .addFields(
-                { name: 'Expires', value: time(expiry, TimestampStyles.LongDateTime) },
+                {
+                    name: 'Expires',
+                    value: time(expiry, TimestampStyles.LongDateTime),
+                },
                 { name: 'Reason', value: reason },
                 { name: 'Punishment ID', value: punishment.punishment_id }
             )
@@ -311,14 +316,32 @@ class MuteCommand extends Command {
                 iconURL: member.user.avatarURL(),
             })
             .addFields(
-                { name: 'Punishment ID', value: `\`${punishment.punishment_id}\`` },
-                { name: 'User', value: `${member.user.tag} (${member.user.id})` },
-                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                {
+                    name: 'Punishment ID',
+                    value: `\`${punishment.punishment_id}\``,
+                },
+                {
+                    name: 'User',
+                    value: `${member.user.tag} (${member.user.id})`,
+                },
+                {
+                    name: 'Moderator',
+                    value: `${interaction.user.tag} (${interaction.user.id})`,
+                },
                 { name: 'Reason', value: reason },
-                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) },
-                { name: 'Expires', value: time(expiry, TimestampStyles.LongDateTime) }
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                },
+                {
+                    name: 'Expires',
+                    value: time(expiry, TimestampStyles.LongDateTime),
+                }
             )
-            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: interaction.guild.iconURL(),
+            })
             .setThumbnail(this.container.client.user.avatarURL());
         const logCh = interaction.guild.channels.cache.get(logChannelID);
         if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});

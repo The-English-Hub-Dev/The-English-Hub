@@ -145,12 +145,21 @@ class SlowmodeCommand extends Command {
             })
             .addFields(
                 { name: 'Channel', value: `${channel} (${channel.id})` },
-                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                {
+                    name: 'Moderator',
+                    value: `${interaction.user.tag} (${interaction.user.id})`,
+                },
                 { name: 'Duration', value: `${duration} seconds` },
                 { name: 'Reason', value: reason },
-                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) }
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                }
             )
-            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: interaction.guild.iconURL(),
+            })
             .setThumbnail(this.container.client.user.avatarURL());
         const logCh = interaction.guild.channels.cache.get(logChannelID);
         if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});
@@ -192,7 +201,9 @@ class SlowmodeCommand extends Command {
             .addChannelOption((option) =>
                 option
                     .setName('channel')
-                    .setDescription('Text channel (defaults to current channel)')
+                    .setDescription(
+                        'Text channel (defaults to current channel)'
+                    )
                     .setRequired(false)
             )
             .addStringOption((option) =>

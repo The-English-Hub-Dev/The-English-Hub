@@ -198,7 +198,8 @@ class VcBanCommand extends Command {
 
         if (!vcBanUnbanManagedCategories.includes(channel.parentId))
             return interaction.reply({
-                content: 'You may only vc ban members from channels in the `Guest Rooms` category.',
+                content:
+                    'You may only vc ban members from channels in the `Guest Rooms` category.',
                 ephemeral: true,
             });
 
@@ -207,7 +208,8 @@ class VcBanCommand extends Command {
             member.roles.highest.position
         )
             return interaction.reply({
-                content: 'You may not vc ban members with equal or higher roles than you.',
+                content:
+                    'You may not vc ban members with equal or higher roles than you.',
                 ephemeral: true,
             });
 
@@ -220,14 +222,18 @@ class VcBanCommand extends Command {
                 iconURL: interaction.guild.iconURL(),
             })
             .addFields({ name: 'Reason', value: reason })
-            .setDescription('This ban will automatically expire in 24 hours. You will receive a DM when you are unbanned.')
+            .setDescription(
+                'This ban will automatically expire in 24 hours. You will receive a DM when you are unbanned.'
+            )
             .setTimestamp();
         await member.send({ embeds: [dmEmbed] }).catch(() => {});
 
         await channel.permissionOverwrites.edit(
             member,
             { Connect: false, SendMessages: false },
-            { reason: `VC ban by ${interaction.user.tag} (${interaction.user.id}): ${reason}` }
+            {
+                reason: `VC ban by ${interaction.user.tag} (${interaction.user.id}): ${reason}`,
+            }
         );
 
         if (member.voice.channel?.id === channel.id)
@@ -248,19 +254,39 @@ class VcBanCommand extends Command {
                 iconURL: member.user.avatarURL(),
             })
             .addFields(
-                { name: 'User', value: `${member.user.tag} (${member.user.id})` },
-                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                {
+                    name: 'User',
+                    value: `${member.user.tag} (${member.user.id})`,
+                },
+                {
+                    name: 'Moderator',
+                    value: `${interaction.user.tag} (${interaction.user.id})`,
+                },
                 { name: 'Reason', value: reason },
-                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) },
-                { name: 'Expires', value: time(new Date(Date.now() + Time.Day), TimestampStyles.LongDateTime) }
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                },
+                {
+                    name: 'Expires',
+                    value: time(
+                        new Date(Date.now() + Time.Day),
+                        TimestampStyles.LongDateTime
+                    ),
+                }
             )
-            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: interaction.guild.iconURL(),
+            })
             .setThumbnail(this.container.client.user.avatarURL());
         const logCh = interaction.guild.channels.cache.get(vcbanlogChannelID);
         if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});
 
         const vcBanEmbed = new EmbedBuilder()
-            .setDescription(`${member} has been banned from the vc ${channel} for 24 hours.`)
+            .setDescription(
+                `${member} has been banned from the vc ${channel} for 24 hours.`
+            )
             .setColor(Colors.Red);
         return interaction.reply({ embeds: [vcBanEmbed] });
     }

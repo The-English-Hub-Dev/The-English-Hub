@@ -220,7 +220,9 @@ class RemovepunishmentCommand extends Command {
      */
     async chatInputRun(interaction) {
         const punishmentID = interaction.options.getString('punishment_id');
-        const reason = interaction.options.getString('reason') || 'No reason provided for punishment removal.';
+        const reason =
+            interaction.options.getString('reason') ||
+            'No reason provided for punishment removal.';
 
         if (!punishmentID)
             return interaction.reply({
@@ -239,10 +241,13 @@ class RemovepunishmentCommand extends Command {
 
         if (
             punishment.moderator_id !== interaction.user.id &&
-            !interaction.member.permissions.has(PermissionFlagsBits.Administrator)
+            !interaction.member.permissions.has(
+                PermissionFlagsBits.Administrator
+            )
         )
             return interaction.reply({
-                content: 'You cannot remove a punishment that you did not give. You need to ask an admin to remove it.',
+                content:
+                    'You cannot remove a punishment that you did not give. You need to ask an admin to remove it.',
                 ephemeral: true,
             });
 
@@ -315,19 +320,47 @@ class RemovepunishmentCommand extends Command {
                         iconURL: punishedUser?.avatarURL() || undefined,
                     })
                     .addFields(
-                        { name: 'Punishment ID', value: `\`${punishment.punishment_id}\`` },
-                        { name: 'User', value: `${punishedUser?.tag || punishment.user_id} (${punishment.user_id})` },
-                        { name: 'Punishment Moderator', value: `${moderator?.tag || punishment.moderator_id} (${punishment.moderator_id})` },
-                        { name: 'Action Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                        {
+                            name: 'Punishment ID',
+                            value: `\`${punishment.punishment_id}\``,
+                        },
+                        {
+                            name: 'User',
+                            value: `${punishedUser?.tag || punishment.user_id} (${punishment.user_id})`,
+                        },
+                        {
+                            name: 'Punishment Moderator',
+                            value: `${moderator?.tag || punishment.moderator_id} (${punishment.moderator_id})`,
+                        },
+                        {
+                            name: 'Action Moderator',
+                            value: `${interaction.user.tag} (${interaction.user.id})`,
+                        },
                         { name: 'Punishment Reason', value: punishment.reason },
                         { name: 'Removal Reason', value: reason },
-                        { name: 'Punishment Date', value: time(punishment.timestamp, TimestampStyles.LongDateTime) },
-                        { name: 'Removal Date', value: time(new Date(), TimestampStyles.LongDateTime) }
+                        {
+                            name: 'Punishment Date',
+                            value: time(
+                                punishment.timestamp,
+                                TimestampStyles.LongDateTime
+                            ),
+                        },
+                        {
+                            name: 'Removal Date',
+                            value: time(
+                                new Date(),
+                                TimestampStyles.LongDateTime
+                            ),
+                        }
                     )
-                    .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+                    .setFooter({
+                        text: 'Moderation Logs',
+                        iconURL: interaction.guild.iconURL(),
+                    })
                     .setThumbnail(this.container.client.user.avatarURL());
 
-                const logChannelFetched = interaction.guild.channels.cache.get(logChannelID);
+                const logChannelFetched =
+                    interaction.guild.channels.cache.get(logChannelID);
                 if (logChannelFetched)
                     await logChannelFetched.send({ embeds: [logEmbed] });
 
@@ -335,7 +368,9 @@ class RemovepunishmentCommand extends Command {
             } else if (id === 'rmpunish_cancel_slash') {
                 const cancelledEmbed = new EmbedBuilder()
                     .setTitle('Cancelled')
-                    .setDescription('You cancelled this action. No punishments were affected.')
+                    .setDescription(
+                        'You cancelled this action. No punishments were affected.'
+                    )
                     .setColor(Colors.Green);
 
                 await ButtonInteraction.update({
@@ -365,7 +400,6 @@ class RemovepunishmentCommand extends Command {
             }
         });
     }
-
 
     /**
      * @param { Command.Registry } registry

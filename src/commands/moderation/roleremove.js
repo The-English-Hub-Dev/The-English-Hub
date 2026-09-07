@@ -226,7 +226,9 @@ class RoleRemoveCommand extends Command {
             .addBooleanOption((option) =>
                 option
                     .setName('hide')
-                    .setDescription('Hide the role removal confirmation message')
+                    .setDescription(
+                        'Hide the role removal confirmation message'
+                    )
                     .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {

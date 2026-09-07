@@ -115,7 +115,7 @@ class QueueCommand extends Command {
             .setTitle('Queue')
             .setDescription(`Queue ID: ${queueSnowflake}\n\n**Users:** None`)
             .setFooter({ text: `Queue created by ${interaction.user.tag}` });
-            
+
         const queueActionRow = new ActionRowBuilder().addComponents([
             new ButtonBuilder()
                 .setCustomId(`queue:join_${queueSnowflake}`)
@@ -158,12 +158,15 @@ class QueueCommand extends Command {
                     }`
                 )
                 .setFooter(queueEmbed.data.footer);
-                
+
             await interaction.reply({
                 embeds: [queueEmbed],
                 components: [queueActionRow],
             });
-            return interaction.followUp({ content: 'Queue restored from ID!', ephemeral: true });
+            return interaction.followUp({
+                content: 'Queue restored from ID!',
+                ephemeral: true,
+            });
         }
 
         await interaction.reply({

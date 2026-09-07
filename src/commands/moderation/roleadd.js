@@ -226,7 +226,9 @@ class RoleAddCommand extends Command {
             .addBooleanOption((option) =>
                 option
                     .setName('hide')
-                    .setDescription('Hide the role addition confirmation message')
+                    .setDescription(
+                        'Hide the role addition confirmation message'
+                    )
                     .setRequired(false)
             );
         registry.registerChatInputCommand(builder, {

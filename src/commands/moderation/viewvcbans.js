@@ -79,7 +79,9 @@ class ViewVcbanCommand extends Command {
         const vcs = {};
         for (let i = 0; i < allvcbans.length; i++) {
             const [vChannelID, memberID] = allvcbans[i][0].split(':');
-            let user = await this.container.client.users.fetch(memberID).catch(() => null);
+            let user = await this.container.client.users
+                .fetch(memberID)
+                .catch(() => null);
             let userTag = user ? user.tag : 'Unknown';
             const text = `<@${memberID}> (${memberID} - ${userTag}) Expires: ${time(new Date(Number(allvcbans[i][1]) + Time.Day), TimestampStyles.RelativeTime)}`;
             if (vChannelID in vcs) {

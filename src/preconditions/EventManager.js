@@ -36,7 +36,9 @@ class EventManagerPrecondition extends Precondition {
         )
             return this.ok();
 
-        if (eventManagerRoles.some((r) => interaction.member.roles.cache.has(r)))
+        if (
+            eventManagerRoles.some((r) => interaction.member.roles.cache.has(r))
+        )
             return this.ok();
 
         return this.error();

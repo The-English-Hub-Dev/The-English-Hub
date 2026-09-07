@@ -210,7 +210,8 @@ class TempbanCommand extends Command {
             member.roles.highest.position
         )
             return interaction.reply({
-                content: 'You may not ban members with equal or higher roles than you.',
+                content:
+                    'You may not ban members with equal or higher roles than you.',
                 ephemeral: true,
             });
 
@@ -240,16 +241,24 @@ class TempbanCommand extends Command {
         // DM the member before banning
         const dmEmbed = new EmbedBuilder()
             .setColor(Colors.Red)
-            .setTitle(`You were temporarily banned from ${interaction.guild.name}`)
+            .setTitle(
+                `You were temporarily banned from ${interaction.guild.name}`
+            )
             .setAuthor({
                 name: interaction.guild.name,
                 iconURL: interaction.guild.iconURL(),
             })
             .addFields(
-                { name: 'Expires', value: time(expiry, TimestampStyles.LongDateTime) },
+                {
+                    name: 'Expires',
+                    value: time(expiry, TimestampStyles.LongDateTime),
+                },
                 { name: 'Reason', value: reason },
                 { name: 'Punishment ID', value: punishment.punishment_id },
-                { name: 'Appeal', value: 'To appeal this ban, click [here](https://discord.com/invite/Yp26QSPnRT).' }
+                {
+                    name: 'Appeal',
+                    value: 'To appeal this ban, click [here](https://discord.com/invite/Yp26QSPnRT).',
+                }
             )
             .setFooter({
                 text: 'If you believe this ban was unjustified, you may submit an appeal',
@@ -275,14 +284,32 @@ class TempbanCommand extends Command {
                 iconURL: member.user.avatarURL(),
             })
             .addFields(
-                { name: 'Punishment ID', value: `\`${punishment.punishment_id}\`` },
-                { name: 'User', value: `${member.user.tag} (${member.user.id})` },
-                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                {
+                    name: 'Punishment ID',
+                    value: `\`${punishment.punishment_id}\``,
+                },
+                {
+                    name: 'User',
+                    value: `${member.user.tag} (${member.user.id})`,
+                },
+                {
+                    name: 'Moderator',
+                    value: `${interaction.user.tag} (${interaction.user.id})`,
+                },
                 { name: 'Reason', value: reason },
-                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) },
-                { name: 'Expires', value: time(expiry, TimestampStyles.LongDateTime) }
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                },
+                {
+                    name: 'Expires',
+                    value: time(expiry, TimestampStyles.LongDateTime),
+                }
             )
-            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: interaction.guild.iconURL(),
+            })
             .setThumbnail(this.container.client.user.avatarURL());
         const logCh = interaction.guild.channels.cache.get(logChannelID);
         if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});

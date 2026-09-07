@@ -1,5 +1,9 @@
 const { Command, Args } = require('@sapphire/framework');
-const { Message, ChatInputCommandInteraction, ChannelType } = require('discord.js');
+const {
+    Message,
+    ChatInputCommandInteraction,
+    ChannelType,
+} = require('discord.js');
 const { SlashCommandBuilder } = require('@discordjs/builders');
 
 class MoveAllCommand extends Command {

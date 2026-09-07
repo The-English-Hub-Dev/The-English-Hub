@@ -35,7 +35,9 @@ class StaffPrecondition extends Precondition {
         )
             return this.ok();
 
-        return staffRoles.some((role) => interaction.member.roles.cache.has(role))
+        return staffRoles.some((role) =>
+            interaction.member.roles.cache.has(role)
+        )
             ? this.ok()
             : this.error();
     }

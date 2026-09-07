@@ -24,7 +24,11 @@ class AdminPrecondition extends Precondition {
     }
 
     async chatInputRun(interaction) {
-        if (interaction.member.permissions.has(PermissionFlagsBits.Administrator))
+        if (
+            interaction.member.permissions.has(
+                PermissionFlagsBits.Administrator
+            )
+        )
             return this.ok();
 
         if (

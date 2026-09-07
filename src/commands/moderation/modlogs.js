@@ -161,20 +161,26 @@ class ModlogsCommand extends Command {
      * @param { ChatInputCommandInteraction } interaction
      */
     async chatInputRun(interaction) {
-        const isStaff = staffRoles.some((r) =>
-            interaction.member.roles.cache.has(r)
-        ) || interaction.member.permissions.has(8n); // Administrator flag
+        const isStaff =
+            staffRoles.some((r) => interaction.member.roles.cache.has(r)) ||
+            interaction.member.permissions.has(8n); // Administrator flag
 
         const requestedUser = interaction.options.getUser('member');
 
         // Non-staff can only view their own punishments
-        if (!isStaff && requestedUser && requestedUser.id !== interaction.user.id)
+        if (
+            !isStaff &&
+            requestedUser &&
+            requestedUser.id !== interaction.user.id
+        )
             return interaction.reply({
                 content: 'You can only view your own punishments.',
                 ephemeral: true,
             });
 
-        const user = isStaff ? (requestedUser || interaction.user) : interaction.user;
+        const user = isStaff
+            ? requestedUser || interaction.user
+            : interaction.user;
 
         const punishments = await this.container.db.punishments.findBy({
             user_id: user.id,
@@ -217,7 +223,10 @@ class ModlogsCommand extends Command {
                     value: blockQuote(
                         `**Type:** ${punishment.type}\n**Reason:** ${punishment.reason}\n**Date:** ${time(punishment.timestamp, TimestampStyles.LongDateTime)}\n**Expiration:** ${
                             punishment.expiration
-                                ? time(punishment.expiration, TimestampStyles.LongDateTime)
+                                ? time(
+                                      punishment.expiration,
+                                      TimestampStyles.LongDateTime
+                                  )
                                 : 'Never'
                         }`
                     ),
@@ -225,7 +234,10 @@ class ModlogsCommand extends Command {
             })
         );
         if (punishments.length > 25)
-            embed.addFields({ name: 'Results truncated', value: `Showing first 25 of ${punishments.length} punishments.` });
+            embed.addFields({
+                name: 'Results truncated',
+                value: `Showing first 25 of ${punishments.length} punishments.`,
+            });
 
         return interaction.reply({ embeds: [embed] });
     }

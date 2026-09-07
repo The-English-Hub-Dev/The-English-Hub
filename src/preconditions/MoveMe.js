@@ -53,7 +53,9 @@ class MoveMePrecondition extends Precondition {
         )
             return this.ok();
 
-        return moveMeRoles.some((role) => interaction.member.roles.cache.has(role))
+        return moveMeRoles.some((role) =>
+            interaction.member.roles.cache.has(role)
+        )
             ? this.ok()
             : this.error();
     }

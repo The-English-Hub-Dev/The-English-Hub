@@ -35,7 +35,9 @@ class FunCmdPrecondition extends Precondition {
         )
             return this.ok();
 
-        return funCmdRoles.some((role) => interaction.member.roles.cache.has(role))
+        return funCmdRoles.some((role) =>
+            interaction.member.roles.cache.has(role)
+        )
             ? this.ok()
             : this.error();
     }

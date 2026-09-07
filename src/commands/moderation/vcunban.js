@@ -176,7 +176,8 @@ class VcUnbanCommand extends Command {
 
         if (!vcBanUnbanManagedCategories.includes(channel.parentId))
             return interaction.reply({
-                content: 'You may only vc unban members from channels in the `Guest Rooms` category.',
+                content:
+                    'You may only vc unban members from channels in the `Guest Rooms` category.',
                 ephemeral: true,
             });
 
@@ -185,7 +186,8 @@ class VcUnbanCommand extends Command {
             member.roles.highest.position
         )
             return interaction.reply({
-                content: 'You may not vc unban members with equal or higher roles than you.',
+                content:
+                    'You may not vc unban members with equal or higher roles than you.',
                 ephemeral: true,
             });
 
@@ -216,18 +218,32 @@ class VcUnbanCommand extends Command {
                 iconURL: member.user.avatarURL(),
             })
             .addFields(
-                { name: 'User', value: `${member.user.tag} (${member.user.id})` },
-                { name: 'Moderator', value: `${interaction.user.tag} (${interaction.user.id})` },
+                {
+                    name: 'User',
+                    value: `${member.user.tag} (${member.user.id})`,
+                },
+                {
+                    name: 'Moderator',
+                    value: `${interaction.user.tag} (${interaction.user.id})`,
+                },
                 { name: 'Reason', value: reason },
-                { name: 'Date', value: time(new Date(), TimestampStyles.LongDateTime) }
+                {
+                    name: 'Date',
+                    value: time(new Date(), TimestampStyles.LongDateTime),
+                }
             )
-            .setFooter({ text: 'Moderation Logs', iconURL: interaction.guild.iconURL() })
+            .setFooter({
+                text: 'Moderation Logs',
+                iconURL: interaction.guild.iconURL(),
+            })
             .setThumbnail(this.container.client.user.avatarURL());
         const logCh = interaction.guild.channels.cache.get(vcbanlogChannelID);
         if (logCh) await logCh.send({ embeds: [logEmbed] }).catch(() => {});
 
         const vcUnbanEmbed = new EmbedBuilder()
-            .setDescription(`${member} has been unbanned from the vc ${channel}.`)
+            .setDescription(
+                `${member} has been unbanned from the vc ${channel}.`
+            )
             .setColor(Colors.DarkGreen);
         return interaction.reply({ embeds: [vcUnbanEmbed] });
     }
