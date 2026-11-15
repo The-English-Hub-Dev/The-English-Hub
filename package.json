@@ -27,7 +27,7 @@
         "@sapphire/discord.js-utilities": "^7.3.3",
         "@sapphire/framework": "^5.4.0",
         "@sapphire/plugin-logger": "^4.1.0",
-        "@sapphire/snowflake": "^3.5.5",
+        "@sapphire/snowflake": "^4.0.0",
         "@sapphire/stopwatch": "^1.5.4",
         "@sapphire/time-utilities": "^1.7.14",
         "@sentry/node": "^7.120.4",
